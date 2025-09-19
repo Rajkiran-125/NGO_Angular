@@ -6,14 +6,14 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ApiService {
-
+  url = "http://localhost:3000/api/";
   constructor(
     private http: HttpClient
   ) { }
 
-  post(endPoint,obj){
+  post(endPoint,obj, header?){
     try{
-      return this.http.post("http://localhost:3000/api/"+endPoint,obj);
+      return this.http.post(this.url+endPoint,obj, header);
     }catch(err){
       console.log(err.message);
       return err.message;
@@ -21,10 +21,19 @@ export class ApiService {
   }
   get(endPoint,obj){
     try{
-      return this.http.get("http://localhost:3000/api/"+endPoint,obj);
+      return this.http.get(this.url+endPoint,obj);
     }catch(err){
       console.log(err.message);
       return err.message;
     }
   }
+  put(endPoint,obj, header?){
+    try{
+      return this.http.put(this.url+endPoint,obj, header);
+    }catch(err){
+      console.log(err.message);
+      return err.message;
+    }
+  }
+  
 }

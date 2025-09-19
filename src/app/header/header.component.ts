@@ -1,29 +1,31 @@
 import { Component } from '@angular/core';
 import { SharedService } from '../Service/shared.service';
-import { NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [NgIf],
+  imports: [NgIf, AsyncPipe],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
 
   authToken:any;
+  isLoggedIn$: Observable<boolean>;
 
   constructor(
     private sharedService: SharedService,
-  ){}
+  ){
+     this.isLoggedIn$ = this.sharedService.isLoggedIn$;
+  }
 
   ngOnInit() {
     this.authToken = localStorage.getItem("authToken");
   }
 
-  logout(){
-    localStorage.removeItem("authToken");
-    this.sharedService.updateDashboardPage(false);
-    this.sharedService.updateLoginPage(true);
+  logout() {
+    this.sharedService.logout();
   }
 }

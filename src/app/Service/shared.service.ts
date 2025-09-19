@@ -6,19 +6,24 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class SharedService {
 
-  constructor() { }
+  private loggedIn = new BehaviorSubject<boolean>(false);
+  isLoggedIn$ = this.loggedIn.asObservable();
 
-  private dashboardPage = new BehaviorSubject<boolean>(false);  // default value
-  currentMessage$ = this.dashboardPage.asObservable(); // expose as Observable
-
-  private loginPage = new BehaviorSubject<boolean>(false);  // default value
-  loginMessage$ = this.loginPage.asObservable();// expose as Observable
-
-  updateLoginPage(val:boolean){
-    this.loginPage.next(val);
+  constructor() {
+    // 👇 check localStorage on load
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      this.loggedIn.next(true);
+    }
   }
 
-  updateDashboardPage(val: boolean) {
-    this.dashboardPage.next(val);
+  login(token: string) {
+    localStorage.setItem('authToken', token);
+    this.loggedIn.next(true);
+  }
+
+  logout() {
+    localStorage.removeItem('authToken');
+    this.loggedIn.next(false);
   }
 }

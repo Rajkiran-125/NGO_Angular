@@ -7,7 +7,7 @@
             <!-- {{authToken}} -->
             <div class="flex items-center space-x-4">
                 <span id="userGreeting" class="text-gray-700"></span>
-                <button id="logoutBtn" *ngIf="authToken" (click)="logout()"
+                <button id="logoutBtn" *ngIf="isLoggedIn$ | async"  (click)="logout()"
                     class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200">
                     Logout
                 </button>
