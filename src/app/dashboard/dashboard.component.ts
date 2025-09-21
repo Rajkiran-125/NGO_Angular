@@ -1,10 +1,14 @@
-import { DatePipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
+import { AsyncPipe, DatePipe, JsonPipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { SharedService } from '../Service/shared.service';
 import { ApiService } from '../Service/api.service';
 import { FormsModule, NgModel } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LoaderComponent } from '../loader/loader.component';
+import { Observable } from 'rxjs';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { TosterService } from '../Service/toster.service';
 
 interface DashboardData {
   profile: { firstName: string; lastName: string; schoolOrganization: string };
@@ -19,7 +23,7 @@ interface DashboardData {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [NgIf,NgFor,NgClass, DatePipe, TitleCasePipe, FormsModule, LoaderComponent],
+  imports: [NgIf, NgFor, NgClass, DatePipe, TitleCasePipe, FormsModule, LoaderComponent, AsyncPipe, JsonPipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -35,8 +39,10 @@ export class DashboardComponent {
   statCards: any[] = []; dashboardPage: boolean = false;
 
   showSubmitModal = false;
-  isAdmin = false; // toggle based on login
+  // isAdmin$ : Observable<boolean>; // toggle based on login
+  isAdmin: any; // toggle based on login
   today = new Date().toISOString().split('T')[0];
+  isLoading = false;
 
   hours: any = {
     firstName: '',
@@ -59,16 +65,25 @@ export class DashboardComponent {
   adminStats = { totalVolunteers: 0, totalHours: 0, pendingSubmissions: 0 };
   pendingHours: any[] = [];
 
-  constructor(private sharedService: SharedService, private api: ApiService) { }
+  constructor(
+    private sharedService: SharedService,
+    private api: ApiService,
+    private toster: TosterService
+  ) {
+    this.isAdmin = this.sharedService.isAdmin$;
+  }
 
   ngOnInit() {
     this.loadDashboardData();
+    this.isAdmin = localStorage.getItem('user') == 'admin' ? true : false;
+    if (this.isAdmin) {
+      this.loadAdminPanel();
+    }
   }
-  
+
 
   loadDashboardData() {
-    try{
-      this.loader = true;
+    try {
       const authToken = localStorage.getItem("authToken");
       let token = {
         headers: {
@@ -76,17 +91,42 @@ export class DashboardComponent {
         }
       }
       this.api.get('volunteers/dashboard', token).subscribe(res => {
-        this.loader = false;
         console.log(res);
         this.dashboardData = res;
         this.calculateProgress();
         this.prepareStatCards();
       });
-    }catch(err){
-      this.loader = false;
+    } catch (err) {
+      // this.loader = false;
+      this.toster.show("error", err.message);
       console.log(err);
     }
+  }
+  loadDashboardDataRefresh() {
+    try {
+      this.isLoading = true;
+      const authToken = localStorage.getItem("authToken");
+      let token = {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      }
+      this.api.get('volunteers/dashboard', token).subscribe(res => {
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 500);
+        // this.toster.show('success', 'Dashboard data refresh');
+        console.log(res);
+        this.dashboardData = res;
+        this.calculateProgress();
+        this.prepareStatCards();
+      });
+    } catch (err) {
+      // this.loader = false;
+      this.toster.show("error", err.message);
+      console.log(err);
     }
+  }
 
   prepareStatCards() {
     this.statCards = [
@@ -169,6 +209,7 @@ export class DashboardComponent {
   }
 
   onSubmitHours() {
+    this.showSubmitModal = true;
     console.log('Submit hours clicked');
   }
 
@@ -177,11 +218,35 @@ export class DashboardComponent {
   }
 
   editHours(id: string) {
-    console.log('Edit hours:', id);
+    console.log(this.dashboardData)
+    const entry = this.pendingHours.find(e => e.id === id);
+
+
+    if (entry) {
+      // 2. Populate hours object
+      this.hours = {
+        firstName: entry.volunteerId.profile.firstName,
+        lastName: entry.volunteerId.profile.lastName,
+        schoolOrganization: entry.volunteerId.profile.schoolOrganization,
+        activityName: entry.activityName,
+        serviceDate: entry.serviceDate ? entry.serviceDate.split('T')[0] : '', // keep YYYY-MM-DD
+        hours: entry.hours,
+        serviceType: entry.serviceType,
+        description: entry.description,
+        isHistorical: entry.isHistorical || false
+      };
+
+      // 3. Track edit state
+      // this.isEditMode = true;
+      // this.editingId = entry.id;
+
+      // 4. Show modal
+      this.showSubmitModal = true;
+    }
   }
 
   showRejectionReason(reason: string) {
-    alert('Rejection Reason: ' + reason);
+    this.toster.show('info', `Rejection Reason: ${reason}`);
   }
 
 
@@ -194,7 +259,6 @@ export class DashboardComponent {
 
 
   // Modal Functions
-  showSubmitHoursModal() { this.showSubmitModal = true; }
   hideSubmitHoursModal() { this.showSubmitModal = false; this.hours = {}; this.proofFile = null; }
 
   onFileSelected(event: any) { this.proofFile = event.target.files[0]; }
@@ -207,15 +271,17 @@ export class DashboardComponent {
 
     const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
 
-    this.api.post(`${this.API_BASE}/hours/submit`, formData, { headers })
+    this.api.post(`hours/submit`, formData, { headers })
       .subscribe({
         next: () => {
-          this.showMessage('Hours submitted successfully!', 'success');
+          // this.showMessage('Hours submitted successfully!', 'success');
           this.hideSubmitHoursModal();
           this.loadAdminPanel();
+          this.loadDashboardData();
         },
         error: (err) => {
-          this.showMessage(err.error?.message || 'Failed to submit hours', 'error');
+          this.toster.show('error', err.error?.message || 'Failed to submit hours');
+          // this.showMessage(err.error?.message || 'Failed to submit hours', 'error');
         }
       });
   }
@@ -230,19 +296,25 @@ export class DashboardComponent {
 
   approveHours(id: string) {
     const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}`, 'Content-Type': 'application/json' });
-    this.api.put(`${this.API_BASE}/admin/review-hours/${id}`, { status: 'approved' }, { headers })
-      .subscribe(() => { this.showMessage('Hours approved!', 'success'); this.loadAdminPanel(); });
+    this.api.put(`admin/review-hours/${id}`, { status: 'approved' }, { headers }).subscribe((res) => {
+      console.log(res);
+      this.toster.show('info', 'Hours approved!');
+      this.loadAdminPanel();
+    });
   }
 
   rejectHours(id: string) {
     const reason = prompt('Please provide a reason for rejection (optional):');
     const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}`, 'Content-Type': 'application/json' });
-    this.api.put(`${this.API_BASE}/admin/review-hours/${id}`, { status: 'rejected', rejectionReason: reason }, { headers })
-      .subscribe(() => { this.showMessage('Hours rejected!', 'success'); this.loadAdminPanel(); });
+    this.api.put(`admin/review-hours/${id}`, { status: 'rejected', rejectionReason: reason }, { headers }).subscribe((res) => {
+      console.log(res)
+      this.toster.show('info', 'Hours rejected!');
+      this.loadAdminPanel();
+    });
   }
 
   viewHourDetails(id: string) {
-    alert(`Viewing details for: ${id}`); // you can expand with modal
+    this.toster.show('info', `Viewing details for: ${id}`)
   }
 
   // Message utility
@@ -258,5 +330,40 @@ export class DashboardComponent {
     container.appendChild(div);
     setTimeout(() => div.remove(), 5000);
   }
+
+
+  exportVolunteerData() {
+    try {
+
+      const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
+      this.api.get(`hours/export?format=json`, { headers }).subscribe(res => {
+        console.log(res);
+
+        // 1. Convert JSON to worksheet
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(res);
+
+        // 2. Create a workbook
+        const workbook: XLSX.WorkBook = {
+          Sheets: { 'Volunteer Hours': worksheet },
+          SheetNames: ['Volunteer Hours']
+        };
+
+        // 3. Generate Excel file buffer
+        const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+        // 4. Save as file
+        const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        saveAs(data, `volunteer_hours_${new Date().toISOString().slice(0, 10)
+          }.xlsx`);
+        this.toster.show('success', 'File exported')
+      });
+
+    } catch (error) {
+      this.toster.show('error', error.error?.message)
+      console.log(error);
+    }
+  }
+
+
 
 }

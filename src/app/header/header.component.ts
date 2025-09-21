@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { SharedService } from '../Service/shared.service';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Observable } from 'rxjs';
+import { TosterService } from '../Service/toster.service';
 
 @Component({
   selector: 'app-header',
@@ -17,6 +18,7 @@ export class HeaderComponent {
 
   constructor(
     private sharedService: SharedService,
+    private toster: TosterService
   ){
      this.isLoggedIn$ = this.sharedService.isLoggedIn$;
   }
@@ -26,6 +28,8 @@ export class HeaderComponent {
   }
 
   logout() {
+    localStorage.removeItem('authToken');
     this.sharedService.logout();
+    this.toster.show("success", "Logout");
   }
 }

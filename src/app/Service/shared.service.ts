@@ -9,6 +9,9 @@ export class SharedService {
   private loggedIn = new BehaviorSubject<boolean>(false);
   isLoggedIn$ = this.loggedIn.asObservable();
 
+  private isAdmin = new BehaviorSubject<boolean>(false);
+  isAdmin$ = this.isAdmin.asObservable();
+
   constructor() {
     // 👇 check localStorage on load
     const token = localStorage.getItem('authToken');
@@ -17,13 +20,19 @@ export class SharedService {
     }
   }
 
-  login(token: string) {
+  login(token: string, isAdmin) {
     localStorage.setItem('authToken', token);
     this.loggedIn.next(true);
+    this.isAdmin.next(isAdmin);
+    if(isAdmin){
+      localStorage.setItem('user', "admin");
+    }else{
+      localStorage.setItem('user', "volunteer");
+    }
   }
 
   logout() {
-    localStorage.removeItem('authToken');
     this.loggedIn.next(false);
   }
+
 }

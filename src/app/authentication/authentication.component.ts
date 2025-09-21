@@ -4,6 +4,7 @@ import { ApiService } from '../Service/api.service';
 import { NgIf } from '@angular/common';
 import { SharedService } from '../Service/shared.service';
 import { LoaderComponent } from '../loader/loader.component';
+import { TosterService } from '../Service/toster.service';
 
 @Component({
   selector: 'app-authentication',
@@ -24,7 +25,8 @@ export class AuthenticationComponent {
   constructor(
     private fb: FormBuilder,
     private api: ApiService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private toster: TosterService
   ) { }
 
   ngOnInit(): void {
@@ -32,51 +34,62 @@ export class AuthenticationComponent {
     this.checkAuthStatus();
 
     this.loginForm = this.fb.group({
-      userName: [],
-      password: []
+      userName: ['', Validators.required],
+      password: ['', Validators.required]
     });
 
     this.signUpForm = this.fb.group({
       firstName: ['', Validators.required],
-      lastName: [],
-      email: [],
-      userName: [],
-      password: [],
-      schoolOrOrganization: [],
-      dob: [],
-      phoneNumber: [],
-      state: [],
-      country: [],
-      refCode: ['']
+      lastName: ['', Validators.required],
+      email: ['', Validators.required],
+      userName: ['', Validators.required],
+      password: ['', Validators.required],
+      schoolOrOrganization: ['', Validators.required],
+      dob: ['', Validators.required],
+      phoneNumber: ['', Validators.required],
+      state: ['', Validators.required],
+      country: ['', Validators.required],
+      refCode: ['', Validators.required]
     });
   }
 
   login() {
-    this.loader = true;
     const email = this.loginForm.value.userName;
     const password = this.loginForm.value.password;
+    
+    if (this.loginForm.valid) {
+      
+      this.loader = true;
 
-    this.api.post('auth/login', { email, password }).subscribe({
-      next: (res: any) => {
-        this.loader = false;
-        console.log(res);
+      this.api.post('auth/login', { email, password }).subscribe({
+        next: (res: any) => {
+          this.loader = false;
+          console.log(res);
+          this.toster.show("success", "Login successfully")
+          const isAdmin = res.user.role == 'admin' ? true : false;
 
-        const authToken = res.token;
-        localStorage.setItem("authToken", authToken);
+          const authToken = res.token;
+          localStorage.setItem("authToken", authToken);
 
-        this.loginPage = false;
-        this.authPage = false;
-        this.sharedService.login(authToken);
+          this.loginPage = false;
+          this.authPage = false;
+          this.sharedService.login(authToken, isAdmin);
 
-        this.loginForm.reset();
-      },
-      error: (err) => {
-        this.loader = false;
-        console.error('Login failed', err);
+          this.loginForm.reset();
+        },
+        error: (err) => {
+          this.loader = false;
+          console.error('Login failed', err);
 
-        alert(err.error.message);
-      }
-    });
+          this.toster.show('error',err.error?.message);
+        }
+      });
+    } else {
+      this.loader = false;
+      console.error('Form Invalid');
+
+      this.toster.show('error','Form Invalid');
+    }
   }
 
 
@@ -101,9 +114,11 @@ export class AuthenticationComponent {
       this.api.post('auth/register', formData).subscribe(res => {
         this.loader = false;
         console.log(res);
+        this.toster.show('success', 'SignUp successfully')
       })
     } catch (err) {
       this.loader = false;
+      this.toster.show('error', err.error?.message);
       console.log(err);
     }
   }
@@ -128,6 +143,7 @@ export class AuthenticationComponent {
           // this.sharedService.updateDashboardPage(true);
         })
       } catch (err) {
+        this.toster.show('error', err.error?.message);
         console.log(err.message);
       }
     }
