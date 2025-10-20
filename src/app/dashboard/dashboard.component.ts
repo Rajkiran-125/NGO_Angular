@@ -95,6 +95,7 @@ export class DashboardComponent {
         this.dashboardData = res;
         this.calculateProgress();
         this.prepareStatCards();
+        this.loadAdminPanel();
       });
     } catch (err) {
       // this.loader = false;
@@ -120,6 +121,7 @@ export class DashboardComponent {
         this.dashboardData = res;
         this.calculateProgress();
         this.prepareStatCards();
+        this.loadAdminPanel();
       });
     } catch (err) {
       // this.loader = false;
@@ -219,7 +221,7 @@ export class DashboardComponent {
 
   editHours(id: string) {
     console.log(this.dashboardData)
-    const entry = this.pendingHours.find(e => e.id === id);
+    const entry = this.pendingHours.find(e => e._id === id);
 
 
     if (entry) {
@@ -270,7 +272,7 @@ export class DashboardComponent {
     if (this.proofFile) formData.append('proofOfService', this.proofFile);
 
     const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
-
+    
     this.api.post(`hours/submit`, formData, { headers })
       .subscribe({
         next: () => {
@@ -292,6 +294,7 @@ export class DashboardComponent {
 
     this.api.get(`admin/stats`, { headers }).subscribe(stats => this.adminStats = stats);
     this.api.get(`admin/pending-hours`, { headers }).subscribe(data => this.pendingHours = data);
+    console.log('__');
   }
 
   approveHours(id: string) {
