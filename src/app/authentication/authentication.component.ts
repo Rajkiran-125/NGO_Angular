@@ -21,6 +21,7 @@ export class AuthenticationComponent {
   loginPage: boolean = true;
   signUpPage: boolean = false;
   authPage: boolean = true;
+  previewUrl: string | ArrayBuffer | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -146,6 +147,15 @@ export class AuthenticationComponent {
         this.toster.show('error', err.error?.message);
         console.log(err.message);
       }
+    }
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => (this.previewUrl = reader.result);
+      reader.readAsDataURL(file);
     }
   }
 

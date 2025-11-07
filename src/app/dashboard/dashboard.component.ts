@@ -184,6 +184,7 @@ export class DashboardComponent {
 
     this.progressInfo = { nextTier, progress, remaining };
   }
+  
 
   get filteredHistory() {
     if (!this.dashboardData?.hoursHistory) return [];
