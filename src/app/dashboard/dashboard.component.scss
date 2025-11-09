@@ -3,11 +3,128 @@
   animation: spin 1s linear infinite;
 }
 
+.badge {
+  background: linear-gradient(90deg, var(--ligth-purpal), var(--purpal), var(--primary-color)) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.badge:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
 @keyframes spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+.tile-cards {
+
+  .tile-icon {
+    background-color: var(--purpal) !important;
+  }
+
+  i {
+    color: #fff !important;
+  }
+
+  div {
+    p:nth-child(1) {
+      color: var(--ligth-purpal);
+    }
+
+    p:nth-child(2) {
+      color: var(--primary-color);
+    }
+  }
+}
+
+.card-button {
+  button {
+    background-color: var(--primary-color);
+  }
+}
+
+/* Optional subtle shadow and hover animation improvements */
+.shadow-sm {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+button {
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+.dHeader {
+  background-color: var(--primary-color) !important;
+
+  h1,
+  p {
+    color: #fff !important;
+  }
+}
+
+// .submit-hours {
+//   button:first-child {
+//     background-color: var(--ligth-purpal);
+//   }
+  
+//   button:nth-child(2) {
+//     background-color: var(--purpal);
+//   }
+// }
+
+.admin-edit-btn{
+  background-color: var(--primary-color);
+}
+
+.subminhrsbtn{
+  background-color: var(--ligth-purpal);
+}
+.exportdatabtn{
+  background-color: var(--purpal);
+}
+.tile-heading{
+  h3{
+    font-weight: bold;
+    font-size: x-large;
+  }
+}
+
+table{
+  thead{
+    tr{
+      background-color: var(--primary-color);
+      color: #fff !important;
+    }
+  }
+}
+
+.submin-hrs-btn{
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.submin-hrs-btn:hover {
+  filter: brightness(1.1);
+
+  transform: translateY(-1px);
+}
+.submin-cancel-btn{
+  border: 1px solid #8e8e8e;
+  background-color: #fff;
+  color: #000;
+}
+
+.submin-cancel-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
 }

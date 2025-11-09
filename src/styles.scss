@@ -1,3 +1,12 @@
+@use '@angular/material' as mat;
+
+@include mat.core(); // required for all Material components
+
+// Choose one prebuilt theme:
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+// other options: deeppurple-amber.css, pink-bluegrey.css, purple-green.css
+
+
 /* You can add global styles to this file, and also import other style files */
 .tier-badge {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -36,5 +45,9 @@ body{
 }
 
 :root{
-  --primary-color: #5a0f8d
+  --primary-color: #5a0f8d;
+  --ligth-purpal: rgb(146, 99, 195);
+  --purpal: rgb(143, 30, 174);
 }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

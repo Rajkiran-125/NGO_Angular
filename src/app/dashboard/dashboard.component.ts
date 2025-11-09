@@ -1,5 +1,5 @@
 import { AsyncPipe, DatePipe, JsonPipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { SharedService } from '../Service/shared.service';
 import { ApiService } from '../Service/api.service';
 import { FormsModule, NgModel } from '@angular/forms';
@@ -9,6 +9,11 @@ import { Observable } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { TosterService } from '../Service/toster.service';
+import { FooterComponent } from '../footer/footer.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Dialog } from '@angular/cdk/dialog';
+import { DialogComponent } from '../dialog/dialog.component';
 
 interface DashboardData {
   profile: { firstName: string; lastName: string; schoolOrganization: string };
@@ -23,12 +28,15 @@ interface DashboardData {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [NgIf, NgFor, NgClass, DatePipe, TitleCasePipe, FormsModule, LoaderComponent, AsyncPipe, JsonPipe],
+  imports: [NgIf,
+    NgFor, NgClass, DatePipe, TitleCasePipe, FormsModule, LoaderComponent, AsyncPipe,
+    JsonPipe, FooterComponent, MatButtonModule, MatDialogModule, DialogComponent],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  styleUrl: './dashboard.component.scss',
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
-
+  readonly dialog = inject(MatDialog);
   loader: boolean = false;
   API_BASE = 'http://localhost:3000/api';
   authToken = localStorage.getItem('authToken');
@@ -130,38 +138,65 @@ export class DashboardComponent {
     }
   }
 
+  // prepareStatCards() {
+  //   this.statCards = [
+  //     {
+  //       icon: 'fas fa-clock',
+  //       bgColor: 'bg-blue-100',
+  //       textColor: 'text-blue-600',
+  //       label: 'Total Hours',
+  //       value: this.dashboardData.totalHours,
+  //     },
+  //     {
+  //       icon: 'fas fa-calendar',
+  //       bgColor: 'bg-green-100',
+  //       textColor: 'text-green-600',
+  //       label: 'This Year',
+  //       value: this.dashboardData.thisYearHours,
+  //     },
+  //     {
+  //       icon: 'fas fa-medal',
+  //       bgColor: 'bg-purple-100',
+  //       textColor: 'text-purple-600',
+  //       label: 'Current Tier',
+  //       value: this.dashboardData.tier,
+  //     },
+  //     {
+  //       icon: 'fas fa-share',
+  //       bgColor: 'bg-yellow-100',
+  //       textColor: 'text-yellow-600',
+  //       label: 'Referral Code',
+  //       value: this.dashboardData.referralCode,
+  //     },
+  //   ];
+  // }
+
   prepareStatCards() {
     this.statCards = [
       {
         icon: 'fas fa-clock',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600',
-        label: 'Total Hours',
-        value: this.dashboardData.totalHours,
+        label: 'Lifetime Hours',
+        value: this.dashboardData.totalHours || 0,
+      },
+      {
+        icon: 'fas fa-dollar-sign',
+        label: 'Value of Service',
+        // value: `$${this.dashboardData.valueOfService || '0.00'}`,
+        value: `$3546.54`,
       },
       {
         icon: 'fas fa-calendar',
-        bgColor: 'bg-green-100',
-        textColor: 'text-green-600',
-        label: 'This Year',
-        value: this.dashboardData.thisYearHours,
+        label: 'Current Year',
+        value: this.dashboardData.thisYearHours || 0,
       },
       {
-        icon: 'fas fa-medal',
-        bgColor: 'bg-purple-100',
-        textColor: 'text-purple-600',
-        label: 'Current Tier',
-        value: this.dashboardData.tier,
-      },
-      {
-        icon: 'fas fa-share',
-        bgColor: 'bg-yellow-100',
-        textColor: 'text-yellow-600',
-        label: 'Referral Code',
-        value: this.dashboardData.referralCode,
+        icon: 'fas fa-award',
+        label: 'Recognition Tier',
+        value: this.dashboardData.tier || 'N/A',
       },
     ];
   }
+
 
   calculateProgress() {
     const tiers = [
@@ -184,7 +219,7 @@ export class DashboardComponent {
 
     this.progressInfo = { nextTier, progress, remaining };
   }
-  
+
 
   get filteredHistory() {
     if (!this.dashboardData?.hoursHistory) return [];
@@ -223,8 +258,6 @@ export class DashboardComponent {
   editHours(id: string) {
     console.log(this.dashboardData)
     const entry = this.pendingHours.find(e => e._id === id);
-
-
     if (entry) {
       // 2. Populate hours object
       this.hours = {
@@ -273,7 +306,7 @@ export class DashboardComponent {
     if (this.proofFile) formData.append('proofOfService', this.proofFile);
 
     const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
-    
+
     this.api.post(`hours/submit`, formData, { headers })
       .subscribe({
         next: () => {
@@ -339,28 +372,47 @@ export class DashboardComponent {
   exportVolunteerData() {
     try {
 
-      const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
-      this.api.get(`hours/export?format=json`, { headers }).subscribe(res => {
-        console.log(res);
-
-        // 1. Convert JSON to worksheet
-        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(res);
-
-        // 2. Create a workbook
-        const workbook: XLSX.WorkBook = {
-          Sheets: { 'Volunteer Hours': worksheet },
-          SheetNames: ['Volunteer Hours']
-        };
-
-        // 3. Generate Excel file buffer
-        const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-
-        // 4. Save as file
-        const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-        saveAs(data, `volunteer_hours_${new Date().toISOString().slice(0, 10)
-          }.xlsx`);
-        this.toster.show('success', 'File exported')
+      const type = 'exportDate'
+      const badge = '';
+      const dialogRef = this.dialog.open(DialogComponent, {
+        data: { badge, type }
       });
+
+      dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      console.log('Dialog closed with data:', result);
+      // example: access the returned data
+      console.log('From:', result.fromDate);
+      console.log('To:', result.toDate);
+      console.log('Type:', result.type);
+    }
+  });
+
+      if (false) {
+
+        const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
+        this.api.get(`hours/export?format=json`, { headers }).subscribe(res => {
+          console.log(res);
+
+          // 1. Convert JSON to worksheet
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(res);
+
+          // 2. Create a workbook
+          const workbook: XLSX.WorkBook = {
+            Sheets: { 'Volunteer Hours': worksheet },
+            SheetNames: ['Volunteer Hours']
+          };
+
+          // 3. Generate Excel file buffer
+          const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+          // 4. Save as file
+          const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          saveAs(data, `volunteer_hours_${new Date().toISOString().slice(0, 10)
+            }.xlsx`);
+          this.toster.show('success', 'File exported')
+        });
+      }
 
     } catch (error) {
       this.toster.show('error', error.error?.message)
@@ -369,5 +421,16 @@ export class DashboardComponent {
   }
 
 
+
+  openDialog(badge) {
+    const type = 'badge'
+    const dialogRef = this.dialog.open(DialogComponent, {
+      data: { badge, type }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+    });
+  }
 
 }

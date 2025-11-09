@@ -22,6 +22,7 @@ export class AuthenticationComponent {
   signUpPage: boolean = false;
   authPage: boolean = true;
   previewUrl: string | ArrayBuffer | null = null;
+  changePassword: boolean = false;
 
   constructor(
     private fb: FormBuilder,

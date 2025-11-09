@@ -2,21 +2,24 @@
 <!-- Dashboard Content -->
 <div *ngIf="dashboardData" #dashboardContainer>
   <!-- Dashboard Header -->
-  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+  <div class="rounded-lg shadow-md p-6 mb-6 dHeader">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between">
       <div>
         <h1 class="text-3xl font-bold text-gray-900">
           Welcome back, {{ dashboardData.profile.firstName }}!
         </h1>
-        <p class="text-gray-600 mt-1">Welcome to your volunteer dashboard</p>
+        <!-- <p class="text-gray-600 mt-1">Welcome to your volunteer dashboard</p> -->
+        <p class="text-gray-600 mt-1" *ngIf="!isAdmin">Manage your service, explore opportunities, and track your impact—all in one
+          place.</p>
+        <p class="text-gray-600 mt-1" *ngIf="isAdmin">Manage volunteers, track metrics, and measure impact—all at the same time.</p>
       </div>
-      <div class="mt-4 md:mt-0 flex space-x-3">
-        <button (click)="onSubmitHours()"
-          class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+      <div class="mt-4 md:mt-0 flex space-x-10 submit-hours">
+        <button (click)="onSubmitHours()" *ngIf="!isAdmin"
+          class="bg-blue-600 subminhrsbtn text-white px-4 py-3 rounded-md hover:bg-blue-700 transition duration-200">
           <i class="fas fa-plus mr-2"></i>Submit Hours
         </button>
         <button (click)="exportVolunteerData()"
-          class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200">
+          class="bg-green-600 exportdatabtn text-white px-4 py-3 rounded-md hover:bg-green-700 transition duration-200">
           <i class="fas fa-download mr-2"></i>Export Data
         </button>
       </div>
@@ -24,7 +27,7 @@
   </div>
 
   <!-- Stats Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+  <!-- <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
     <ng-container *ngFor="let card of statCards">
       <div class="bg-white rounded-lg shadow-md p-6">
         <div class="flex items-center">
@@ -40,11 +43,56 @@
         </div>
       </div>
     </ng-container>
+  </div> -->
+  <!-- Stats Section -->
+   <div class="tile-heading">
+     <h3>Portal Analytics</h3>
+   </div>
+  <div class="flex flex-col md:flex-row justify-between items-start gap-6 mb-6">
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 flex-1">
+      <ng-container *ngFor="let card of statCards">
+        <div
+          class="bg-white shadow-sm rounded-lg p-2 flex flex-col justify-center items-start transition-transform hover:-translate-y-1 hover:shadow-md">
+          <div class="flex tile-cards items-center mb-2">
+            <div class="p-1 mb-8 tile-icon rounded-full flex-shrink-0">
+              <i [class]="card.icon + ' text-2xl'"></i>
+            </div>
+            <div class="ml-4 min-w-0">
+              <!-- prevent overflow by wrapping text -->
+              <p class="text-sm font-medium  whitespace-normal break-words">
+                {{ card.label }}
+              </p>
+              <p
+                class="text-1xl md:text-2xl font-extrabold leading-tight whitespace-normal break-words">
+                {{ card.value }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Right Buttons -->
+    <div class="flex card-button flex-col gap-2 w-full md:w-56" *ngIf="!isAdmin">
+      <button class="hover:bg-purple-800 text-white font-semibold py-2 rounded-sm transition-all">
+        Volunteer
+      </button>
+      <button class="hover:bg-purple-800 text-white font-semibold py-2 rounded-sm transition-all">
+        Upcoming Events
+      </button>
+      <button class="hover:bg-purple-800 text-white font-semibold py-2 rounded-sm transition-all">
+        Recognition Programs
+      </button>
+    </div>
   </div>
 
+
+
   <!-- Progress to Next Tier -->
-  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6" *ngIf="!isAdmin">
+    <h3 class="font-semibold text-gray-900 mb-4" style="font-size: x-large;">
       Progress to Next Tier
     </h3>
     <div *ngIf="progressInfo; else highestTier">
@@ -81,8 +129,11 @@
       <h4 class="text-md font-medium text-gray-700 mb-2">Your Badges</h4>
       <div class="flex flex-wrap gap-2">
         <span *ngFor="let badge of dashboardData.badges"
-          class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
-          <i class="fas fa-award mr-1"></i> {{ badge }}
+          class="inline-flex items-center px-4 py-3 rounded-full text-sm font-medium text-white badge">
+          <!-- <i class="fas fa-award mr-1"></i> -->
+           <button (click)="openDialog(badge)">
+             {{ badge }}
+            </button>
         </span>
         <p *ngIf="!dashboardData.badges?.length" class="text-gray-500">
           No badges earned yet. Keep volunteering!
@@ -92,7 +143,7 @@
   </div>
 
   <!-- Hours History -->
-  <div class="bg-white rounded-lg shadow-md p-6">
+  <div class="bg-white rounded-lg shadow-md p-6" *ngIf="!isAdmin">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
       <h3 class="text-lg font-semibold text-gray-900">Hours History</h3>
       <div class="mt-2 md:mt-0 flex space-x-2">
@@ -113,22 +164,22 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th class="px-6 py-3 text-left text-md font-medium uppercase tracking-wider">
               Activity
             </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Date
+            <th class="px-6 py-3 text-left text-md font-medium uppercase tracking-wider">
+              Date of service
             </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th class="px-6 py-3 text-left text-md font-medium uppercase tracking-wider">
               Hours
             </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th class="px-6 py-3 text-left text-md font-medium uppercase tracking-wider">
               Status
             </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th class="px-6 py-3 text-left text-md font-medium uppercase tracking-wider">
               Submitted
             </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th class="px-6 py-3 text-left text-md font-medium uppercase tracking-wider">
               Actions
             </th>
           </tr>
@@ -182,7 +233,7 @@
 
 
 <!-- Submit Hours Modal -->
-<div *ngIf="showSubmitModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+<div *ngIf="showSubmitModal && (!isAdmin || showSubmitModal)" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
   <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
     <div class="mt-3">
       <div class="flex justify-between items-center mb-4">
@@ -260,9 +311,9 @@
 
         <div class="flex justify-end space-x-3 pt-4">
           <button type="button" (click)="hideSubmitHoursModal()"
-            class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 transition duration-200">Cancel</button>
+            class=" text-white submin-cancel-btn py-2 px-4 rounded-md transition duration-200">Cancel</button>
           <button type="submit"
-            class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">Submit
+            class="text-white py-2 px-4 rounded-md transition duration-200 submin-hrs-btn">Submit
             Hours</button>
         </div>
       </form>
@@ -274,9 +325,9 @@
 <!-- {{isAdmin$ | json}} -->
 <!-- Admin Panel -->
 <div *ngIf="isAdmin" id="adminPanel" class="bg-white rounded-lg shadow-md p-6 mb-6">
-  <h2 class="text-2xl font-bold text-gray-900 mb-6">Admin Dashboard</h2>
+  <!-- <h2 class="text-2xl font-bold text-gray-900 mb-6">Admin Dashboard</h2> -->
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6" *ngIf="!isAdmin">
     <div class="bg-blue-50 rounded-lg p-4">
       <h3>Total Volunteers</h3>
       <p class="text-3xl font-bold text-blue-600">{{ adminStats.totalVolunteers }}</p>
@@ -293,16 +344,16 @@
 
   <!-- Pending Hours -->
   <div>
-    <h3 class="text-xl font-semibold mb-4">Pending Hours for Review</h3>
+    <h3 class="text-xl font-bold font-semibold mb-4">Pending Hours for Review</h3>
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volunteer</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hours</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Volunteer</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Activity</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Date Of Service</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Hours</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Type</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -324,6 +375,8 @@
               class="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700">Reject</button>
             <button (click)="viewHourDetails(entry._id)"
               class="bg-blue-600 text-white px-3 py-1 rounded text-xs ml-1 hover:bg-blue-700">View</button>
+            <button (click)="editHours(entry._id)"
+              class="text-white px-3 py-1 rounded text-xs ml-1 hover:bg-blue-700 admin-edit-btn">Edit</button>
           </td>
         </tr>
       </tbody>
@@ -333,3 +386,8 @@
 
 <!-- Message Container -->
 <div id="messageContainer"></div>
+
+
+<!-- <div class="">
+  <app-footer></app-footer>
+</div> -->

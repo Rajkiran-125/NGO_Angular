@@ -9,6 +9,9 @@ export class SharedService {
   private loggedIn = new BehaviorSubject<boolean>(false);
   isLoggedIn$ = this.loggedIn.asObservable();
 
+  private showChangePasswordSource = new BehaviorSubject<boolean>(false);
+  showChangePassword$ = this.showChangePasswordSource.asObservable();
+
   private isAdmin = new BehaviorSubject<boolean>(false);
   isAdmin$ = this.isAdmin.asObservable();
 
@@ -29,6 +32,10 @@ export class SharedService {
     }else{
       localStorage.setItem('user', "volunteer");
     }
+  }
+
+  setShowChangePassword(value: boolean) {
+    this.showChangePasswordSource.next(value);
   }
 
   logout() {

@@ -2,15 +2,24 @@
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex justify-between items-center py-4">
             <div class="flex items-center space-x-4">
-                <h1 class="text-2xl font-bold text-blue-600">NEST4US</h1>
+                <h1 class="text-2xl font-bold text-blue-600"><img src="assets/Image/logo.png" alt="logo"></h1>
             </div>
-            <!-- {{authToken}} -->
-            <div class="flex items-center space-x-4">
+            <div class="flex" *ngIf="isLoggedIn$ | async">
                 <span id="userGreeting" class="text-gray-700"></span>
-                <button id="logoutBtn" *ngIf="isLoggedIn$ | async"  (click)="logout()"
-                    class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200">
-                    Logout
+                <button (click)="toggleMenu()">
+                    <i class="fa-regular fa-user"></i>
                 </button>
+                <div class="custom-dropdown">
+                    <button class="dropdown-btn" (click)="toggleMenu()">
+                        ▼
+                    </button>
+                    <div class="dropdown-menu" *ngIf="menuOpen">
+                        <div class="dropdown-item" (click)="openProfile()">My Profile</div>
+                        <div class="dropdown-item" (click)="changePassword()">Change Password</div>
+                        <div class="dropdown-item" (click)="logout()">Logout</div>
+                    </div>
+                </div>
+                <a href=""><i class="fa-solid fa-question"></i></a>
             </div>
         </div>
     </div>

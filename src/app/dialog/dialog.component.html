@@ -1,0 +1,42 @@
+<div class="congrats-card" *ngIf="type == 'badge'">
+    <!-- <button class="justify-end" (click)="closeDialog()">
+        <i class="fa-solid fa-xmark"></i>
+    </button> -->
+    <div class="congrats-content">
+        <img src="assets/congrats.svg" alt="Congratulations" class="congrats-image" />
+
+        <p class="congrats-text">
+            Hooray! NEST4US is proud to recognize you as a
+            <strong class="highlight">{{badge}}</strong>
+            for your 50+ hours of volunteer service.
+            Thank you for spreading kindness and making the world brighter with every act you do!
+        </p>
+
+        <button class="download-btn" (click)="downloadBadge()">
+            Click here to view and download your badge!
+        </button>
+    </div>
+</div>
+
+
+<div class="congrats-card" *ngIf="data.type == 'exportDate'">
+    <p>Select a date you want to export</p>
+  <mat-form-field>
+    <mat-label>From date</mat-label>
+    <input matInput [matDatepicker]="fromPicker" [(ngModel)]="fromDate">
+    <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+    <mat-datepicker #fromPicker></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>To date</mat-label>
+    <input matInput [matDatepicker]="toPicker" [(ngModel)]="toDate">
+    <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+    <mat-datepicker #toPicker></mat-datepicker>
+  </mat-form-field>
+
+  <div class="actions">
+    <button mat-raised-button color="primary" (click)="closeDialog()">Submit</button>
+    <button mat-button (click)="dialogRef.close()">Cancel</button>
+  </div>
+</div>
