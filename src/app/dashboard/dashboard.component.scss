@@ -115,7 +115,6 @@ table{
 
 .submin-hrs-btn:hover {
   filter: brightness(1.1);
-
   transform: translateY(-1px);
 }
 .submin-cancel-btn{
@@ -127,4 +126,18 @@ table{
 .submin-cancel-btn:hover {
   filter: brightness(1.1);
   transform: translateY(-1px);
+}
+
+.table-search{
+  input{
+    border: 1px solid #000;
+    margin-bottom: 0.9rem;
+    width: 20%;
+    margin-right: 2rem;
+  }
+  input::placeholder{
+    text-indent: 1rem;
+    color: #000;
+    // font-weight: bold;
+  }
 }

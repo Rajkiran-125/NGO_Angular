@@ -45,7 +45,7 @@
     </ng-container>
   </div> -->
   <!-- Stats Section -->
-   <div class="tile-heading">
+   <div class="tile-heading" *ngIf="isAdmin">
      <h3>Portal Analytics</h3>
    </div>
   <div class="flex flex-col md:flex-row justify-between items-start gap-6 mb-6">
@@ -344,7 +344,10 @@
 
   <!-- Pending Hours -->
   <div>
-    <h3 class="text-xl font-bold font-semibold mb-4">Pending Hours for Review</h3>
+    <div class="flex justify-between table-search">
+      <h3 class="text-xl font-bold font-semibold mb-4">Pending Hours for Review</h3>
+      <input type="text" placeholder="Search">
+    </div>
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>

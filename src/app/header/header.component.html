@@ -1,7 +1,7 @@
 <nav class="bg-white shadow-lg" id="navbar">
     <div class="max-w-7xl mx-auto px-4">
-        <div class="flex justify-between items-center py-4">
-            <div class="flex items-center space-x-4">
+        <div class="flex justify-between items-center py-2">
+            <div class="flex items-center space-x-2">
                 <h1 class="text-2xl font-bold text-blue-600"><img src="assets/Image/logo.png" alt="logo"></h1>
             </div>
             <div class="flex" *ngIf="isLoggedIn$ | async">
@@ -9,10 +9,21 @@
                 <button (click)="toggleMenu()">
                     <i class="fa-regular fa-user"></i>
                 </button>
+                <!-- <div class="custom-dropdown">
+                    <button class="dropdown-btn" (click)="toggleMenu()">
+                        ▼
+                    </button>
+                    <div class="dropdown-menu" *ngIf="menuOpen">
+                        <div class="dropdown-item" (click)="openProfile()">My Profile</div>
+                        <div class="dropdown-item" (click)="changePassword()">Change Password</div>
+                        <div class="dropdown-item" (click)="logout()">Logout</div>
+                    </div>
+                </div> -->
                 <div class="custom-dropdown">
                     <button class="dropdown-btn" (click)="toggleMenu()">
                         ▼
                     </button>
+
                     <div class="dropdown-menu" *ngIf="menuOpen">
                         <div class="dropdown-item" (click)="openProfile()">My Profile</div>
                         <div class="dropdown-item" (click)="changePassword()">Change Password</div>

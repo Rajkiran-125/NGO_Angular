@@ -6,6 +6,7 @@ import { SharedService } from '../Service/shared.service';
 import { LoaderComponent } from '../loader/loader.component';
 import { TosterService } from '../Service/toster.service';
 
+
 @Component({
   selector: 'app-authentication',
   standalone: true,

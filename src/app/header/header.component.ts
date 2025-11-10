@@ -3,6 +3,7 @@ import { SharedService } from '../Service/shared.service';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Observable } from 'rxjs';
 import { TosterService } from '../Service/toster.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -19,13 +20,15 @@ export class HeaderComponent {
 
   constructor(
     private sharedService: SharedService,
-    private toster: TosterService
+    private toster: TosterService,
+    private router: Router
   ) {
     this.isLoggedIn$ = this.sharedService.isLoggedIn$;
   }
 
   ngOnInit() {
     this.authToken = localStorage.getItem("authToken");
+    this.menuOpen = false;
   }
 
 
@@ -44,8 +47,8 @@ export class HeaderComponent {
   }
 
   openProfile() {
-    console.log('My Profile clicked');
     this.menuOpen = false;
+    this.router.navigate(['/profile']);
   }
 
   changePassword() {
@@ -58,4 +61,5 @@ export class HeaderComponent {
     this.sharedService.logout();
     this.toster.show("success", "Logout");
   }
+
 }
