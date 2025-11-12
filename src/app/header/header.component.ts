@@ -1,9 +1,10 @@
-import { Component, HostListener  } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { SharedService } from '../Service/shared.service';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Observable } from 'rxjs';
 import { TosterService } from '../Service/toster.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd  } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
@@ -17,6 +18,8 @@ export class HeaderComponent {
   authToken: any;
   isLoggedIn$: Observable<boolean>;
   menuOpen = false;
+  currentRoute: string = '';
+
 
   constructor(
     private sharedService: SharedService,
@@ -24,6 +27,11 @@ export class HeaderComponent {
     private router: Router
   ) {
     this.isLoggedIn$ = this.sharedService.isLoggedIn$;
+     this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.currentRoute = event.urlAfterRedirects;
+      });
   }
 
   ngOnInit() {
@@ -48,7 +56,14 @@ export class HeaderComponent {
 
   openProfile() {
     this.menuOpen = false;
-    this.router.navigate(['/profile']);
+    // this.router.navigate(['/profile']);
+    console.log('Navigating to profile...');
+    this.router.navigate(['/profile']).then(success => console.log('Navigation result:', success));
+  }
+
+  showDashboard(){
+    this.menuOpen = false;
+    this.router.navigate(['/home']);
   }
 
   changePassword() {

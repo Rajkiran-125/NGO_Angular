@@ -36,23 +36,34 @@ export class DialogComponent {
   //   window.open('assets/badge/Change%20Catalyst.png', '_blank');
   // }
 
+  // downloadBadge(badgeName: string) {
+  //   const badgePath = `assets/Image/badge/kindness_Ambassador.png`;
+  //   const link = document.createElement('a');
+  //   link.href = badgePath;
+  //   link.download = `${badgeName}.png`;
+  //   link.target = '_blank'; // optional, opens in new tab if download fails
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // }
+
   downloadBadge(badgeName: string) {
-    // Create the path to the badge inside assets
-    const badgePath = `assets/Image/badge/kindness_Ambassador.png`;
+  // Encode and build path
+  const badgePath = `assets/Image/badge/kindness_Ambassador.png`;
 
-    // Create a hidden <a> element
-    const link = document.createElement('a');
-    link.href = badgePath;
-    link.download = `${badgeName}.png`; // sets the filename for download
-    link.target = '_blank'; // optional, opens in new tab if download fails
+  // 1️⃣ Open in a new tab for preview
+  const newTab = window.open(badgePath, '_blank');
 
-    // Trigger the click programmatically
-    document.body.appendChild(link);
-    link.click();
-
-    // Cleanup
-    document.body.removeChild(link);
-  }
+  // // 2️⃣ Wait a bit (to allow browser to open), then trigger download
+  // setTimeout(() => {
+  //   const link = document.createElement('a');
+  //   link.href = badgePath;
+  //   link.download = `${badgeName}.png`;
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // }, 1000); // 1 second delay (can adjust)
+}
 
   constructor(
     public dialogRef: MatDialogRef<DialogComponent>,
