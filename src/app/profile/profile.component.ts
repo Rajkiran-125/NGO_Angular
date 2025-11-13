@@ -31,17 +31,18 @@ export class ProfileComponent {
     this.loadProfileData();
 
     this.updateProfile = this.fb.group({
-      firstName: ['Rajkiran', Validators.required],
+      firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', Validators.required],
       userName: ['', Validators.required],
       password: ['', Validators.required],
-      schoolOrOrganization: ['', Validators.required],
+      organization: ['', Validators.required],
       dob: ['', Validators.required],
       phoneNumber: ['', Validators.required],
       state: ['', Validators.required],
       country: ['', Validators.required],
-      refCode: ['', Validators.required]
+      refCode: ['', Validators.required],
+      interests: ['', Validators.required],
     });
   }
 
@@ -59,27 +60,71 @@ export class ProfileComponent {
   }
 
   onImageChange(event) {
-    console.log('')
+    console.log('');
   }
+
+  // loadProfileData() {
+  //   try {
+  //     // this.isLoading = true;
+  //     const authToken = localStorage.getItem("authToken");
+  //     let token = {
+  //       headers: {
+  //         Authorization: `Bearer ${authToken}`
+  //       }
+  //     }
+  //     this.api.get('volunteers/profile', token).subscribe(res => {
+  //       console.log(this.updateProfile);
+  //       console.log(res);
+  //       let user = res.user;
+
+  //     });
+  //   } catch (err) {
+  //     // this.loader = false;
+  //     this.toster.show("error", err.message);
+  //     console.log(err);
+  //   }
+  // }
+
 
   loadProfileData() {
     try {
-      // this.isLoading = true;
       const authToken = localStorage.getItem("authToken");
-      let token = {
+      const token = {
         headers: {
           Authorization: `Bearer ${authToken}`
         }
-      }
-      this.api.get('volunteers/profile', token).subscribe(res => {
-        // this.toster.show('success', 'Dashboard data refresh');
-        console.log(res);
+      };
+
+      this.api.get('volunteers/profile', token).subscribe({
+        next: (res: any) => {
+          const user = res.user;
+
+          console.log('user: >> ', user)
+
+          this.updateProfile.patchValue({
+            firstName: user.profile.firstName || '',
+            lastName: user.profile.lastName || '',
+            organization: user.profile.schoolOrganization || '',
+            dob: user.profile.dateOfBirth ? user.profile.dateOfBirth.split('T')[0] : '',
+            country: `${user.profile.location?.state || ''}, ${user.profile.location?.country || ''}`,
+            phoneNumber: user.profile.phoneNumber || '',
+            email: user.email || '',
+            interests: user.profile.causesOfInterest?.join(', ') || ''
+          });
+
+          console.log('Profile form patched:', this.updateProfile.value);
+        },
+        error: (err) => {
+          this.toster.show("error", err.message);
+          console.error(err);
+        }
       });
     } catch (err) {
-      // this.loader = false;
       this.toster.show("error", err.message);
-      console.log(err);
+      console.error(err);
     }
   }
+
+
 
 }

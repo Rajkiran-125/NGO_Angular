@@ -388,7 +388,7 @@ export class DashboardComponent {
     }
   });
 
-      if (false) {
+      if (true) {
 
         const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
         this.api.get(`hours/export?format=json`, { headers }).subscribe(res => {
