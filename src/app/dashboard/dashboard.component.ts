@@ -15,6 +15,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Dialog } from '@angular/cdk/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
 
+import html2pdf from 'html2pdf.js';
+
+
 interface DashboardData {
   profile: { firstName: string; lastName: string; schoolOrganization: string };
   totalHours: number;
@@ -51,11 +54,12 @@ export class DashboardComponent {
   isAdmin: any; // toggle based on login
   today = new Date().toISOString().split('T')[0];
   isLoading = false;
+  pdfExportData: any;
+
 
   hours: any = {
-    firstName: '',
-    lastName: '',
-    schoolOrganization: '',
+    fullName: '',
+    // schoolOrganization: '',
     activityName: '',
     serviceDate: '',
     hours: '',
@@ -66,8 +70,8 @@ export class DashboardComponent {
   proofFile: File | null = null;
 
   serviceTypes = [
-    'Service Projects', 'Community Events', 'Food Rescues',
-    'NEST Tutors', 'Notes of Kindness', 'Workshops', 'Donations', 'Other'
+    'NEST4US Service Projects', 'NEST4US Community Events', 'NEST4US Food Rescues',
+    'NEST4US Tutors', 'NEST4US Notes of Kindness', 'NEST4US Workshops', 'NEST4US Donations', "Other's"
   ];
 
   adminStats = { totalVolunteers: 0, totalHours: 0, pendingSubmissions: 0 };
@@ -258,12 +262,11 @@ export class DashboardComponent {
   editHours(id: string) {
     console.log(this.dashboardData)
     const entry = this.pendingHours.find(e => e._id === id);
+    console.log(entry)
     if (entry) {
       // 2. Populate hours object
       this.hours = {
-        firstName: entry.volunteerId.profile.firstName,
-        lastName: entry.volunteerId.profile.lastName,
-        schoolOrganization: entry.volunteerId.profile.schoolOrganization,
+        fullName: `${entry.volunteerId.profile.firstName} ${entry.volunteerId.profile.lastName}`,
         activityName: entry.activityName,
         serviceDate: entry.serviceDate ? entry.serviceDate.split('T')[0] : '', // keep YYYY-MM-DD
         hours: entry.hours,
@@ -379,38 +382,43 @@ export class DashboardComponent {
       });
 
       dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-      console.log('Dialog closed with data:', result);
-      // example: access the returned data
-      console.log('From:', result.fromDate);
-      console.log('To:', result.toDate);
-      console.log('Type:', result.type);
-    }
-  });
+        if (result) {
+          console.log('Dialog closed with data:', result);
+          // example: access the returned data
+          console.log('From:', result.fromDate);
+          console.log('To:', result.toDate);
+          console.log('Type:', result.type);
+        }
+      });
 
-      if (true) {
+      if (false) {
 
+        let obj = {
+          "fromDate": "2024-01-03",
+          "toDate": "2025-11-08"
+        }
         const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
-        this.api.get(`hours/export?format=json`, { headers }).subscribe(res => {
+        // this.api.get(`hours/export?format=json`, { headers }).subscribe(res => {
+        this.api.post(`volunteers/hours/export`, obj, { headers }).subscribe(res => {
           console.log(res);
 
           // 1. Convert JSON to worksheet
-          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(res);
+          // const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(res);
 
-          // 2. Create a workbook
-          const workbook: XLSX.WorkBook = {
-            Sheets: { 'Volunteer Hours': worksheet },
-            SheetNames: ['Volunteer Hours']
-          };
+          // // 2. Create a workbook
+          // const workbook: XLSX.WorkBook = {
+          //   Sheets: { 'Volunteer Hours': worksheet },
+          //   SheetNames: ['Volunteer Hours']
+          // };
 
-          // 3. Generate Excel file buffer
-          const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+          // // 3. Generate Excel file buffer
+          // const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
-          // 4. Save as file
-          const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-          saveAs(data, `volunteer_hours_${new Date().toISOString().slice(0, 10)
-            }.xlsx`);
-          this.toster.show('success', 'File exported')
+          // // 4. Save as file
+          // const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          // saveAs(data, `volunteer_hours_${new Date().toISOString().slice(0, 10)
+          //   }.xlsx`);
+          // this.toster.show('success', 'File exported')
         });
       }
 
@@ -419,6 +427,7 @@ export class DashboardComponent {
       console.log(error);
     }
   }
+
 
 
 

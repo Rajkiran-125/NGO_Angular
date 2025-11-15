@@ -1,45 +1,127 @@
+<button class="close-btn" (click)="dialogRef.close()">
+  ✕
+</button>
 <div class="congrats-card" *ngIf="type == 'badge'">
-    <!-- <button class="justify-end" (click)="closeDialog()">
-        <i class="fa-solid fa-xmark"></i>
-    </button> -->
-    <div class="congrats-content ">
-      <div class="flex justify-center">
-        <img src="assets/Image/Congratulations.png" alt="Congratulations" class="congrats-image" />
 
-      </div>
+  <div class="congrats-content ">
+    <div class="flex justify-center">
+      <img src="assets/Image/Congratulations.png" alt="Congratulations" class="congrats-image" />
 
-        <p class="congrats-text">
-            Hooray! NEST4US is proud to recognize you as a
-            <strong class="highlight">{{badge}}</strong>
-            for your 50+ hours of volunteer service.
-            Thank you for spreading kindness and making the world brighter with every act you do!
-        </p>
-
-        <button class="download-btn" (click)="downloadBadge(badge)">
-            Click here to view and download your badge!
-        </button>
     </div>
-</div>
 
+    <p class="congrats-text">
+      Hooray! NEST4US is proud to recognize you as a
+      <strong class="highlight">{{badge}}</strong>
+      for your 50+ hours of volunteer service.
+      Thank you for spreading kindness and making the world brighter with every act you do!
+    </p>
 
-<div class="congrats-card" *ngIf="data.type == 'exportDate'">
-    <p>Select a date you want to export</p>
-  <mat-form-field>
-    <mat-label>From date</mat-label>
-    <input matInput [matDatepicker]="fromPicker" [(ngModel)]="fromDate">
-    <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
-    <mat-datepicker #fromPicker></mat-datepicker>
-  </mat-form-field>
-
-  <mat-form-field>
-    <mat-label>To date</mat-label>
-    <input matInput [matDatepicker]="toPicker" [(ngModel)]="toDate">
-    <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
-    <mat-datepicker #toPicker></mat-datepicker>
-  </mat-form-field>
-
-  <div class="actions">
-    <button mat-raised-button color="primary" (click)="closeDialog()">Submit</button>
-    <button mat-button (click)="dialogRef.close()">Cancel</button>
+    <button class="download-btn" (click)="downloadBadge(badge)">
+      Click here to view and download your badge!
+    </button>
   </div>
 </div>
+
+<div class="congrats-card" *ngIf="data.type == 'exportDate'">
+  <mat-tab-group [(selectedIndex)]="selectedTab">
+
+    <!-- ==================== TAB 1 → SINGLE DATE ==================== -->
+    <mat-tab label="Single Date">
+      <div class="congrats-card">
+
+        <p>Select a date you want to export</p>
+
+        <mat-form-field>
+          <mat-label>Date</mat-label>
+          <input matInput [matDatepicker]="singleFromPicker" [(ngModel)]="fromDate">
+          <mat-datepicker-toggle matSuffix [for]="singleFromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #singleFromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <div class="actions">
+          <button mat-raised-button color="primary"
+            (click)="downloadPDF('submitSingle'); showPdf = true;">Submit</button>
+          <button mat-button (click)="dialogRef.close()">Cancel</button>
+        </div>
+
+      </div>
+    </mat-tab>
+
+    <!-- ==================== TAB 2 → DATE RANGE ==================== -->
+    <mat-tab label="Date Range">
+      <div class="congrats-card">
+
+        <p>Select a date range you want to export</p>
+
+        <mat-form-field>
+          <mat-label>From Date</mat-label>
+          <input matInput [matDatepicker]="rangeFromPicker" [(ngModel)]="fromDate">
+          <mat-datepicker-toggle matSuffix [for]="rangeFromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #rangeFromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>To Date</mat-label>
+          <input matInput [matDatepicker]="rangeToPicker" [(ngModel)]="toDate">
+          <mat-datepicker-toggle matSuffix [for]="rangeToPicker"></mat-datepicker-toggle>
+          <mat-datepicker #rangeToPicker></mat-datepicker>
+        </mat-form-field>
+
+        <div class="actions">
+          <button mat-raised-button
+            (click)="downloadPDF('submitRange'); showPdf = true;">Submit</button>
+          <button mat-button (click)="dialogRef.close()">Cancel</button>
+        </div>
+
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>
+
+
+
+
+<!-- report.component.html -->
+<div id="pdfContent" class="report-container" *ngIf="showPdf">
+
+  <!-- Header -->
+  <div class="headerBanner">
+    <div class="left">
+      <h2>Full Name: John Doe</h2>
+      <p>NEST4US • www.nest4us.org</p>
+    </div>
+    <div class="right">
+      <img src="https://nest4us.org/wp-content/uploads/2025/09/NEST4US-Logo-scaled.png" crossOrigin="anonymous" />
+    </div>
+  </div>
+
+  <!-- Event Table Card -->
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Service Activity</th>
+          <th>Date of Service</th>
+          <th>Hours</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of pdfExportData?.records">
+          <td>{{ r.serviceActivity }}</td>
+          <td>{{ r.serviceDate | date }}</td>
+          <td>{{ r.numberOfHours }}</td>
+          <td>{{ r.status }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer Total -->
+  <div class="footerCard">
+    TOTAL HOURS FOR SELECTED EVENTS: {{ pdfExportData?.totalHours }} HOURS
+  </div>
+</div>
+<!-- <button (click)="downloadPDF()">Download PDF</button> -->
+

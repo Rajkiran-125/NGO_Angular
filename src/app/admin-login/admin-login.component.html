@@ -1,0 +1,32 @@
+<app-loader *ngIf="loader"></app-loader>
+
+<div class="admin-wrapper">
+  <div class="admin-card">
+
+    <h2 class="admin-title">ADMIN LOGIN</h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+
+      <div class="input-group">
+        <input type="email" placeholder="Admin Email"
+               formControlName="userName" class="admin-input" required />
+      </div>
+
+      <div class="input-group">
+        <input type="password" placeholder="Password"
+               formControlName="password" class="admin-input" required />
+      </div>
+
+      <button type="submit" class="admin-btn">
+        SIGN IN
+      </button>
+
+      <p class="forgot-text">
+        <a href="#">Forgot Password?</a>
+      </p>
+
+    </form>
+
+  </div>
+</div>
+

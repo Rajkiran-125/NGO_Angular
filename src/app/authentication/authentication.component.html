@@ -3,7 +3,7 @@
 <!-- <div id="authContainer" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6" *ngIf="authPage"> -->
 <!-- <div class="flex items-center justify-center min-h-screen bg-gray-100"> -->
 <div class="flex justify-center bg-gray-100" *ngIf="loginPage">
-  <div class="border border-gray-300 p-8 rounded-none w-full bg-white text-center formInside">
+  <div class="border border-gray-300 p-8 rounded-none w-full bg-white text-center formInsideLogin">
     <h2 class="text-2xl font-bold mb-6">LOG IN</h2>
 
     <!-- Login Form -->
@@ -20,6 +20,7 @@
       </div>
       <div class="flex justify-between text-sm text-gray-700 mb-4 consern">
         <a href="#" class="hover:text-purple-600">Forgot Password</a>
+        <br>
         <a href="#" class="hover:text-purple-600" (click)="loginPage = false; signUpPage = true;">Create an Account</a>
       </div>
 
@@ -34,7 +35,7 @@
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo"
             class="w-5 h-5 google-img" />
           <p class="google-signIn-text">
-            Continue with Google
+            &nbsp; Continue with Google
           </p>
         </button>
       </div>
@@ -46,7 +47,7 @@
 
 <!-- Register Form  -->
 <div class="flex justify-center bg-gray-100" *ngIf="signUpPage">
-  <div class="border border-gray-300 p-8 rounded-none w-full bg-white text-center">
+  <div class="border border-gray-300 p-8 rounded-none w-full bg-white text-center formInsideSignUp">
 
     <h2 class="text-2xl font-bold mb-6">SIGN UP</h2>
 
@@ -253,3 +254,5 @@
 
   </div>
 </div>
+
+

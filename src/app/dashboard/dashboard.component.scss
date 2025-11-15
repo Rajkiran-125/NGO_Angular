@@ -13,6 +13,7 @@
   filter: brightness(1.1);
   transform: translateY(-1px);
 }
+
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -76,39 +77,41 @@ button:hover {
 //   button:first-child {
 //     background-color: var(--ligth-purpal);
 //   }
-  
+
 //   button:nth-child(2) {
 //     background-color: var(--purpal);
 //   }
 // }
 
-.admin-edit-btn{
+.admin-edit-btn {
   background-color: var(--primary-color);
 }
 
-.subminhrsbtn{
+.subminhrsbtn {
   background-color: var(--ligth-purpal);
 }
-.exportdatabtn{
+
+.exportdatabtn {
   background-color: var(--purpal);
 }
-.tile-heading{
-  h3{
+
+.tile-heading {
+  h3 {
     font-weight: bold;
     font-size: x-large;
   }
 }
 
-table{
-  thead{
-    tr{
+table {
+  thead {
+    tr {
       background-color: var(--primary-color);
       color: #fff !important;
     }
   }
 }
 
-.submin-hrs-btn{
+.submin-hrs-btn {
   background-color: var(--primary-color);
   color: #fff;
 }
@@ -117,7 +120,8 @@ table{
   filter: brightness(1.1);
   transform: translateY(-1px);
 }
-.submin-cancel-btn{
+
+.submin-cancel-btn {
   border: 1px solid #8e8e8e;
   background-color: #fff;
   color: #000;
@@ -128,16 +132,82 @@ table{
   transform: translateY(-1px);
 }
 
-.table-search{
-  input{
+.table-search {
+  input {
     border: 1px solid #000;
     margin-bottom: 0.9rem;
     width: 20%;
     margin-right: 2rem;
   }
-  input::placeholder{
+
+  input::placeholder {
     text-indent: 1rem;
     color: #000;
     // font-weight: bold;
+  }
+}
+
+
+
+
+
+
+/* Pdf css */
+.report-container {
+  width: 100%;
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.headerBanner {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.card {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.card th {
+  background: #f5f5f5;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  color: #000;
+  font-weight: bold;
+}
+
+.card td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.footerCard {
+  margin-top: 20px;
+  padding: 12px;
+  background: #f2faf2;
+  border-radius: 8px;
+  font-weight: bold;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.report-container {
+  // display: none;
+
+  table th,
+  table td {
+    text-align: center !important;
   }
 }

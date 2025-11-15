@@ -1,50 +1,162 @@
-// button{
-//     .signInBtn{
-//         background-color: var(--primary-color);
-//         color: #fff;
+// // button{
+// //     .signInBtn{
+// //         background-color: var(--primary-color);
+// //         color: #fff;
+// //     }
+// // }
+
+// .formInside {
+//     padding: 2rem 10rem 4rem 10rem;
+// }
+
+// .formRegister{
+//     padding: 2rem 5rem 4rem 5rem;
+// }
+// .consern {
+//     padding: 0rem 20rem 0rem 20rem;
+
+//     a {
+//         color: #000;
 //     }
 // }
 
-.formInside {
-    padding: 2rem 10rem 4rem 10rem;
-}
+// .signInBtn {
+//     background-color: var(--primary-color);
+//     width: 15rem;
+//     color: #fff;
+// }
+// .updatebtn{
+//     background-color: var(--primary-color);
+//     color: #fff;
 
-.formRegister{
-    padding: 2rem 5rem 4rem 5rem;
-}
-.consern {
-    padding: 0rem 20rem 0rem 20rem;
+// }
 
-    a {
-        color: #000;
+// .google-signIn {
+//     padding: 0rem 15rem;
+// }
+
+// .google-img {
+//     // margin: 0rem 0rem 0rem -14rem;
+// }
+
+// .google-signIn-text {
+//     margin: 0rem 7rem;
+// }
+
+// input {
+//     border-color: #000;
+// }
+
+// button {
+//     border-color: #000;
+//     border-width: 2px;
+// }
+
+// input::placeholder {
+//     color: #000;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.formInsideLogin {
+    // min-height: 81vh;
+    padding: 2rem 3rem 3rem 3rem;
+    /* smaller default padding */
+    max-width: 450px;
+    /* controls form width */
+    margin: auto;
+
+    input {
+        width: 80% !important;
+        /* reduce input width */
+        margin: 0 auto;
+        /* center inputs */
+        display: block;
+        border-color: #000;
     }
 }
 
-.signInBtn {
-    background-color: var(--primary-color);
-    width: 15rem;
-    color: #fff;
-}
-.updatebtn{
-    background-color: var(--primary-color);
-    color: #fff;
-
-}
-
-.google-signIn {
-    padding: 0rem 15rem;
+.formInsideSignUp{
+    input {
+        width: 80% !important;
+        /* reduce input width */
+        margin: 0 !important;
+        /* center inputs */
+        display: block;
+        border-color: #000;
+    }
 }
 
-.google-img {
-    // margin: 0rem 0rem 0rem -14rem;
+.consern {
+    padding: 0.5rem;
+    justify-content: space-between;
+    margin: 0rem 2rem 0rem 2rem;
+}
+
+/* Very small screens */
+@media (max-width: 640px) {
+    .formInside {
+        padding: 1.5rem;
+        max-width: 90%;
+    }
+
+    .consern {
+        padding: 0 !important;
+        justify-content: space-between;
+    }
+
+    .google-signIn {
+        padding: 0 !important;
+    }
+
+    .google-signIn-text {
+        margin: 0 !important;
+        /* reduce spacing */
+    }
 }
 
 .google-signIn-text {
-    margin: 0rem 7rem;
+    margin: 0 !important;
+    /* reduce spacing */
 }
 
+/* Inputs – reduce width */
+
 input {
+    width: 80% !important;
+    /* reduce input width */
+    margin: 0 auto;
+    /* center inputs */
+    display: block;
     border-color: #000;
+}
+
+/* Button width reduced */
+.signInBtn {
+    background-color: var(--primary-color);
+    width: 80% !important;
+    margin: 0 auto;
+    display: block;
+    color: #fff;
+}
+
+/* Google button also reduced */
+.google-signIn button {
+    width: 80% !important;
+    margin: 0 auto;
 }
 
 button {
@@ -55,3 +167,11 @@ button {
 input::placeholder {
     color: #000;
 }
+
+
+
+
+
+
+
+
