@@ -5,6 +5,7 @@ import { NgIf } from '@angular/common';
 import { SharedService } from '../Service/shared.service';
 import { LoaderComponent } from '../loader/loader.component';
 import { TosterService } from '../Service/toster.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -29,7 +30,8 @@ export class AuthenticationComponent {
     private fb: FormBuilder,
     private api: ApiService,
     private sharedService: SharedService,
-    private toster: TosterService
+    private toster: TosterService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -79,6 +81,7 @@ export class AuthenticationComponent {
           this.sharedService.login(authToken, isAdmin);
 
           this.loginForm.reset();
+          this.router.navigate(['/home']);
         },
         error: (err) => {
           this.loader = false;
@@ -117,7 +120,8 @@ export class AuthenticationComponent {
       this.api.post('auth/register', formData).subscribe(res => {
         this.loader = false;
         console.log(res);
-        this.toster.show('success', 'SignUp successfully')
+        this.toster.show('success', 'SignUp successfully');
+        this.router.navigate(['/login']);
       })
     } catch (err) {
       this.loader = false;

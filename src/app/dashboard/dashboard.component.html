@@ -9,9 +9,11 @@
           Welcome back, {{ dashboardData.profile.firstName }}!
         </h1>
         <!-- <p class="text-gray-600 mt-1">Welcome to your volunteer dashboard</p> -->
-        <p class="text-gray-600 mt-1" *ngIf="!isAdmin">Manage your service, explore opportunities, and track your impact—all in one
+        <p class="text-gray-600 mt-1" *ngIf="!isAdmin">Manage your service, explore opportunities, and track your
+          impact—all in one
           place.</p>
-        <p class="text-gray-600 mt-1" *ngIf="isAdmin">Manage volunteers, track metrics, and measure impact—all at the same time.</p>
+        <p class="text-gray-600 mt-1" *ngIf="isAdmin">Manage volunteers, track metrics, and measure impact—all at the
+          same time.</p>
       </div>
       <div class="mt-4 md:mt-0 flex space-x-10 submit-hours">
         <button (click)="onSubmitHours()" *ngIf="!isAdmin"
@@ -45,14 +47,14 @@
     </ng-container>
   </div> -->
   <!-- Stats Section -->
-   <div class="tile-heading" *ngIf="isAdmin">
-     <h3>Portal Analytics</h3>
-   </div>
+  <div class="tile-heading" *ngIf="isAdmin">
+    <h3>Portal Analytics</h3>
+  </div>
   <div class="flex flex-col md:flex-row justify-between items-start gap-6 mb-6">
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 flex-1">
-      <ng-container *ngFor="let card of statCards">
+      <ng-container *ngFor="let card of (isAdmin ? statCardsAdmin : statCards)">
         <div
           class="bg-white shadow-sm rounded-lg p-2 flex flex-col justify-center items-start transition-transform hover:-translate-y-1 hover:shadow-md">
           <div class="flex tile-cards items-center mb-2">
@@ -64,8 +66,7 @@
               <p class="text-sm font-medium  whitespace-normal break-words">
                 {{ card.label }}
               </p>
-              <p
-                class="text-1xl md:text-2xl font-extrabold leading-tight whitespace-normal break-words">
+              <p class="text-1xl md:text-2xl font-extrabold leading-tight whitespace-normal break-words">
                 {{ card.value }}
               </p>
             </div>
@@ -137,9 +138,9 @@
         <span *ngFor="let badge of dashboardData.badges"
           class="inline-flex items-center px-4 py-3 rounded-full text-sm font-medium text-white badge">
           <!-- <i class="fas fa-award mr-1"></i> -->
-           <button (click)="openDialog(badge)">
-             {{ badge }}
-            </button>
+          <button (click)="openDialog(badge)">
+            {{ badge }}
+          </button>
         </span>
         <p *ngIf="!dashboardData.badges?.length" class="text-gray-500">
           No badges earned yet. Keep volunteering!
@@ -239,7 +240,8 @@
 
 
 <!-- Submit Hours Modal -->
-<div *ngIf="showSubmitModal && (!isAdmin || showSubmitModal)" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+<div *ngIf="showSubmitModal && (!isAdmin || showSubmitModal)"
+  class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
   <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
     <div class="mt-3">
       <div class="flex justify-between items-center mb-4">
@@ -251,11 +253,11 @@
 
       <form (ngSubmit)="handleSubmitHours()" #submitForm="ngForm" enctype="multipart/form-data" class="space-y-4">
         <!-- <div class="grid grid-cols-2 gap-4"> -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Full Name *</label>
-            <input type="text" [(ngModel)]="hours.fullName" name="fullName" required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Full Name *</label>
+          <input type="text" [(ngModel)]="hours.fullName" name="fullName" required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
         <!-- </div> -->
 
         <!-- <div>
@@ -282,7 +284,7 @@
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
         </div>
-
+{{hours | json}}
         <div>
           <label class="block text-sm font-medium text-gray-700">Type of Service *</label>
           <select [(ngModel)]="hours.serviceType" name="serviceType" required
@@ -310,12 +312,20 @@
           <label class="ml-2 block text-sm text-gray-700">This is for historical hours</label>
         </div> -->
 
-        <div class="flex justify-end space-x-3 pt-4">
-          <button type="button" (click)="hideSubmitHoursModal()"
-            class=" text-white submin-cancel-btn py-2 px-4 rounded-md transition duration-200">Cancel</button>
-          <button type="submit"
-            class="text-white py-2 px-4 rounded-md transition duration-200 submin-hrs-btn">Submit
-            Hours</button>
+        <div *ngIf="!isAdmin">
+          <div class="flex justify-end space-x-3 pt-4">
+            <button type="button" (click)="hideSubmitHoursModal()"
+              class=" text-white submin-cancel-btn py-2 px-4 rounded-md transition duration-200">Cancel</button>
+            <button type="submit" class="text-white py-2 px-4 rounded-md transition duration-200 submin-hrs-btn">Submit
+              Hours</button>
+          </div>
+        </div>
+        <div *ngIf="isAdmin">
+          <div class="flex justify-end space-x-3 pt-4">
+            <button type="button" (click)="rejectHours(hours.id); hideSubmitHoursModal()"
+              class=" text-white submin-cancel-btn py-2 px-4 rounded-md transition duration-200">Rejected</button>
+            <button type="submit" (click)="approveHours(hours.id); hideSubmitHoursModal()" class="text-white py-2 px-4 rounded-md transition duration-200 submin-hrs-btn">Approve</button>
+          </div>
         </div>
       </form>
     </div>
@@ -323,7 +333,6 @@
 </div>
 
 
-<!-- {{isAdmin$ | json}} -->
 <!-- Admin Panel -->
 <div *ngIf="isAdmin" id="adminPanel" class="bg-white rounded-lg shadow-md p-6 mb-6">
   <!-- <h2 class="text-2xl font-bold text-gray-900 mb-6">Admin Dashboard</h2> -->
@@ -395,4 +404,3 @@
 <!-- <div class="">
   <app-footer></app-footer>
 </div> -->
-

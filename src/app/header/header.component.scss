@@ -53,7 +53,7 @@ a i {
   border: none;
   font-weight: bold;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 20px;
   color: var(--primary-color);
 }
 
@@ -100,6 +100,10 @@ a i {
   /* light hover purple */
 }
 
+.dashboard-btn{
+  background-color: var(--primary-color);
+      border-radius: 3px;
+}
 
 
 

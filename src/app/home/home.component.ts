@@ -19,15 +19,15 @@ import { ChangePasswordComponent } from '../change-password/change-password.comp
 })
 export class HomeComponent {
 
-  showChangePassword = false;
+  // showChangePassword = false;
   isLoggedIn$: Observable<boolean>;
   constructor(private sharedService: SharedService) {
     this.isLoggedIn$ = this.sharedService.isLoggedIn$;
   }
 
   ngOnInit() {
-    this.sharedService.showChangePassword$.subscribe(value => {
-      this.showChangePassword = value;
-    });
+    // this.sharedService.showChangePassword$.subscribe(value => {
+    //   this.showChangePassword = value;
+    // });
   }
 }

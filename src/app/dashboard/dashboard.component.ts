@@ -47,7 +47,9 @@ export class DashboardComponent {
   progressInfo: any;
   statusFilter: string = '';
 
-  statCards: any[] = []; dashboardPage: boolean = false;
+  statCards: any[] = [];
+  statCardsAdmin: any[] = [];
+  dashboardPage: boolean = false;
 
   showSubmitModal = false;
   // isAdmin$ : Observable<boolean>; // toggle based on login
@@ -55,6 +57,7 @@ export class DashboardComponent {
   today = new Date().toISOString().split('T')[0];
   isLoading = false;
   pdfExportData: any;
+  adminCardsData: any;
 
 
   hours: any = {
@@ -90,6 +93,7 @@ export class DashboardComponent {
     this.isAdmin = localStorage.getItem('user') == 'admin' ? true : false;
     if (this.isAdmin) {
       this.loadAdminPanel();
+      this.loadAdminCards();
     }
   }
 
@@ -142,65 +146,73 @@ export class DashboardComponent {
     }
   }
 
-  // prepareStatCards() {
-  //   this.statCards = [
-  //     {
-  //       icon: 'fas fa-clock',
-  //       bgColor: 'bg-blue-100',
-  //       textColor: 'text-blue-600',
-  //       label: 'Total Hours',
-  //       value: this.dashboardData.totalHours,
-  //     },
-  //     {
-  //       icon: 'fas fa-calendar',
-  //       bgColor: 'bg-green-100',
-  //       textColor: 'text-green-600',
-  //       label: 'This Year',
-  //       value: this.dashboardData.thisYearHours,
-  //     },
-  //     {
-  //       icon: 'fas fa-medal',
-  //       bgColor: 'bg-purple-100',
-  //       textColor: 'text-purple-600',
-  //       label: 'Current Tier',
-  //       value: this.dashboardData.tier,
-  //     },
-  //     {
-  //       icon: 'fas fa-share',
-  //       bgColor: 'bg-yellow-100',
-  //       textColor: 'text-yellow-600',
-  //       label: 'Referral Code',
-  //       value: this.dashboardData.referralCode,
-  //     },
-  //   ];
-  // }
 
   prepareStatCards() {
     this.statCards = [
       {
         icon: 'fas fa-clock',
         label: 'Lifetime Hours',
-        value: this.dashboardData.totalHours || 0,
+        value: this.dashboardData?.totalHours || 0,
       },
       {
         icon: 'fas fa-dollar-sign',
         label: 'Value of Service',
         // value: `$${this.dashboardData.valueOfService || '0.00'}`,
-        value: `$3546.54`,
+        value: `$${(this.dashboardData?.totalHours * 34.79)}`,
       },
       {
         icon: 'fas fa-calendar',
         label: 'Current Year',
-        value: this.dashboardData.thisYearHours || 0,
+        value: this.dashboardData?.thisYearHours || 0,
       },
       {
         icon: 'fas fa-award',
         label: 'Recognition Tier',
-        value: this.dashboardData.tier || 'N/A',
+        value: this.dashboardData?.tier || 'N/A',
       },
-    ];
+    ],
+      this.statCardsAdmin = [
+        {
+          icon: 'fa-solid fa-heart',
+          label: 'Total Volunteers',
+          value: this.adminCardsData?.totalVolunteers || 0,
+        },
+        {
+          icon: 'fa-solid fa-clock',
+          label: 'Total Hours',
+          // value: `$${this.dashboardData.valueOfService || '0.00'}`,
+          value: this.adminCardsData?.totalHours || 0,
+        },
+        {
+          icon: 'fas fa-dollar-sign',
+          label: 'Value of Service',
+          value: this.adminCardsData?.valueOfService || '0.00',
+        },
+        {
+          icon: 'fa-solid fa-clipboard-list',
+          label: 'Pending Submissions',
+          value: this.adminCardsData?.pendingSubmissions || 'N/A',
+        },
+      ];
   }
 
+  loadAdminCards() {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let token = {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      }
+      this.api.get('admin/summary', token).subscribe(res => {
+        console.log(res);
+        this.adminCardsData = res?.summary;
+        this.prepareStatCards();
+      })
+    } catch (err) {
+      console.log(err.message);
+    }
+  }
 
   calculateProgress() {
     const tiers = [
@@ -272,7 +284,8 @@ export class DashboardComponent {
         hours: entry.hours,
         serviceType: entry.serviceType,
         description: entry.description,
-        isHistorical: entry.isHistorical || false
+        isHistorical: entry.isHistorical || false,
+        id: id
       };
 
       // 3. Track edit state

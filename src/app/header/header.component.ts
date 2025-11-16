@@ -67,14 +67,17 @@ export class HeaderComponent {
   }
 
   changePassword() {
-    this.sharedService.setShowChangePassword(true);
+    // this.sharedService.setShowChangePassword(true);
+
     this.menuOpen = false; // optional, close the menu
+    this.router.navigate(['/changepassword']);
   }
 
   logout() {
     localStorage.removeItem('authToken');
     this.sharedService.logout();
     this.toster.show("success", "Logout");
+    this.router.navigate(['/login']);
   }
 
 }
