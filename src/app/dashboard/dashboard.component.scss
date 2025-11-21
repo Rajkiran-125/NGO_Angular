@@ -1,4 +1,11 @@
 /* styles.css or component.scss */
+.panel-body {
+
+  overflow: auto;
+  height: calc(100vh - 119px);
+  padding: 40px 60px;
+}
+
 .spin {
   animation: spin 1s linear infinite;
 }
@@ -228,7 +235,7 @@ table {
   // border-radius: 50px;
   padding: 6px;
   background: white;
-  position: relative;
+  // position: relative;
 }
 
 .search-input {
@@ -266,13 +273,14 @@ table {
   right: 0;
   background: white;
   // border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   width: 120px;
   // padding: 12px 0;
-  z-index: 50;
+  // z-index: 50;
   border: solid 1px var(--ligth-purpal);
 }
-.arrow{
+
+.arrow {
   color: var(--primary-color);
 }
 

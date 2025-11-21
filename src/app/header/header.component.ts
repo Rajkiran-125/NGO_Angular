@@ -83,6 +83,10 @@ export class HeaderComponent {
     this.menuOpen = false; // optional, close the menu
     this.router.navigate(['/tierbreakdown']);
   }
+  impactMetrics(){
+    this.menuOpen = false;
+    this.router.navigate(['chart']);
+  }
 
   logout() {
     localStorage.removeItem('authToken');

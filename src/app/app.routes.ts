@@ -7,6 +7,7 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
 import { AuthGuard } from './guards/auth.guard';
 import { LoginGuard } from './guards/login.guard';
 import { TierbreakdownComponent } from './tierbreakdown/tierbreakdown.component';
+import { ImpactMetricsChartsComponent } from './impact-metrics-charts/impact-metrics-charts.component';
 
 // export const routes: Routes = [
 //     { path: '', component: HomeComponent },
@@ -27,6 +28,7 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
   { path: 'changepassword', component: ChangePasswordComponent, canActivate: [AuthGuard] },
   { path: 'tierbreakdown', component: TierbreakdownComponent, canActivate: [AuthGuard] },
+  { path: 'chart', component: ImpactMetricsChartsComponent, canActivate: [AuthGuard] },
 
   { path: 'login', component: AuthenticationComponent, canActivate: [LoginGuard] },
   { path: 'adminlogin', component: AdminLoginComponent, canActivate: [LoginGuard] },

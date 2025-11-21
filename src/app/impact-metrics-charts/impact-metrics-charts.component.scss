@@ -1,0 +1,12 @@
+.charts-wrapper {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+canvas {
+  width: 400px !important;
+  height: 300px !important;
+}
