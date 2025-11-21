@@ -3,7 +3,7 @@ import { SharedService } from '../Service/shared.service';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Observable } from 'rxjs';
 import { TosterService } from '../Service/toster.service';
-import { Router, NavigationEnd  } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -19,6 +19,7 @@ export class HeaderComponent {
   isLoggedIn$: Observable<boolean>;
   menuOpen = false;
   currentRoute: string = '';
+  isAdmin: any;
 
 
   constructor(
@@ -27,16 +28,22 @@ export class HeaderComponent {
     private router: Router
   ) {
     this.isLoggedIn$ = this.sharedService.isLoggedIn$;
-     this.router.events
+    this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.currentRoute = event.urlAfterRedirects;
       });
+    this.isAdmin = this.sharedService.isAdmin$;
   }
 
   ngOnInit() {
     this.authToken = localStorage.getItem("authToken");
     this.menuOpen = false;
+    // this.isAdmin = this.sharedService.isAdmin$;
+    this.sharedService.isAdmin$.subscribe(value => {
+      this.isAdmin = value;
+    });
+
   }
 
 
@@ -61,7 +68,7 @@ export class HeaderComponent {
     this.router.navigate(['/profile']).then(success => console.log('Navigation result:', success));
   }
 
-  showDashboard(){
+  showDashboard() {
     this.menuOpen = false;
     this.router.navigate(['/home']);
   }
@@ -71,6 +78,10 @@ export class HeaderComponent {
 
     this.menuOpen = false; // optional, close the menu
     this.router.navigate(['/changepassword']);
+  }
+  tierBreakdown() {
+    this.menuOpen = false; // optional, close the menu
+    this.router.navigate(['/tierbreakdown']);
   }
 
   logout() {

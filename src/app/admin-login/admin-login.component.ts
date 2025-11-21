@@ -53,7 +53,7 @@ export class AdminLoginComponent {
           console.log(res);
           this.toster.show("success", "Login successfully")
           const isAdmin = res.user.role == 'admin' ? true : false;
-
+          
           const authToken = res.token;
           localStorage.setItem("authToken", authToken);
 

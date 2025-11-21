@@ -2,9 +2,10 @@
     padding: 2rem 10rem 4rem 10rem;
 }
 
-.formRegister{
+.formRegister {
     padding: 2rem 5rem 4rem 5rem;
 }
+
 .consern {
     padding: 0rem 20rem 0rem 20rem;
 
@@ -18,10 +19,19 @@
     width: 15rem;
     color: #fff;
 }
-.updatebtn{
-    background-color: var(--primary-color);
-    color: #fff;
 
+.updatebtn {
+    button {
+        background-color: var(--primary-color);
+        color: #fff;
+    }
+}
+
+.updatebtn {
+    button:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+    }
 }
 
 .google-signIn {
@@ -36,10 +46,10 @@ input {
     border-color: #000;
 }
 
-button {
-    border-color: #000;
-    border-width: 2px;
-}
+// button {
+//     // border-color: #000;
+//     // border-width: 2px;
+// }
 
 input::placeholder {
     color: #000;

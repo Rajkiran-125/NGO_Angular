@@ -47,7 +47,7 @@
                     <img src="assets/Image/logo.png" alt="logo">
                 </h1>
             </div>
-
+            
             <!-- Right Side -->
             <div class="flex items-center gap-4" *ngIf="isLoggedIn$ | async">
 
@@ -55,6 +55,11 @@
                 <button class="px-4 py-1 dashboard-btn text-white rounded-md hover:bg-blue-700 transition"
                     (click)="showDashboard()">
                     Dashboard
+                </button>
+                <!-- Recognition Tier Breakdown -->
+                <button *ngIf="isAdmin" class="px-4 py-1 tierbreakdown-btn text-white rounded-md hover:bg-blue-700 transition"
+                    (click)="tierBreakdown()">
+                    Tier&nbsp;Breakdown
                 </button>
 
                 <!-- User Greeting -->
@@ -76,12 +81,18 @@
                     </div>
 
                     <div class="dropdown-menu" *ngIf="menuOpen">
-                        <div class="dropdown-item" *ngIf="currentRoute !== '/profile'" (click)="openProfile()">
+                        <!-- <div class="dropdown-item" *ngIf="currentRoute !== '/profile'" (click)="openProfile()">
+                            My Profile
+                        </div> -->
+                        <div class="dropdown-item"  (click)="openProfile()">
                             My Profile
                         </div>
 
-                        <div class="dropdown-item" *ngIf="currentRoute === '/profile'" (click)="showDashboard()">
+                        <div class="dropdown-item"  (click)="showDashboard()">
                             Dashboard
+                        </div>
+                        <div class="dropdown-item" (click)="tierBreakdown()">
+                            Tier Breakdown
                         </div>
 
                         <div class="dropdown-item" (click)="changePassword()">Change Password</div>

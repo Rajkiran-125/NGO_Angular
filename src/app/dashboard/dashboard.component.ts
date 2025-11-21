@@ -1,5 +1,5 @@
 import { AsyncPipe, DatePipe, JsonPipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, HostListener } from '@angular/core';
 import { SharedService } from '../Service/shared.service';
 import { ApiService } from '../Service/api.service';
 import { FormsModule, NgModel } from '@angular/forms';
@@ -16,6 +16,7 @@ import { Dialog } from '@angular/cdk/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
 
 import html2pdf from 'html2pdf.js';
+import { SearchFilterPipe } from '../search-filter.pipe';
 
 
 interface DashboardData {
@@ -33,7 +34,8 @@ interface DashboardData {
   standalone: true,
   imports: [NgIf,
     NgFor, NgClass, DatePipe, TitleCasePipe, FormsModule, LoaderComponent, AsyncPipe,
-    JsonPipe, FooterComponent, MatButtonModule, MatDialogModule, DialogComponent],
+    JsonPipe, FooterComponent, MatButtonModule, MatDialogModule, DialogComponent,
+    SearchFilterPipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   // changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,7 +60,11 @@ export class DashboardComponent {
   isLoading = false;
   pdfExportData: any;
   adminCardsData: any;
-
+  searchBy: string = 'activityName';
+  searchText: string = '';
+  searchType: string = '';
+  dropdownOpen = false;
+  displayLabel: string = 'Select Filter';
 
   hours: any = {
     fullName: '',
@@ -74,7 +80,7 @@ export class DashboardComponent {
 
   serviceTypes = [
     'NEST4US Service Projects', 'NEST4US Community Events', 'NEST4US Food Rescues',
-    'NEST4US Tutors', 'NEST4US Notes of Kindness', 'NEST4US Workshops', 'NEST4US Donations', "Other's"
+    'NEST4US Tutors', 'NEST4US Notes of Kindness', 'NEST4US Workshops', 'NEST4US Donations', "Others"
   ];
 
   adminStats = { totalVolunteers: 0, totalHours: 0, pendingSubmissions: 0 };
@@ -97,6 +103,26 @@ export class DashboardComponent {
     }
   }
 
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  selectFilter(type: string, label: string) {
+    this.searchType = type;
+    this.displayLabel = label;
+    this.dropdownOpen = false;
+  }
+
+  // 🔥 CLOSE DROPDOWN ON CLICK OUTSIDE
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event) {
+    const target = event.target as HTMLElement;
+
+    // If click is outside the dropdown, close it
+    if (!target.closest('.dropdown')) {
+      this.dropdownOpen = false;
+    }
+  }
 
   loadDashboardData() {
     try {
@@ -278,7 +304,7 @@ export class DashboardComponent {
     if (entry) {
       // 2. Populate hours object
       this.hours = {
-        fullName: `${entry.volunteerId.profile.firstName} ${entry.volunteerId.profile.lastName}`,
+        fullName: entry.fullName,
         activityName: entry.activityName,
         serviceDate: entry.serviceDate ? entry.serviceDate.split('T')[0] : '', // keep YYYY-MM-DD
         hours: entry.hours,
@@ -344,7 +370,9 @@ export class DashboardComponent {
 
     this.api.get(`admin/stats`, { headers }).subscribe(stats => this.adminStats = stats);
     this.api.get(`admin/pending-hours`, { headers }).subscribe(data => this.pendingHours = data);
+
     console.log('__');
+    console.log('this.pendingHours : ', this.pendingHours)
   }
 
   approveHours(id: string) {
