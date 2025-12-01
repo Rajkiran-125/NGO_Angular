@@ -51,6 +51,10 @@
             <!-- Right Side -->
             <div class="flex items-center gap-4" *ngIf="isLoggedIn$ | async">
 
+                <button *ngIf="isAdmin" class="px-4 py-1 dashboard-btn text-white rounded-md hover:bg-blue-700 transition"
+                    (click)="impactMetrics()">
+                    Impact&nbsp;Metrics
+                </button>
                 <!-- Dashboard Button -->
                 <button class="px-4 py-1 dashboard-btn text-white rounded-md hover:bg-blue-700 transition"
                     (click)="showDashboard()">
@@ -88,15 +92,17 @@
                             My Profile
                         </div>
 
-                        <div class="dropdown-item"  (click)="showDashboard()">
+                        <!-- <div class="dropdown-item"  (click)="showDashboard()">
                             Dashboard
-                        </div>
-                        <div class="dropdown-item" (click)="tierBreakdown()">
-                            Tier Breakdown
-                        </div>
-                        <div class="dropdown-item" (click)="impactMetrics()">
-                            Impact Metrics
-                        </div>
+                        </div> -->
+                        <!-- <div *ngIf="isAdmin">
+                            <div class="dropdown-item" (click)="tierBreakdown()">
+                                Tier Breakdown
+                            </div>
+                            <div class="dropdown-item" (click)="impactMetrics()">
+                                Impact Metrics
+                            </div>
+                        </div> -->
 
                         <div class="dropdown-item" (click)="changePassword()">Change Password</div>
                         <div class="dropdown-item" (click)="logout()">Logout</div>
@@ -104,7 +110,7 @@
                 </div>
 
                 <!-- Help Icon -->
-                <a href="https://nest4us.org/connect-with-us/" target="_blank">
+                <a href="https://nest4us.org/connect-with-us/" target="_blank" *ngIf="!isAdmin">
                     <i class="fa-solid fa-question text-xl"></i>
                 </a>
             </div>

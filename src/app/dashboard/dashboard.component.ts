@@ -17,7 +17,7 @@ import { DialogComponent } from '../dialog/dialog.component';
 
 import html2pdf from 'html2pdf.js';
 import { SearchFilterPipe } from '../search-filter.pipe';
-
+import { environment } from '../../environments/environment';
 
 interface DashboardData {
   profile: { firstName: string; lastName: string; schoolOrganization: string };
@@ -65,6 +65,8 @@ export class DashboardComponent {
   searchType: string = '';
   dropdownOpen = false;
   displayLabel: string = 'Select Filter';
+  path: boolean = false;
+  fileBaseUrl = environment.fileBaseUrl;
 
   hours: any = {
     fullName: '',
@@ -188,7 +190,7 @@ export class DashboardComponent {
       },
       {
         icon: 'fas fa-calendar',
-        label: 'Current Year',
+        label: 'Annual Year',
         value: this.dashboardData?.thisYearHours || 0,
       },
       {
@@ -297,12 +299,11 @@ export class DashboardComponent {
     console.log('Export data clicked');
   }
 
-  editHours(id: string) {
+  editHoursAdmin(id: string) {
     console.log(this.dashboardData)
     const entry = this.pendingHours.find(e => e._id === id);
     console.log(entry)
     if (entry) {
-      // 2. Populate hours object
       this.hours = {
         fullName: entry.fullName,
         activityName: entry.activityName,
@@ -311,17 +312,117 @@ export class DashboardComponent {
         serviceType: entry.serviceType,
         description: entry.description,
         isHistorical: entry.isHistorical || false,
-        id: id
+        id: id,
+        proofOfService: entry.proofOfService
       };
 
-      // 3. Track edit state
-      // this.isEditMode = true;
-      // this.editingId = entry.id;
-
-      // 4. Show modal
       this.showSubmitModal = true;
     }
   }
+
+  editHours(id: string) {
+    this.path = true;
+    const obj = {
+      id: id
+    }
+
+    const authToken = localStorage.getItem("authToken");
+    let token = {
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      }
+    }
+
+    this.api.post('hours/get-entry', obj, token).subscribe(res => {
+
+      const entry = res?.entry;
+
+      if (entry) {
+        this.hours = {
+          fullName: entry.fullName,
+          activityName: entry.activityName,
+          serviceDate: entry.serviceDate ? entry.serviceDate.split('T')[0] : '', // keep YYYY-MM-DD
+          hours: entry.hours,
+          serviceType: entry.serviceType,
+          description: entry.description,
+          isHistorical: entry.isHistorical || false,
+          id: id,
+          proofOfService: entry.proofOfService
+        };
+        this.showSubmitModal = true;
+      }
+    });
+  }
+
+  updateHours() {
+    if (!this.hours || !this.hours.id) {
+      console.error("No entry selected for update");
+      this.toster.show('error', "No entry selected for update");
+      return;
+    }
+
+    const authToken = localStorage.getItem("authToken");
+    const headers = {
+      Authorization: `Bearer ${authToken}`
+    };
+
+    // ---------- CASE 1: Update WITH Image ----------
+    if (this.proofFile) {
+      const formData = new FormData();
+
+      formData.append("id", this.hours.id);
+      formData.append("fullName", this.hours.fullName);
+      formData.append("activityName", this.hours.activityName);
+      formData.append("serviceDate", this.hours.serviceDate);
+      formData.append("serviceType", this.hours.serviceType);
+      formData.append("hours", String(this.hours.hours));
+      formData.append("description", this.hours.description);
+      formData.append("isHistorical", String(this.hours.isHistorical));
+      formData.append("proofOfService", this.proofFile); // selectedFile from file input
+
+      this.api.post('hours/update', formData, { headers }).subscribe({
+        next: (res) => {
+          console.log("Updated Successfully (With Image)", res);
+          this.hideSubmitHoursModal();
+          this.loadAdminPanel();
+          this.loadDashboardData();
+          this.toster.show('success', 'Hours Updated');
+        },
+        error: (err) => { console.error("Update Failed:", err.message); this.toster.show('error', err.message) }
+      });
+
+      return; // stop here
+    }
+
+    // ---------- CASE 2: Update WITHOUT Image ----------
+    const body = {
+      id: this.hours.id,
+      fullName: this.hours.fullName,
+      activityName: this.hours.activityName,
+      serviceDate: this.hours.serviceDate,
+      serviceType: this.hours.serviceType,
+      hours: this.hours.hours,
+      description: this.hours.description,
+      isHistorical: this.hours.isHistorical
+    };
+
+    this.api.post('hours/update', body, {
+      headers: {
+        ...headers,
+        "Content-Type": "application/json"
+      }
+    }).subscribe({
+      next: (res) => {
+        console.log("Updated Successfully (Without Image)", res);
+        this.hideSubmitHoursModal();
+        this.loadAdminPanel();
+        this.loadDashboardData();
+        this.toster.show('success', 'Hours Updated');
+      },
+      error: (err) => { console.error("Update Failed:", err); this.toster.show('error', err.message) }
+    });
+  }
+
 
   showRejectionReason(reason: string) {
     this.toster.show('info', `Rejection Reason: ${reason}`);
@@ -339,7 +440,7 @@ export class DashboardComponent {
   // Modal Functions
   hideSubmitHoursModal() { this.showSubmitModal = false; this.hours = {}; this.proofFile = null; }
 
-  onFileSelected(event: any) { this.proofFile = event.target.files[0]; }
+  onFileSelected(event: any) { this.proofFile = event.target.files[0]; console.log(this.proofFile) }
 
   // Submit Hours
   handleSubmitHours() {
@@ -347,15 +448,21 @@ export class DashboardComponent {
     Object.keys(this.hours).forEach(key => formData.append(key, this.hours[key]));
     if (this.proofFile) formData.append('proofOfService', this.proofFile);
 
-    const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
+    const authToken = localStorage.getItem("authToken");
+    let token = {
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      }
+    }
 
-    this.api.post(`hours/submit`, formData, { headers })
+    this.api.post(`hours/submit`, formData, token)
       .subscribe({
         next: () => {
           // this.showMessage('Hours submitted successfully!', 'success');
           this.hideSubmitHoursModal();
           this.loadAdminPanel();
           this.loadDashboardData();
+          this.toster.show('success', 'Hours submitted')
         },
         error: (err) => {
           this.toster.show('error', err.error?.message || 'Failed to submit hours');
@@ -369,7 +476,10 @@ export class DashboardComponent {
     const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
 
     this.api.get(`admin/stats`, { headers }).subscribe(stats => this.adminStats = stats);
-    this.api.get(`admin/pending-hours`, { headers }).subscribe(data => this.pendingHours = data);
+    this.api.get(`admin/pending-hours`, { headers }).subscribe(data => {
+      console.log('pendingHour data: ', data)
+      this.pendingHours = data;
+    });
 
     console.log('__');
     console.log('this.pendingHours : ', this.pendingHours)
@@ -381,21 +491,78 @@ export class DashboardComponent {
       console.log(res);
       this.toster.show('info', 'Hours approved!');
       this.loadAdminPanel();
+      this.calculateProgress();
+      this.prepareStatCards();
+      this.loadAdminPanel();
+      this.loadAdminCards();
     });
   }
+
+  // rejectHours(id: string) {
+  //   const reason = prompt('Please provide a reason for rejection (optional):');
+  //   const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}`, 'Content-Type': 'application/json' });
+  //   this.api.put(`admin/review-hours/${id}`, { status: 'rejected', rejectionReason: reason }, { headers }).subscribe((res) => {
+  //     console.log(res)
+  //     this.toster.show('info', 'Hours rejected!');
+  //     this.loadAdminPanel();
+  //     this.calculateProgress();
+  //     this.prepareStatCards();
+  //     this.loadAdminPanel();
+  //     this.loadAdminCards();
+  //   });
+  // }
 
   rejectHours(id: string) {
-    const reason = prompt('Please provide a reason for rejection (optional):');
-    const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}`, 'Content-Type': 'application/json' });
-    this.api.put(`admin/review-hours/${id}`, { status: 'rejected', rejectionReason: reason }, { headers }).subscribe((res) => {
-      console.log(res)
-      this.toster.show('info', 'Hours rejected!');
-      this.loadAdminPanel();
+    const type = 'rejectHours'
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '400px',
+      data: { type }
+    });
+
+    dialogRef.afterClosed().subscribe(reason => {
+      if (reason === undefined) return; // user canceled
+
+      const headers = new HttpHeaders({
+        Authorization: `Bearer ${this.authToken}`,
+        'Content-Type': 'application/json'
+      });
+
+      this.api.put(`admin/review-hours/${id}`,
+        { status: 'rejected', rejectionReason: reason },
+        { headers }
+      ).subscribe((res) => {
+        this.toster.show('info', 'Hours rejected!');
+        this.loadAdminPanel();
+        this.calculateProgress();
+        this.prepareStatCards();
+        this.loadAdminCards();
+      });
     });
   }
 
-  viewHourDetails(id: string) {
-    this.toster.show('info', `Viewing details for: ${id}`)
+
+  viewHourDetails(id: string, proof) {
+
+    const type = 'viewProof'
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '450px',
+      data: { type, proof }
+    });
+
+    // dialogRef.afterClosed().subscribe(result => {
+    //   if (result) {
+
+    //   }
+    // });
+    // this.toster.show('info', `Viewing details for: ${id}`)
+  }
+  openImageFullscreen(img: string) {
+    this.dialog.open(DialogComponent, {
+      // width: '90vw',
+      // height: '90vh',
+      width: '450px',
+      data: { type: 'viewProof', proof: img }
+    });
   }
 
   // Message utility
@@ -418,8 +585,9 @@ export class DashboardComponent {
 
       const type = 'exportDate'
       const badge = '';
+      const isAdmin = this.isAdmin ? true : false
       const dialogRef = this.dialog.open(DialogComponent, {
-        data: { badge, type }
+        data: { badge, type, isAdmin }
       });
 
       dialogRef.afterClosed().subscribe(result => {

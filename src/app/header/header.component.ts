@@ -43,6 +43,7 @@ export class HeaderComponent {
     this.sharedService.isAdmin$.subscribe(value => {
       this.isAdmin = value;
     });
+    this.isAdmin = localStorage.getItem('user') == 'admin' ? true : false;
 
   }
 
@@ -89,6 +90,7 @@ export class HeaderComponent {
   }
 
   logout() {
+    this.menuOpen = false;
     localStorage.removeItem('authToken');
     this.sharedService.logout();
     this.toster.show("success", "Logout");

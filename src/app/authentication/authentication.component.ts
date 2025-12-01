@@ -44,8 +44,8 @@ export class AuthenticationComponent {
     });
 
     this.signUpForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      fullName: ['', Validators.required],
+      // lastName: ['', Validators.required],
       email: ['', Validators.required],
       userName: ['', Validators.required],
       password: ['', Validators.required],
@@ -103,8 +103,8 @@ export class AuthenticationComponent {
     try {
       this.loader = true;
       let formData = {
-        firstName: this.signUpForm.value.firstName,
-        lastName: this.signUpForm.value.lastName,
+        fullName: this.signUpForm.value.fullName,
+        // lastName: this.signUpForm.value.lastName,
         email: this.signUpForm.value.email,
         password: this.signUpForm.value.password,
         schoolOrganization: this.signUpForm.value.schoolOrOrganization,
@@ -163,6 +163,10 @@ export class AuthenticationComponent {
       reader.onload = () => (this.previewUrl = reader.result);
       reader.readAsDataURL(file);
     }
+  }
+
+  frogetPassword(){
+    this.router.navigate(['/forgetPassword']);
   }
 
 }

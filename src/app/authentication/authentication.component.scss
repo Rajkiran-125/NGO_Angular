@@ -77,7 +77,7 @@
     /* smaller default padding */
     max-width: 450px;
     /* controls form width */
-    margin: auto;
+    margin: 0 auto;
 
     input {
         width: 80% !important;
@@ -89,7 +89,7 @@
     }
 }
 
-.formInsideSignUp{
+.formInsideSignUp {
     input {
         width: 80% !important;
         /* reduce input width */
@@ -136,7 +136,7 @@
 /* Inputs – reduce width */
 
 input {
-    width: 80% !important;
+    // width: 80% !important;
     /* reduce input width */
     margin: 0 auto;
     /* center inputs */
@@ -163,15 +163,18 @@ button {
     border-color: #000;
     border-width: 2px;
 }
+.signUp-btn{
+    background: var(--primary-color);
+}
 
 input::placeholder {
     color: #000;
 }
 
+.login-bg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80%;
 
-
-
-
-
-
-
+}

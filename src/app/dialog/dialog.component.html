@@ -16,9 +16,15 @@
       Thank you for spreading kindness and making the world brighter with every act you do!
     </p>
 
-    <button class="download-btn" (click)="downloadBadge(badge)">
-      Click here to view and download your badge!
-    </button>
+    <div class="flex justify-center space-x-3 pt-4">
+      <button class="download-btn" (click)="downloadBadge(badge)">
+        View badge
+      </button>
+      <button class="download-btn" (click)="downloadBadge(badge)">
+        Download badge
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -40,7 +46,7 @@
 
         <div class="actions">
           <button mat-raised-button color="primary"
-            (click)="downloadPDF('submitSingle'); showPdf = true;">Submit</button>
+            (click)="exportData('submitSingle'); showPdf = true;">Submit</button>
           <button mat-button (click)="dialogRef.close()">Cancel</button>
         </div>
 
@@ -69,7 +75,7 @@
 
         <div class="actions">
           <button mat-raised-button
-            (click)="downloadPDF('submitRange'); showPdf = true;">Submit</button>
+            (click)="exportData('submitRange'); showPdf = true;">Submit</button>
           <button mat-button (click)="dialogRef.close()">Cancel</button>
         </div>
 
@@ -123,5 +129,46 @@
     TOTAL HOURS FOR SELECTED EVENTS: {{ pdfExportData?.totalHours }} HOURS
   </div>
 </div>
-<!-- <button (click)="downloadPDF()">Download PDF</button> -->
+<!-- <button (click)="exportData()">Download PDF</button> -->
 
+
+<div class="p-4" *ngIf="type == 'viewProof'">
+
+  <h2 class="text-lg font-semibold mb-3 text-gray-800">
+    Proof of Service
+  </h2>
+
+  <img 
+    *ngIf="proofImageUrl"
+    [src]="proofImageUrl"
+    class="max-h-96 w-full object-contain border rounded-lg shadow-sm"
+    alt="Proof Image"
+  />
+
+  <div class="flex justify-end mt-4">
+    <button 
+      (click)="dialogRef.close()" 
+      class="px-4 py-2 text-white rounded-lg transition"
+    >
+      Close
+    </button>
+  </div>
+
+</div>
+
+
+<div class="p-4" *ngIf="type == 'rejectHours'">
+  <h2 class="text-lg font-semibold mb-3">Rejection Reason</h2>
+
+  <textarea 
+    [(ngModel)]="hourRejectReason"
+    rows="3"
+    placeholder="Enter reason (optional)"
+    class="w-full border rounded p-2"
+  ></textarea>
+
+  <div class="flex justify-end mt-4 space-x-2">
+    <button class="px-4 py-2 bg-gray-300 rounded" (click)="dialogRef.close()">Cancel</button>
+    <button class="px-4 py-2 bg-purple-600 text-white rounded" (click)="submitHourReason()">Submit</button>
+  </div>
+</div>

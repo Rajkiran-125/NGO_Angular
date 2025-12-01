@@ -14,6 +14,9 @@ import { SharedService } from '../Service/shared.service';
 import { ApiService } from '../Service/api.service';
 import { TosterService } from '../Service/toster.service';
 import { MatTabsModule } from '@angular/material/tabs';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-dialog',
@@ -34,18 +37,21 @@ import { MatTabsModule } from '@angular/material/tabs';
   styleUrl: './dialog.component.scss'
 })
 export class DialogComponent {
-
+  
   badge: any;
   type: any;
-
+  
   fromDate: Date;
   toDate: Date;
   pdfExportData: any;
   authToken = localStorage.getItem('authToken');
   showPdf: boolean = false;
-
+  isAdmin: any;
+  proofImageUrl = '';
+  hourRejectReason: string = '';
+  proofBaseUrl = environment.fileBaseUrl;
   selectedTab = 0; // default: Single Date
-
+  
   constructor(
     public dialogRef: MatDialogRef<DialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -56,11 +62,19 @@ export class DialogComponent {
   ) { }
 
   ngOnInit(): void {
-    this.badge = this.data.badge;
+
     this.type = this.data.type;
 
-    console.log('Badge:', this.badge);
-    console.log('Type:', this.type);
+    if (this.data.type == 'exportDate') {
+      this.badge = this.data.badge;
+      this.type = this.data.type;
+      this.isAdmin = this.data?.isAdmin;
+    }
+    if (this.data.type === 'viewProof') {
+      // this.proofImageUrl = this.fileBaseUrl + this.data.proof;
+      this.proofImageUrl = this.proofBaseUrl + 'proof/' + this.data.proof;
+    }
+
   }
 
   closeDialog() {
@@ -99,7 +113,7 @@ export class DialogComponent {
     return `${year}-${month}-${day}`;
   }
 
-  downloadPDF(type) {
+  exportData(type) {
 
     console.log('fromDate', this.fromDate);
     console.log('toDate', this.toDate);
@@ -134,37 +148,72 @@ export class DialogComponent {
 
       // 3. Wait for DOM + images + table to fully render
       requestAnimationFrame(() => {
-        // setTimeout(() => {
 
-        const element = document.getElementById('pdfContent');
+        if (this.isAdmin) {
 
-        console.log("PDF Content:", element?.innerHTML); // Debugging
+          const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
+          // this.api.get(`hours/export?format=json`, { headers }).subscribe(res => {
+          this.api.post(`volunteers/hours/export`, obj, { headers }).subscribe(res => {
+            console.log(res);
 
-        if (!element) return;
+            if (res.records.length > 0) {
 
-        // 4. PDF Options
-        const opt = {
-          margin: 0.5,
-          filename: 'Volunteer_Report.pdf',
-          image: { type: 'jpeg', quality: 1 },
-          html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-        };
 
-        // 5. Generate PDF
-        (html2pdf as any)()
-          .from(element)
-          .set(opt)
-          .save();
+              // 1. Convert JSON to worksheet
+              const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(res.records);
 
+              // 2. Create a workbook
+              const workbook: XLSX.WorkBook = {
+                Sheets: { 'Volunteer Hours': worksheet },
+                SheetNames: ['Volunteer Hours']
+              };
+
+              // 3. Generate Excel file buffer
+              const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+              // 4. Save as file
+              const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+              saveAs(data, `volunteer_hours_${new Date().toISOString().slice(0, 10)
+                }.xlsx`);
+              this.toster.show('success', 'File exported');
+            } else {
+              this.toster.show('error', 'Data not found');
+
+            }
+          });
+        }
+        else {
+
+          const element = document.getElementById('pdfContent');
+
+          console.log("PDF Content:", element?.innerHTML); // Debugging
+
+          if (!element) return;
+
+          // 4. PDF Options
+          const opt = {
+            margin: 0.5,
+            filename: 'Volunteer_Report.pdf',
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+          };
+
+          // 5. Generate PDF
+          (html2pdf as any)()
+            .from(element)
+            .set(opt)
+            .save();
+          // this.toster.show('success', 'File exported');
+        }
 
         this.dialogRef.close();
 
-        // }, 300);  // allow table + images to render fully
       });
-
-
-
     });
+  }
+
+  submitHourReason(){
+    this.dialogRef.close(this.hourRejectReason);
   }
 }
