@@ -82,7 +82,7 @@ export class DashboardComponent {
 
   serviceTypes = [
     'NEST4US Service Projects', 'NEST4US Community Events', 'NEST4US Food Rescues',
-    'NEST4US Tutors', 'NEST4US Notes of Kindness', 'NEST4US Workshops', 'NEST4US Donations', "Others"
+    'NEST Tutors', 'NEST4US Notes of Kindness', 'NEST4US Workshops', 'NEST4US Donations', "Others"
   ];
 
   adminStats = { totalVolunteers: 0, totalHours: 0, pendingSubmissions: 0 };

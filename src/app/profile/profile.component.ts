@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, NgModel, Forms
 import { AsyncPipe, NgIf } from '@angular/common';
 import { ApiService } from '../Service/api.service';
 import { TosterService } from '../Service/toster.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -18,6 +19,7 @@ export class ProfileComponent {
   user: any;
   isDisabled = true;
   previewUrl: string | ArrayBuffer | null = null;
+  fileBaseUrl = environment.fileBaseUrl;
 
 
   constructor(
@@ -31,8 +33,8 @@ export class ProfileComponent {
     this.loadProfileData();
 
     this.updateProfile = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      fullName: ['', Validators.required],
+      // lastName: ['', Validators.required],
       email: ['', Validators.required],
       userName: ['', Validators.required],
       password: ['', Validators.required],
@@ -41,9 +43,18 @@ export class ProfileComponent {
       phoneNumber: ['', Validators.required],
       state: ['', Validators.required],
       country: ['', Validators.required],
-      refCode: ['', Validators.required],
+      // refCode: ['', Validators.required],
       interests: ['', Validators.required],
     });
+
+    // updateProfile = this.fb.group({
+    //   fullName: ['', Validators.required],
+    //   organization: ['', Validators.required],
+    //   dob: ['', Validators.required],
+    //   email: ['', [Validators.required, Validators.email]],
+    //   phoneNumber: ['', Validators.required],
+    //   bio: ['']
+    // });
   }
 
   enableEdit() {
@@ -99,11 +110,11 @@ export class ProfileComponent {
         next: (res: any) => {
           const user = res.user;
 
-          console.log('user: >> ', user)
+          console.log('user: >> ', user);
 
           this.updateProfile.patchValue({
-            firstName: user.profile.firstName || '',
-            lastName: user.profile.lastName || '',
+            fullName: user.profile.fullName || '',
+            // lastName: user.profile.lastName || '',
             organization: user.profile.schoolOrganization || '',
             dob: user.profile.dateOfBirth ? user.profile.dateOfBirth.split('T')[0] : '',
             country: `${user.profile.location?.state || ''}, ${user.profile.location?.country || ''}`,
@@ -111,6 +122,7 @@ export class ProfileComponent {
             email: user.email || '',
             interests: user.profile.causesOfInterest?.join(', ') || ''
           });
+          this.previewUrl = user.profile.profilePicture;
 
           console.log('Profile form patched:', this.updateProfile.value);
         },
@@ -125,6 +137,36 @@ export class ProfileComponent {
     }
   }
 
+  updateProfileFun() {
+    if (this.updateProfile.invalid) {
+      this.toster.show('error', 'Please fill all required fields.');
+      return;
+    }
 
+    // this.loader = true;
+
+    const formData = {
+      fullName: this.updateProfile.value.fullName,
+      email: this.updateProfile.value.email,
+      phoneNumber: this.updateProfile.value.phoneNumber,
+      dateOfBirth: this.updateProfile.value.dob,
+      organization: this.updateProfile.value.organization,
+      bio: this.updateProfile.value.bio,
+      profilePicture: this.previewUrl
+    };
+
+    this.api.put('auth/update-profile', formData).subscribe({
+      next: (res) => {
+        // this.loader = false;
+        this.toster.show('success', 'Profile updated successfully!');
+        this.editProfile = false;
+      },
+      error: (err) => {
+        // this.loader = false;
+        this.toster.show('error', err.error?.message || 'Failed to update profile');
+        console.error(err);
+      }
+    });
+  }
 
 }

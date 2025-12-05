@@ -52,10 +52,10 @@ export class ForgetPasswordComponent {
   sendOtp() {
     try {
 
-      if (!this.emailForm.valid){
+      if (!this.emailForm.valid) {
         this.toster.show('error', 'Email is invalid');
         return;
-      } 
+      }
 
       const email = this.emailForm.value.email;
       console.log("Sending OTP to:", email);
@@ -86,7 +86,7 @@ export class ForgetPasswordComponent {
 
       const data = {
         email: this.emailForm.value.email,
-        code: this.resetForm.value.otp,
+        code: String(this.resetForm.value.otp),
         newPassword: this.resetForm.value.newPassword,
         confirmPassword: this.resetForm.value.confirmPassword,
       };

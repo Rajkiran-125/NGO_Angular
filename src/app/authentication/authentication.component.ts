@@ -23,7 +23,7 @@ export class AuthenticationComponent {
   loginPage: boolean = true;
   signUpPage: boolean = false;
   authPage: boolean = true;
-  previewUrl: string | ArrayBuffer | null = null;
+  previewUrl:File | null = null;
   changePassword: boolean = false;
 
   constructor(
@@ -43,27 +43,49 @@ export class AuthenticationComponent {
       password: ['', Validators.required]
     });
 
+
+    // this.signUpForm = this.fb.group({
+    //   fullName: ['', Validators.required],
+    //   // lastName: ['', Validators.required],
+    //   email: ['', Validators.required],
+    //   userName: ['', Validators.required],
+    //   password: ['', Validators.required],
+    //   schoolOrOrganization: ['', Validators.required],
+    //   dob: ['', Validators.required],
+    //   phoneNumber: ['', Validators.required],
+    //   state: ['', Validators.required],
+    //   country: ['', Validators.required],
+    //   refCode: ['', Validators.required]
+    // });
+
     this.signUpForm = this.fb.group({
       fullName: ['', Validators.required],
-      // lastName: ['', Validators.required],
-      email: ['', Validators.required],
-      userName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      // userName: ['', Validators.required],
       password: ['', Validators.required],
       schoolOrOrganization: ['', Validators.required],
       dob: ['', Validators.required],
       phoneNumber: ['', Validators.required],
+
       state: ['', Validators.required],
       country: ['', Validators.required],
-      refCode: ['', Validators.required]
+
+      // refCode: ['', Validators.required],
+      interests: [''],
+      // bio: [''],
+
+      profilePhoto: [null]
     });
+
   }
+
 
   login() {
     const email = this.loginForm.value.userName;
     const password = this.loginForm.value.password;
-    
+
     if (this.loginForm.valid) {
-      
+
       this.loader = true;
 
       this.api.post('auth/login', { email, password }).subscribe({
@@ -87,48 +109,93 @@ export class AuthenticationComponent {
           this.loader = false;
           console.error('Login failed', err);
 
-          this.toster.show('error',err.error?.message);
+          this.toster.show('error', err.error?.message);
         }
       });
     } else {
       this.loader = false;
       console.error('Form Invalid');
 
-      this.toster.show('error','Form Invalid');
+      this.toster.show('error', 'Form Invalid');
     }
   }
+
+
+  // signUp() {
+  //   try {
+  //     this.loader = true;
+  //     let formData = {
+  //       fullName: this.signUpForm.value.fullName,
+  //       // lastName: this.signUpForm.value.lastName,
+  //       email: this.signUpForm.value.email,
+  //       password: this.signUpForm.value.password,
+  //       schoolOrganization: this.signUpForm.value.schoolOrOrganization,
+  //       dateOfBirth: this.signUpForm.value.dob,
+  //       phoneNumber: this.signUpForm.value.phoneNumber,
+  //       location: {
+  //         state: this.signUpForm.value.state,
+  //         country: this.signUpForm.value.country,
+  //       },
+  //       referredBy: this.signUpForm.value.refCode,
+  //     };
+
+  //     this.api.post('auth/register', formData).subscribe(res => {
+  //       this.loader = false;
+  //       console.log(res);
+  //       this.toster.show('success', 'SignUp successfully');
+  //       this.router.navigate(['/login']);
+  //     })
+  //   } catch (err) {
+  //     this.loader = false;
+  //     this.toster.show('error', err.error?.message);
+  //     console.log(err);
+  //   }
+  // }
 
 
   signUp() {
-    try {
-      this.loader = true;
-      let formData = {
-        fullName: this.signUpForm.value.fullName,
-        // lastName: this.signUpForm.value.lastName,
-        email: this.signUpForm.value.email,
-        password: this.signUpForm.value.password,
-        schoolOrganization: this.signUpForm.value.schoolOrOrganization,
-        dateOfBirth: this.signUpForm.value.dob,
-        phoneNumber: this.signUpForm.value.phoneNumber,
-        location: {
-          state: this.signUpForm.value.state,
-          country: this.signUpForm.value.country,
-        },
-        referredBy: this.signUpForm.value.refCode,
-      };
-
-      this.api.post('auth/register', formData).subscribe(res => {
-        this.loader = false;
-        console.log(res);
-        this.toster.show('success', 'SignUp successfully');
-        this.router.navigate(['/login']);
-      })
-    } catch (err) {
-      this.loader = false;
-      this.toster.show('error', err.error?.message);
-      console.log(err);
+    if (this.signUpForm.invalid) {
+      this.toster.show('error', 'Please fill all required fields.');
+      return;
     }
+
+    this.loader = true;
+
+    const formData = {
+      fullName: this.signUpForm.value.fullName,//
+      email: this.signUpForm.value.email,//
+      // userName: this.signUpForm.value.userName,
+      password: this.signUpForm.value.password,//
+      schoolOrganization: this.signUpForm.value.schoolOrOrganization,//
+      dateOfBirth: this.signUpForm.value.dob,//
+      phoneNumber: this.signUpForm.value.phoneNumber,//
+
+      location: {
+        state: this.signUpForm.value.state,
+        country: this.signUpForm.value.country
+      },
+
+      referredBy: "",
+      causesOfInterest: this.signUpForm.value.interests, //
+      // bio: this.signUpForm.value.bio
+      profilePicture: this.previewUrl //
+    };
+
+    this.api.post('auth/register', formData, '').subscribe({
+      next: (res) => {
+        this.loader = false;
+        this.toster.show('success', 'Account created successfully!');
+        this.router.navigate(['/login']);
+        this.loginPage = true;
+      },
+      error: (err) => {
+        this.loader = false;
+        this.toster.show('error', err.error?.message || 'Signup failed');
+        console.error(err);
+      }
+    });
   }
+
 
   logout() {
     localStorage.removeItem("authToken");
@@ -156,16 +223,17 @@ export class AuthenticationComponent {
     }
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => (this.previewUrl = reader.result);
-      reader.readAsDataURL(file);
-    }
-  }
+  // onFileSelected(event: any) {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = () => (this.previewUrl = reader.result);
+  //     reader.readAsDataURL(file);
+  //   }
+  // }
+  onFileSelected(event: any) { this.previewUrl = event.target.files[0]; console.log(this.previewUrl) }
 
-  frogetPassword(){
+  frogetPassword() {
     this.router.navigate(['/forgetPassword']);
   }
 

@@ -47,7 +47,7 @@ export class AdminLoginComponent {
 
       this.loader = true;
 
-      this.api.post('auth/login', { email, password }).subscribe({
+      this.api.post('auth/admin/login', { email, password }).subscribe({
         next: (res: any) => {
           this.loader = false;
           console.log(res);
