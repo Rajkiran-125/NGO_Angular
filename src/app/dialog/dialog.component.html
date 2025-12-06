@@ -17,11 +17,16 @@
     </p>
 
     <div class="flex justify-center space-x-3 pt-4">
-      <button class="download-btn" (click)="viewBadge(badge)">
+      <!-- <button class="download-btn" (click)="viewBadge(badge)">
         View badge
-      </button>
+      </button> -->
+
       <button class="download-btn" (click)="downloadBadge(badge)">
         Download badge
+      </button>
+
+      <button class="download-btn">
+        Download Social Media Toolkit
       </button>
     </div>
 
@@ -49,11 +54,15 @@
     </p>
 
     <div class="flex justify-center space-x-3 pt-4">
-      <button class="download-btn" (click)="viewBadge(badge)">
+      <!-- <button class="download-btn" (click)="viewBadge(badge)">
         View badge
-      </button>
+      </button> -->
       <button class="download-btn" (click)="downloadBadge(badge)">
         Download badge
+      </button>
+
+      <button class="download-btn">
+        Download Social Media Toolkit
       </button>
     </div>
 
@@ -78,9 +87,9 @@
         </mat-form-field>
 
         <div class="actions">
-          <button mat-raised-button color="primary"
-            (click)="exportData('submitSingle'); showPdf = true;">Submit</button>
-          <button mat-button (click)="dialogRef.close()">Cancel</button>
+          <button mat-raised-button class="action-cancel-btn" (click)="dialogRef.close()">Cancel</button>
+          <button mat-raised-button class="action-submit-btn"
+          (click)="exportData('submitSingle'); showPdf = true;">Submit</button>
         </div>
 
       </div>
@@ -107,8 +116,10 @@
         </mat-form-field>
 
         <div class="actions">
-          <button mat-raised-button (click)="exportData('submitRange'); showPdf = true;">Submit</button>
-          <button mat-button (click)="dialogRef.close()">Cancel</button>
+          <button mat-raised-button class="action-cancel-btn" (click)="dialogRef.close()">Cancel</button>
+
+          <button mat-raised-button class="action-submit-btn" (click)="exportData('submitRange'); showPdf = true;">Submit</button>
+          <!-- <button mat-raised-button (click)="showPdf = true;">Submit</button> -->
         </div>
 
       </div>
@@ -124,13 +135,26 @@
 <div id="pdfContent" class="report-container" *ngIf="showPdf">
 
   <!-- Header -->
-  <div class="headerBanner">
+  <!-- <div class="headerBanner">
     <div class="left">
       <h2>Full Name: John Doe</h2>
       <p>NEST4US • www.nest4us.org</p>
     </div>
     <div class="right">
-      <img src="https://nest4us.org/wp-content/uploads/2025/09/NEST4US-Logo-scaled.png" crossOrigin="anonymous" />
+      <img src="https://ngo-node-js.onrender.com/uploads/logo/logo.png" crossOrigin="anonymous" />
+    </div>
+  </div> -->
+
+  <div class="headerBanner">
+    <div class="left">
+      <h2>Full Name: {{fullName}}</h2>
+      <p>NEST4US • www.nest4us.org</p>
+    </div>
+
+    <div class="right">
+      <a href="https://www.nest4us.org" target="_blank">
+        <img src="https://ngo-node-js.onrender.com/uploads/logo/logo.png" crossOrigin="anonymous" class="header-logo" />
+      </a>
     </div>
   </div>
 
@@ -158,7 +182,10 @@
 
   <!-- Footer Total -->
   <div class="footerCard">
-    TOTAL HOURS FOR SELECTED EVENTS: {{ pdfExportData?.totalHours }} HOURS
+    <!-- TOTAL HOURS FOR SELECTED EVENTS: {{ pdfExportData?.totalHours }} HOURS -->
+    TOTAL HOURS: {{ pdfExportData?.totalHours }} HOURS
+    <br>
+    For any questions, please reach out to info&#64;nest4us.org - thanks!
   </div>
 </div>
 <!-- <button (click)="exportData()">Download PDF</button> -->

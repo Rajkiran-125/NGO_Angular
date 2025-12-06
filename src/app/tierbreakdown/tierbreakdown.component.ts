@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { SharedService } from '../Service/shared.service';
 import { ApiService } from '../Service/api.service';
 import { TosterService } from '../Service/toster.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-tierbreakdown',
@@ -26,6 +27,7 @@ export class TierbreakdownComponent {
   selectTier:boolean = false;
   volunteerDetails:any;
   volunteerCard:boolean = false;
+  imgUrl = environment.fileBaseUrl;
 
   constructor(
       private sharedService: SharedService,

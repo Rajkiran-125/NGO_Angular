@@ -53,6 +53,7 @@ export class DialogComponent {
   selectedTab = 0; // default: Single Date
   tierContent:any;
   unlockedTier:any;
+  fullName:any;
   
   constructor(
     public dialogRef: MatDialogRef<DialogComponent>,
@@ -71,10 +72,12 @@ export class DialogComponent {
       this.badge = this.data.badge;
       this.type = this.data.type;
       this.isAdmin = this.data?.isAdmin;
+      this.fullName = this.data?.fullName;
     }
     if (this.data.type === 'viewProof') {
       // this.proofImageUrl = this.fileBaseUrl + this.data.proof;
       this.proofImageUrl = this.proofBaseUrl + '/uploads/proof/' + this.data.proof;
+      console.log('this.proofImageUrl: >> ', this.proofImageUrl)
     }
     if(this.type == 'newTier'){
       this.tierContent = this.data.tierContent; 

@@ -21,7 +21,7 @@ import { environment } from '../../environments/environment';
 import { TREE_KEY_MANAGER_FACTORY_PROVIDER } from '@angular/cdk/a11y';
 
 interface DashboardData {
-  profile: { firstName: string; lastName: string; schoolOrganization: string };
+  profile: { firstName: string; lastName: string; fullName: string; schoolOrganization: string };
   totalHours: number;
   thisYearHours: number;
   tier: string;
@@ -182,6 +182,7 @@ export class DashboardComponent {
         this.calculateProgress();
         this.prepareStatCards();
         this.loadAdminPanel();
+        this.hours.fullName = this.dashboardData.profile.fullName;
       });
     } catch (err) {
       // this.loader = false;
@@ -203,11 +204,12 @@ export class DashboardComponent {
           this.isLoading = false;
         }, 500);
         // this.toster.show('success', 'Dashboard data refresh');
-        console.log('dashboardData >>> ',res);
+        console.log('dashboardData >>> ', res);
         this.dashboardData = res;
         this.calculateProgress();
         this.prepareStatCards();
         this.loadAdminPanel();
+        this.hours.fullName = this.dashboardData.profile.fullName;
       });
     } catch (err) {
       // this.loader = false;
@@ -232,7 +234,8 @@ export class DashboardComponent {
       },
       {
         icon: 'fas fa-calendar',
-        label: 'Annual Year',
+        // label: 'Annual Year',
+        label: 'This Year',
         value: this.dashboardData?.thisYearHours || 0,
       },
       {
@@ -378,6 +381,7 @@ export class DashboardComponent {
     this.api.post('hours/get-entry', obj, token).subscribe(res => {
 
       const entry = res?.entry;
+      console.log('edit hour: ', entry);
 
       if (entry) {
         this.hours = {
@@ -485,33 +489,93 @@ export class DashboardComponent {
   onFileSelected(event: any) { this.proofFile = event.target.files[0]; console.log(this.proofFile) }
 
   // Submit Hours
+  // handleSubmitHours() {
+  //   const formData = new FormData();
+  //   Object.keys(this.hours).forEach(key => formData.append(key, this.hours[key]));
+  //   if (this.proofFile) formData.append('proofOfService', this.proofFile);
+
+  //   const authToken = localStorage.getItem("authToken");
+  //   let token = {
+  //     headers: {
+  //       Authorization: `Bearer ${authToken}`
+  //     }
+  //   }
+
+  //   this.api.post(`hours/submit`, formData, token)
+  //     .subscribe({
+  //       next: () => {
+  //         // this.showMessage('Hours submitted successfully!', 'success');
+  //         this.hideSubmitHoursModal();
+  //         this.loadAdminPanel();
+  //         this.loadDashboardData();
+  //         this.toster.show('success', 'Hours submitted')
+  //       },
+  //       error: (err) => {
+  //         this.toster.show('error', err.error?.message || 'Failed to submit hours');
+  //         // this.showMessage(err.error?.message || 'Failed to submit hours', 'error');
+  //       }
+  //     });
+  // }
+
   handleSubmitHours() {
+
+    // Required field validation (manual)
+    const requiredFields = [
+      'fullName',
+      'activityName',
+      'serviceDate',
+      'hours',
+      'serviceType',
+      'description'
+    ];
+
+    for (let field of requiredFields) {
+      if (!this.hours[field]) {
+        this.toster.show('error', `${field} is required.`);
+        return;
+      }
+    }
+
+    // Proof image required only when user is NOT admin
+    if (!this.isAdmin && !this.proofFile && !this.hours.proofOfService) {
+      this.toster.show('error', 'Proof of Service is required.');
+      return;
+    }
+
+    // --- Build FormData ---
     const formData = new FormData();
-    Object.keys(this.hours).forEach(key => formData.append(key, this.hours[key]));
-    if (this.proofFile) formData.append('proofOfService', this.proofFile);
+    Object.keys(this.hours).forEach(key => {
+      if (this.hours[key] !== null && this.hours[key] !== undefined) {
+        formData.append(key, this.hours[key]);
+      }
+    });
+
+    if (this.proofFile) {
+      formData.append('proofOfService', this.proofFile);
+    }
 
     const authToken = localStorage.getItem("authToken");
     let token = {
       headers: {
         Authorization: `Bearer ${authToken}`
       }
-    }
+    };
 
+    // Submit API
     this.api.post(`hours/submit`, formData, token)
       .subscribe({
         next: () => {
-          // this.showMessage('Hours submitted successfully!', 'success');
           this.hideSubmitHoursModal();
           this.loadAdminPanel();
           this.loadDashboardData();
-          this.toster.show('success', 'Hours submitted')
+          this.toster.show('success', 'Hours submitted');
         },
         error: (err) => {
           this.toster.show('error', err.error?.message || 'Failed to submit hours');
-          // this.showMessage(err.error?.message || 'Failed to submit hours', 'error');
         }
       });
   }
+
 
   // Admin Panel
   loadAdminPanel() {
@@ -585,6 +649,7 @@ export class DashboardComponent {
 
   viewHourDetails(id: string, proof) {
 
+    console.log('Proof url: ', proof)
     const type = 'viewProof'
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '450px',
@@ -627,9 +692,10 @@ export class DashboardComponent {
 
       const type = 'exportDate'
       const badge = '';
-      const isAdmin = this.isAdmin ? true : false
+      const isAdmin = this.isAdmin ? true : false;
+      const fullName = this.dashboardData.profile.fullName;
       const dialogRef = this.dialog.open(DialogComponent, {
-        data: { badge, type, isAdmin }
+        data: { badge, type, isAdmin, fullName }
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -685,7 +751,7 @@ export class DashboardComponent {
         Authorization: `Bearer ${this.authToken}`,
         'Content-Type': 'application/json'
       });
-console.log('updated hours: >>> ',this.hours.hours);
+      console.log('updated hours: >>> ', this.hours.hours);
       this.api.put(`admin/edit-hours/${id}`,
         { "hours": this.hours.hours },
         { headers }
