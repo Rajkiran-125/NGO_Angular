@@ -18,6 +18,7 @@ import { DialogComponent } from '../dialog/dialog.component';
 import html2pdf from 'html2pdf.js';
 import { SearchFilterPipe } from '../search-filter.pipe';
 import { environment } from '../../environments/environment';
+import { TREE_KEY_MANAGER_FACTORY_PROVIDER } from '@angular/cdk/a11y';
 
 interface DashboardData {
   profile: { firstName: string; lastName: string; schoolOrganization: string };
@@ -99,6 +100,7 @@ export class DashboardComponent {
   ngOnInit() {
     this.loadDashboardData();
     this.isAdmin = localStorage.getItem('user') == 'admin' ? true : false;
+    this.newTier();
     if (this.isAdmin) {
       this.loadAdminPanel();
       this.loadAdminCards();
@@ -123,6 +125,46 @@ export class DashboardComponent {
     // If click is outside the dropdown, close it
     if (!target.closest('.dropdown')) {
       this.dropdownOpen = false;
+    }
+  }
+
+  newTier() {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let token = {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      }
+      this.api.get('volunteers/newTier', token).subscribe(res => {
+        console.log('newTier: ', res);
+        const unlockedTier = res.unlockedTier;
+        // const unlockedTier =  "Legacy Leader";
+        // res = {
+
+        //   "newTierUnlocked": true,
+        //   "unlockedTier": "Legacy Leader",
+        //   "tierContent": {
+        //     "subject": "👑 You Are Now a Legacy Leader!",
+        //     "message": "You’ve gone above and beyond! NEST4US is proud to recognize you as a <strong>LEGACY LEADER</strong> for your 250+ hours of volunteer service. Your dedication has built a legacy of kindness and impact that will inspire generations to come!"
+        //   }
+        // }
+        const tierContent = res.tierContent
+        if (res.newTierUnlocked) {
+          const type = 'newTier'
+          const dialogRef = this.dialog.open(DialogComponent, {
+            // width: '400px',
+            data: { type, tierContent, unlockedTier }
+          });
+        }
+
+        // this.dashboardData = res;
+        // this.calculateProgress();
+        // this.prepareStatCards();
+        // this.loadAdminPanel();
+      });
+    } catch (err) {
+      console.log(err.message);
     }
   }
 
@@ -161,7 +203,7 @@ export class DashboardComponent {
           this.isLoading = false;
         }, 500);
         // this.toster.show('success', 'Dashboard data refresh');
-        console.log(res);
+        console.log('dashboardData >>> ',res);
         this.dashboardData = res;
         this.calculateProgress();
         this.prepareStatCards();
@@ -637,7 +679,24 @@ export class DashboardComponent {
     }
   }
 
-
+  adminUpdateHours(id) {
+    try {
+      const headers = new HttpHeaders({
+        Authorization: `Bearer ${this.authToken}`,
+        'Content-Type': 'application/json'
+      });
+console.log('updated hours: >>> ',this.hours.hours);
+      this.api.put(`admin/edit-hours/${id}`,
+        { "hours": this.hours.hours },
+        { headers }
+      ).subscribe((res) => {
+        this.toster.show('info', 'Hours updated!');
+        this.loadAdminPanel();
+      });
+    } catch (err) {
+      console.log(err.message);
+    }
+  }
 
 
   openDialog(badge) {

@@ -2,7 +2,7 @@ img {
   width: 5%;
 }
 
-.logo{
+.logo {
   margin: 0;
 }
 
@@ -100,21 +100,23 @@ a i {
   /* light hover purple */
 }
 
-.dashboard-btn{
+.dashboard-btn {
   background-color: var(--primary-color);
-      border-radius: 3px;
+  border-radius: 3px;
 }
-.tierbreakdown-btn{
+
+.tierbreakdown-btn {
   background-color: var(--primary-color);
-      border-radius: 3px;
-      width: fit-content;
+  border-radius: 3px;
+  width: fit-content;
 }
- .fixheader{
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-}
+
+//  .fixheader{
+//     position: fixed;
+//     top: 0;
+//     right: 0;
+//     left: 0;
+// }
 
 
 

@@ -23,8 +23,10 @@ export class AuthenticationComponent {
   loginPage: boolean = true;
   signUpPage: boolean = false;
   authPage: boolean = true;
-  previewUrl:File | null = null;
+  profileUploadPic:File | null = null;
+  previewUrl: string | ArrayBuffer | null = null;
   changePassword: boolean = false;
+  // uploadPic:boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -153,48 +155,102 @@ export class AuthenticationComponent {
   // }
 
 
+  // signUp() {
+  //   if (this.signUpForm.invalid) {
+  //     this.toster.show('error', 'Please fill all required fields.');
+  //     return;
+  //   }
+
+  //   this.loader = true;
+
+  //   const formData = {
+  //     fullName: this.signUpForm.value.fullName,//
+  //     email: this.signUpForm.value.email,//
+  //     // userName: this.signUpForm.value.userName,
+  //     password: this.signUpForm.value.password,//
+  //     schoolOrganization: this.signUpForm.value.schoolOrOrganization,//
+  //     dateOfBirth: this.signUpForm.value.dob,//
+  //     phoneNumber: this.signUpForm.value.phoneNumber,//
+
+  //     location: {
+  //       state: this.signUpForm.value.state,
+  //       country: this.signUpForm.value.country
+  //     },
+
+  //     referredBy: "",
+  //     causesOfInterest: this.signUpForm.value.interests, //
+  //     // bio: this.signUpForm.value.bio
+  //     profilePicture: this.profileUploadPic //
+  //   };
+
+  //   this.api.post('auth/register', formData, '').subscribe({
+  //     next: (res) => {
+  //       this.loader = false;
+  //       this.toster.show('success', 'Account created successfully!');
+  //       this.router.navigate(['/login']);
+  //       this.loginPage = true;
+  //     },
+  //     error: (err) => {
+  //       this.loader = false;
+  //       this.toster.show('error', err.error?.message || 'Signup failed');
+  //       console.error(err);
+  //     }
+  //   });
+  // }
+
   signUp() {
-    if (this.signUpForm.invalid) {
-      this.toster.show('error', 'Please fill all required fields.');
-      return;
-    }
-
-    this.loader = true;
-
-    const formData = {
-      fullName: this.signUpForm.value.fullName,//
-      email: this.signUpForm.value.email,//
-      // userName: this.signUpForm.value.userName,
-      password: this.signUpForm.value.password,//
-      schoolOrganization: this.signUpForm.value.schoolOrOrganization,//
-      dateOfBirth: this.signUpForm.value.dob,//
-      phoneNumber: this.signUpForm.value.phoneNumber,//
-
-      location: {
-        state: this.signUpForm.value.state,
-        country: this.signUpForm.value.country
-      },
-
-      referredBy: "",
-      causesOfInterest: this.signUpForm.value.interests, //
-      // bio: this.signUpForm.value.bio
-      profilePicture: this.previewUrl //
-    };
-
-    this.api.post('auth/register', formData, '').subscribe({
-      next: (res) => {
-        this.loader = false;
-        this.toster.show('success', 'Account created successfully!');
-        this.router.navigate(['/login']);
-        this.loginPage = true;
-      },
-      error: (err) => {
-        this.loader = false;
-        this.toster.show('error', err.error?.message || 'Signup failed');
-        console.error(err);
-      }
-    });
+  if (this.signUpForm.invalid) {
+    this.toster.show('error', 'Please fill all required fields.');
+    return;
   }
+
+  this.loader = true;
+
+  const formData = new FormData();
+
+  formData.append("fullName", this.signUpForm.value.fullName);
+  formData.append("email", this.signUpForm.value.email);
+  formData.append("password", this.signUpForm.value.password);
+  formData.append("schoolOrganization", this.signUpForm.value.schoolOrOrganization);
+  formData.append("dateOfBirth", this.signUpForm.value.dob);
+  formData.append("phoneNumber", this.signUpForm.value.phoneNumber);
+
+  // 👉 Nested location object
+  formData.append("state", this.signUpForm.value.state);
+  formData.append("country", this.signUpForm.value.country);
+
+  // 👉 Causes of interest (array or comma-separated)
+  if (Array.isArray(this.signUpForm.value.interests)) {
+    this.signUpForm.value.interests.forEach((item: string, index: number) => {
+      formData.append(`causesOfInterest[${index}]`, item);
+    });
+  } else {
+    formData.append("causesOfInterest", this.signUpForm.value.interests);
+  }
+
+  formData.append("referredBy", "");
+  
+  // 👉 Profile picture (File)
+  if (this.profileUploadPic) {
+    formData.append("profilePicture", this.profileUploadPic);
+  }
+
+  this.api.post('auth/register', formData).subscribe({
+    next: (res) => {
+      this.loader = false;
+      this.toster.show('success', 'Account created successfully!');
+      this.router.navigate(['/login']);
+      this.loginPage = true;
+      this.signUpPage = false;
+    },
+    error: (err) => {
+      this.loader = false;
+      this.toster.show('error', err.error?.message || 'Signup failed');
+      console.error(err);
+    }
+  });
+}
+
 
 
   logout() {
@@ -223,15 +279,16 @@ export class AuthenticationComponent {
     }
   }
 
-  // onFileSelected(event: any) {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onload = () => (this.previewUrl = reader.result);
-  //     reader.readAsDataURL(file);
-  //   }
-  // }
-  onFileSelected(event: any) { this.previewUrl = event.target.files[0]; console.log(this.previewUrl) }
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.profileUploadPic = file;
+      const reader = new FileReader();
+      reader.onload = () => (this.previewUrl = reader.result);
+      reader.readAsDataURL(file);
+    }
+  }
+  // onFileSelected(event: any) { this.previewUrl = event.target.files[0]; console.log(this.previewUrl) }
 
   frogetPassword() {
     this.router.navigate(['/forgetPassword']);

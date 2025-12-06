@@ -19,8 +19,9 @@ export class ProfileComponent {
   user: any;
   isDisabled = true;
   previewUrl: string | ArrayBuffer | null = null;
+  profileUploadPic: File | null = null;
   fileBaseUrl = environment.fileBaseUrl;
-
+  uploadPic: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -35,9 +36,10 @@ export class ProfileComponent {
     this.updateProfile = this.fb.group({
       fullName: ['', Validators.required],
       // lastName: ['', Validators.required],
-      email: ['', Validators.required],
-      userName: ['', Validators.required],
-      password: ['', Validators.required],
+      // email: ['', Validators.required],
+      email: [{ value: '', disabled: true }], 
+      // userName: ['', Validators.required],
+      // password: ['', Validators.required],
       organization: ['', Validators.required],
       dob: ['', Validators.required],
       phoneNumber: ['', Validators.required],
@@ -61,14 +63,33 @@ export class ProfileComponent {
     console.log('')
   }
 
+  // onFileSelected(event: any) {
+  //   const file = event.target.files[0];
+
+  //   if (file) {
+  //     this.profileUploadPic = file;
+  //     const reader = new FileReader();
+  //     reader.onload = () => (this.previewUrl = reader.result);
+  //     reader.readAsDataURL(file);
+  //   }
+  // }
+
   onFileSelected(event: any) {
     const file = event.target.files[0];
+
     if (file) {
+      this.uploadPic = true;
+      this.profileUploadPic = file;
+
       const reader = new FileReader();
-      reader.onload = () => (this.previewUrl = reader.result);
+      reader.onload = () => {
+        this.previewUrl = reader.result?.toString() ?? null;   // FIXED 👍
+      };
       reader.readAsDataURL(file);
     }
   }
+
+  // onFileSelected(event: any) { this.previewUrl = event.target.files[0]; console.log(this.previewUrl) }
 
   onImageChange(event) {
     console.log('');
@@ -117,7 +138,9 @@ export class ProfileComponent {
             // lastName: user.profile.lastName || '',
             organization: user.profile.schoolOrganization || '',
             dob: user.profile.dateOfBirth ? user.profile.dateOfBirth.split('T')[0] : '',
-            country: `${user.profile.location?.state || ''}, ${user.profile.location?.country || ''}`,
+            // country: `${user.profile.location?.state || ''}, ${user.profile.location?.country || ''}`,
+            state: user.profile.location?.state || '',
+            country: user.profile.location?.country || '',
             phoneNumber: user.profile.phoneNumber || '',
             email: user.email || '',
             interests: user.profile.causesOfInterest?.join(', ') || ''
@@ -137,36 +160,88 @@ export class ProfileComponent {
     }
   }
 
+  // updateProfileFun() {
+  //   console.log(this.updateProfile)
+  //   if (this.updateProfile.invalid) {
+  //     this.toster.show('error', 'Please fill all required fields.');
+  //     return;
+  //   }
+
+  //   // this.loader = true;
+
+  //   const formData = {
+  //     fullName: this.updateProfile.value.fullName,
+  //     email: this.updateProfile.value.email,
+  //     phoneNumber: this.updateProfile.value.phoneNumber,
+  //     dateOfBirth: this.updateProfile.value.dob,
+  //     organization: this.updateProfile.value.organization,
+  //     bio: this.updateProfile.value.bio,
+  //     profilePicture: this.profileUploadPic
+  //   };
+
+  //   const authToken = localStorage.getItem("authToken");
+  //   let token = {
+  //     headers: {
+  //       Authorization: `Bearer ${authToken}`
+  //     }
+  //   }
+
+  //   this.api.post('volunteers/profile/update', formData, token).subscribe({
+  //     next: (res) => {
+  //       // this.loader = false;
+  //       this.toster.show('success', 'Profile updated successfully!');
+  //       this.editProfile = false;
+  //     },
+  //     error: (err) => {
+  //       // this.loader = false;
+  //       this.toster.show('error', err.error?.message || 'Failed to update profile');
+  //       console.error(err);
+  //     }
+  //   });
+  // }
+
   updateProfileFun() {
+
     if (this.updateProfile.invalid) {
       this.toster.show('error', 'Please fill all required fields.');
       return;
     }
 
-    // this.loader = true;
+    const formData = new FormData();
 
-    const formData = {
-      fullName: this.updateProfile.value.fullName,
-      email: this.updateProfile.value.email,
-      phoneNumber: this.updateProfile.value.phoneNumber,
-      dateOfBirth: this.updateProfile.value.dob,
-      organization: this.updateProfile.value.organization,
-      bio: this.updateProfile.value.bio,
-      profilePicture: this.previewUrl
+    formData.append("fullName", this.updateProfile.value.fullName);
+    // formData.append("email", this.updateProfile.value.email);
+    formData.append("phoneNumber", this.updateProfile.value.phoneNumber);
+    formData.append("dateOfBirth", this.updateProfile.value.dob);
+    formData.append("schoolOrganization", this.updateProfile.value.organization);
+    formData.append("state", this.updateProfile.value.state);
+    formData.append("country", this.updateProfile.value.country);
+
+    // ⬇️ Append profile picture file (NOT Base64)
+    if (this.profileUploadPic) {
+      formData.append("profilePicture", this.profileUploadPic);
+    }
+
+    const authToken = localStorage.getItem("authToken");
+    const token = {
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      }
     };
 
-    this.api.put('auth/update-profile', formData).subscribe({
+    this.api.post('volunteers/profile/update', formData, token).subscribe({
       next: (res) => {
-        // this.loader = false;
         this.toster.show('success', 'Profile updated successfully!');
-        this.editProfile = false;
+        // this.editProfile = false;
+        this.uploadPic = false;
+        this.loadProfileData();
       },
       error: (err) => {
-        // this.loader = false;
         this.toster.show('error', err.error?.message || 'Failed to update profile');
         console.error(err);
       }
     });
   }
+
 
 }

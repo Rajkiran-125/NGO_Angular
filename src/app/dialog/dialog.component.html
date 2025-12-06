@@ -17,7 +17,7 @@
     </p>
 
     <div class="flex justify-center space-x-3 pt-4">
-      <button class="download-btn" (click)="downloadBadge(badge)">
+      <button class="download-btn" (click)="viewBadge(badge)">
         View badge
       </button>
       <button class="download-btn" (click)="downloadBadge(badge)">
@@ -27,6 +27,39 @@
 
   </div>
 </div>
+
+<div class="congrats-card" *ngIf="type == 'newTier'">
+
+  <div class="congrats-content ">
+    <div class="flex justify-center">
+      <img src="assets/Image/Congratulations.png" alt="Congratulations" class="congrats-image" />
+
+    </div>
+    <br>
+    <div class="">
+      <p style="font-size: large; font-weight: bold;">New tier unlock
+      </p>
+      <span
+        class="inline-flex items-center px-4 py-3 rounded-full text-sm font-medium text-white badge">{{unlockedTier}}</span>
+    </div>
+    <br>
+
+    <p class="congrats-text" [innerHTML]="tierContent?.message ? tierContent.message : 'Message not found'">
+
+    </p>
+
+    <div class="flex justify-center space-x-3 pt-4">
+      <button class="download-btn" (click)="viewBadge(badge)">
+        View badge
+      </button>
+      <button class="download-btn" (click)="downloadBadge(badge)">
+        Download badge
+      </button>
+    </div>
+
+  </div>
+</div>
+
 
 <div class="congrats-card" *ngIf="data.type == 'exportDate'">
   <mat-tab-group [(selectedIndex)]="selectedTab">
@@ -74,8 +107,7 @@
         </mat-form-field>
 
         <div class="actions">
-          <button mat-raised-button
-            (click)="exportData('submitRange'); showPdf = true;">Submit</button>
+          <button mat-raised-button (click)="exportData('submitRange'); showPdf = true;">Submit</button>
           <button mat-button (click)="dialogRef.close()">Cancel</button>
         </div>
 
@@ -138,18 +170,11 @@
     Proof of Service
   </h2>
 
-  <img 
-    *ngIf="proofImageUrl"
-    [src]="proofImageUrl"
-    class="max-h-96 w-full object-contain border rounded-lg shadow-sm"
-    alt="Proof Image"
-  />
+  <img *ngIf="proofImageUrl" [src]="proofImageUrl" class="max-h-96 w-full object-contain border rounded-lg shadow-sm"
+    alt="Proof Image" />
 
   <div class="flex justify-end mt-4">
-    <button 
-      (click)="dialogRef.close()" 
-      class="px-4 py-2 text-white rounded-lg transition"
-    >
+    <button (click)="dialogRef.close()" class="px-4 py-2 text-white rounded-lg transition">
       Close
     </button>
   </div>
@@ -160,12 +185,8 @@
 <div class="p-4" *ngIf="type == 'rejectHours'">
   <h2 class="text-lg font-semibold mb-3">Rejection Reason</h2>
 
-  <textarea 
-    [(ngModel)]="hourRejectReason"
-    rows="3"
-    placeholder="Enter reason (optional)"
-    class="w-full border rounded p-2"
-  ></textarea>
+  <textarea [(ngModel)]="hourRejectReason" rows="3" placeholder="Enter reason (optional)"
+    class="w-full border rounded p-2"></textarea>
 
   <div class="flex justify-end mt-4 space-x-2">
     <button class="px-4 py-2 bg-gray-300 rounded" (click)="dialogRef.close()">Cancel</button>

@@ -51,6 +51,8 @@ export class DialogComponent {
   hourRejectReason: string = '';
   proofBaseUrl = environment.fileBaseUrl;
   selectedTab = 0; // default: Single Date
+  tierContent:any;
+  unlockedTier:any;
   
   constructor(
     public dialogRef: MatDialogRef<DialogComponent>,
@@ -72,9 +74,12 @@ export class DialogComponent {
     }
     if (this.data.type === 'viewProof') {
       // this.proofImageUrl = this.fileBaseUrl + this.data.proof;
-      this.proofImageUrl = this.proofBaseUrl + 'proof/' + this.data.proof;
+      this.proofImageUrl = this.proofBaseUrl + '/uploads/proof/' + this.data.proof;
     }
-
+    if(this.type == 'newTier'){
+      this.tierContent = this.data.tierContent; 
+      this.unlockedTier = this.data.unlockedTier;
+    }
   }
 
   closeDialog() {
@@ -88,22 +93,30 @@ export class DialogComponent {
     this.dialogRef.close(returnData);
   }
 
-  downloadBadge(badgeName: string) {
-    // Encode and build path
+  viewBadge(badgeName){
     const badgePath = `assets/Image/badge/kindness_Ambassador.png`;
 
     // 1️⃣ Open in a new tab for preview
     const newTab = window.open(badgePath, '_blank');
 
+  }
+
+  downloadBadge(badgeName: string) {
+    // Encode and build path
+    const badgePath = `assets/Image/badge/kindness_Ambassador.png`;
+
+    // 1️⃣ Open in a new tab for preview
+    // const newTab = window.open(badgePath, '_blank');
+
     // // 2️⃣ Wait a bit (to allow browser to open), then trigger download
-    // setTimeout(() => {
-    //   const link = document.createElement('a');
-    //   link.href = badgePath;
-    //   link.download = `${badgeName}.png`;
-    //   document.body.appendChild(link);
-    //   link.click();
-    //   document.body.removeChild(link);
-    // }, 1000); // 1 second delay (can adjust)
+    setTimeout(() => {
+      const link = document.createElement('a');
+      link.href = badgePath;
+      link.download = `${badgeName}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }, 1000); // 1 second delay (can adjust)
   }
 
   formatDate(date: Date) {
