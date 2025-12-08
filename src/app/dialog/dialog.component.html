@@ -9,19 +9,20 @@
 
     </div>
 
-    <p class="congrats-text">
+    <p class="congrats-text" [innerHTML]="tierMessage?.message"></p>
+    <!-- <p class="congrats-text">
       Hooray! NEST4US is proud to recognize you as a
       <strong class="highlight">{{badge}}</strong>
       for your 50+ hours of volunteer service.
       Thank you for spreading kindness and making the world brighter with every act you do!
-    </p>
+    </p> -->
 
     <div class="flex justify-center space-x-3 pt-4">
       <!-- <button class="download-btn" (click)="viewBadge(badge)">
         View badge
       </button> -->
 
-      <button class="download-btn" (click)="downloadBadge(badge)">
+      <button class="download-btn" (click)="viewBadge(badge)">
         Download badge
       </button>
 

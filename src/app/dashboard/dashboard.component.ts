@@ -28,6 +28,7 @@ interface DashboardData {
   referralCode: string;
   badges: string[];
   hoursHistory: any[];
+  tierMessages:any;
 }
 
 @Component({
@@ -177,7 +178,7 @@ export class DashboardComponent {
         }
       }
       this.api.get('volunteers/dashboard', token).subscribe(res => {
-        console.log(res);
+        console.log('volunteers/dashboard >>> ', res);
         this.dashboardData = res;
         this.calculateProgress();
         this.prepareStatCards();
@@ -766,9 +767,16 @@ export class DashboardComponent {
 
 
   openDialog(badge) {
-    const type = 'badge'
+
+    const badgeMessage = this.dashboardData.tierMessages[badge] || null;
+
+    const dialogData = {
+      badge,
+      type: 'badge',
+      tierMessage: badgeMessage 
+    };
     const dialogRef = this.dialog.open(DialogComponent, {
-      data: { badge, type }
+      data: dialogData
     });
 
     dialogRef.afterClosed().subscribe(result => {

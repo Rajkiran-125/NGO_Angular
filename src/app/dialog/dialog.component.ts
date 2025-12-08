@@ -54,6 +54,7 @@ export class DialogComponent {
   tierContent:any;
   unlockedTier:any;
   fullName:any;
+  tierMessage:any;
   
   constructor(
     public dialogRef: MatDialogRef<DialogComponent>,
@@ -73,6 +74,10 @@ export class DialogComponent {
       this.type = this.data.type;
       this.isAdmin = this.data?.isAdmin;
       this.fullName = this.data?.fullName;
+    }
+    if(this.type == 'badge'){
+      this.badge = this.data.badge;
+      this.tierMessage = this.data.tierMessage;
     }
     if (this.data.type === 'viewProof') {
       // this.proofImageUrl = this.fileBaseUrl + this.data.proof;
@@ -96,8 +101,19 @@ export class DialogComponent {
     this.dialogRef.close(returnData);
   }
 
-  viewBadge(badgeName){
-    const badgePath = `assets/Image/badge/kindness_Ambassador.png`;
+  viewBadge(badge){
+
+    let badgePath;
+
+    if(badge == 'Kindness Ambassador'){
+      badgePath = `assets/Image/badge/kindness_Ambassador.png`;
+    }else if(badge == 'Change Catalyst'){
+      badgePath = `assets/Image/badge/Change_Catalyst.png`;
+    }else if(badge == 'Service Champion'){
+      badgePath = `assets/Image/badge/Service_Champion.png`;
+    }else if(badge == 'Legacy Leader'){
+      badgePath = `assets/Image/badge/Lagacy_Leader.jfif`;
+    }
 
     // 1️⃣ Open in a new tab for preview
     const newTab = window.open(badgePath, '_blank');
@@ -108,10 +124,8 @@ export class DialogComponent {
     // Encode and build path
     const badgePath = `assets/Image/badge/kindness_Ambassador.png`;
 
-    // 1️⃣ Open in a new tab for preview
     // const newTab = window.open(badgePath, '_blank');
 
-    // // 2️⃣ Wait a bit (to allow browser to open), then trigger download
     setTimeout(() => {
       const link = document.createElement('a');
       link.href = badgePath;
@@ -119,7 +133,7 @@ export class DialogComponent {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    }, 1000); // 1 second delay (can adjust)
+    }, 1000);
   }
 
   formatDate(date: Date) {
