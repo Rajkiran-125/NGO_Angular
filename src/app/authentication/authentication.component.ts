@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApiService } from '../Service/api.service';
-import { NgIf } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import { SharedService } from '../Service/shared.service';
 import { LoaderComponent } from '../loader/loader.component';
 import { TosterService } from '../Service/toster.service';
@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-authentication',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, LoaderComponent],
+  imports: [ReactiveFormsModule, NgIf, LoaderComponent, NgClass],
   templateUrl: './authentication.component.html',
   styleUrl: './authentication.component.scss'
 })
@@ -27,6 +27,8 @@ export class AuthenticationComponent {
   previewUrl: string | ArrayBuffer | null = null;
   changePassword: boolean = false;
   // uploadPic:boolean = false;
+  showPassword = false;
+
 
   constructor(
     private fb: FormBuilder,

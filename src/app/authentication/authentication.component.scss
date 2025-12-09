@@ -110,3 +110,21 @@ input::placeholder {
     height: 80%;
 
 }
+
+
+
+
+.password-eye {
+  position: absolute;
+  right: 40px;        /* distance from right side */
+  top: 50%;           /* vertical center */
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color: #555;
+  z-index: 10;        /* ensures icon stays on top */
+}
+
+.password-eye:hover {
+  color: #7b3ce0;
+}

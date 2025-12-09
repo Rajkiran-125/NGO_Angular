@@ -4,13 +4,13 @@ import { ApiService } from '../Service/api.service';
 import { SharedService } from '../Service/shared.service';
 import { TosterService } from '../Service/toster.service';
 import { LoaderComponent } from '../loader/loader.component';
-import { NgIf } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-login',
   standalone: true,
-  imports: [LoaderComponent, NgIf, ReactiveFormsModule],
+  imports: [LoaderComponent, NgIf, ReactiveFormsModule, NgClass],
   templateUrl: './admin-login.component.html',
   styleUrl: './admin-login.component.scss'
 })
@@ -20,6 +20,7 @@ export class AdminLoginComponent {
   loginForm: any = FormGroup;
   loginPage: boolean = true;
   authPage: boolean = true;
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -76,6 +77,10 @@ export class AdminLoginComponent {
 
       this.toster.show('error', 'Form Invalid');
     }
+  }
+
+  routeForgetPass(){
+    this.router.navigate(['/forgetPassword']);
   }
 
   checkAuthStatus() {
