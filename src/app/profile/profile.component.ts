@@ -34,9 +34,8 @@ export class ProfileComponent {
     this.loadProfileData();
 
     this.updateProfile = this.fb.group({
-      fullName: ['', Validators.required],
-      // lastName: ['', Validators.required],
-      // email: ['', Validators.required],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
       email: [{ value: '', disabled: true }], 
       // userName: ['', Validators.required],
       // password: ['', Validators.required],
@@ -134,8 +133,8 @@ export class ProfileComponent {
           console.log('user: >> ', user);
 
           this.updateProfile.patchValue({
-            fullName: user.profile.fullName || '',
-            // lastName: user.profile.lastName || '',
+            firstName: user.profile.firstName || '',
+            lastName: user.profile.lastName || '',
             organization: user.profile.schoolOrganization || '',
             dob: user.profile.dateOfBirth ? user.profile.dateOfBirth.split('T')[0] : '',
             // country: `${user.profile.location?.state || ''}, ${user.profile.location?.country || ''}`,

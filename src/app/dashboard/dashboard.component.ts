@@ -28,7 +28,7 @@ interface DashboardData {
   referralCode: string;
   badges: string[];
   hoursHistory: any[];
-  tierMessages:any;
+  tierMessages: any;
 }
 
 @Component({
@@ -71,7 +71,8 @@ export class DashboardComponent {
   fileBaseUrl = environment.fileBaseUrl;
 
   hours: any = {
-    fullName: '',
+    firstName: '',
+    lastName: '',
     // schoolOrganization: '',
     activityName: '',
     serviceDate: '',
@@ -83,8 +84,15 @@ export class DashboardComponent {
   proofFile: File | null = null;
 
   serviceTypes = [
-    'NEST4US Service Projects', 'NEST4US Community Events', 'NEST4US Food Rescues',
-    'NEST Tutors', 'NEST4US Notes of Kindness', 'NEST4US Workshops', 'NEST4US Donations', "Others"
+    'NEST4US Service Projects',
+    'NEST4US Community/School Events',
+    'NEST4US Food Rescues',
+    'NEST4US Community Resource Distributions',
+    'NEST Tutors',
+    'NEST4US Notes of Kindness',
+    'NEST4US Workshops',
+    'NEST4US Donations',
+    "Other"
   ];
 
   adminStats = { totalVolunteers: 0, totalHours: 0, pendingSubmissions: 0 };
@@ -105,6 +113,7 @@ export class DashboardComponent {
     if (this.isAdmin) {
       this.loadAdminPanel();
       this.loadAdminCards();
+      this.getServiceTypes();
     }
   }
 
@@ -118,7 +127,7 @@ export class DashboardComponent {
     this.dropdownOpen = false;
   }
 
-  // 🔥 CLOSE DROPDOWN ON CLICK OUTSIDE
+  // CLOSE DROPDOWN ON CLICK OUTSIDE
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
     const target = event.target as HTMLElement;
@@ -146,7 +155,7 @@ export class DashboardComponent {
         //   "newTierUnlocked": true,
         //   "unlockedTier": "Legacy Leader",
         //   "tierContent": {
-        //     "subject": "👑 You Are Now a Legacy Leader!",
+        //     "subject": "You Are Now a Legacy Leader!",
         //     "message": "You’ve gone above and beyond! NEST4US is proud to recognize you as a <strong>LEGACY LEADER</strong> for your 250+ hours of volunteer service. Your dedication has built a legacy of kindness and impact that will inspire generations to come!"
         //   }
         // }
@@ -183,7 +192,8 @@ export class DashboardComponent {
         this.calculateProgress();
         this.prepareStatCards();
         this.loadAdminPanel();
-        this.hours.fullName = this.dashboardData.profile.fullName;
+        this.hours.firstName = this.dashboardData.profile.firstName;
+        this.hours.lastName = this.dashboardData.profile.lastName;
       });
     } catch (err) {
       // this.loader = false;
@@ -270,6 +280,25 @@ export class DashboardComponent {
       ];
   }
 
+  getServiceTypes() {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      let token = {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      }
+      this.api.get('volunteers/service-types', token).subscribe(res => {
+        console.log(res);
+        if (res?.data) {
+          this.serviceTypes = res?.data;
+        }
+      })
+    } catch (err) {
+      console.log(err.message);
+    }
+  }
+
   loadAdminCards() {
     try {
       const authToken = localStorage.getItem("authToken");
@@ -351,7 +380,8 @@ export class DashboardComponent {
     console.log(entry)
     if (entry) {
       this.hours = {
-        fullName: entry.fullName,
+        firstName: entry.firstName,
+        lastName: entry.lastName,
         activityName: entry.activityName,
         serviceDate: entry.serviceDate ? entry.serviceDate.split('T')[0] : '', // keep YYYY-MM-DD
         hours: entry.hours,
@@ -386,7 +416,8 @@ export class DashboardComponent {
 
       if (entry) {
         this.hours = {
-          fullName: entry.fullName,
+          firstName: entry.firstName,
+          lastName: entry.lastName,
           activityName: entry.activityName,
           serviceDate: entry.serviceDate ? entry.serviceDate.split('T')[0] : '', // keep YYYY-MM-DD
           hours: entry.hours,
@@ -418,14 +449,15 @@ export class DashboardComponent {
       const formData = new FormData();
 
       formData.append("id", this.hours.id);
-      formData.append("fullName", this.hours.fullName);
+      formData.append("firstName", this.hours.firstName);
+      formData.append("lastName", this.hours.lastName);
       formData.append("activityName", this.hours.activityName);
       formData.append("serviceDate", this.hours.serviceDate);
       formData.append("serviceType", this.hours.serviceType);
       formData.append("hours", String(this.hours.hours));
       formData.append("description", this.hours.description);
       formData.append("isHistorical", String(this.hours.isHistorical));
-      formData.append("proofOfService", this.proofFile); // selectedFile from file input
+      formData.append("proofOfService", this.proofFile);
 
       this.api.post('hours/update', formData, { headers }).subscribe({
         next: (res) => {
@@ -444,7 +476,8 @@ export class DashboardComponent {
     // ---------- CASE 2: Update WITHOUT Image ----------
     const body = {
       id: this.hours.id,
-      fullName: this.hours.fullName,
+      firstName: this.hours.firstName,
+      lastName: this.hours.lastName,
       activityName: this.hours.activityName,
       serviceDate: this.hours.serviceDate,
       serviceType: this.hours.serviceType,
@@ -522,7 +555,8 @@ export class DashboardComponent {
 
     // Required field validation (manual)
     const requiredFields = [
-      'fullName',
+      'firstName',
+      'lastName',
       'activityName',
       'serviceDate',
       'hours',
@@ -694,7 +728,7 @@ export class DashboardComponent {
       const type = 'exportDate'
       const badge = '';
       const isAdmin = this.isAdmin ? true : false;
-      const fullName = this.dashboardData.profile.fullName;
+      const fullName = `${this.dashboardData.profile.firstName} ${this.dashboardData.profile.lastName}`;
       const dialogRef = this.dialog.open(DialogComponent, {
         data: { badge, type, isAdmin, fullName }
       });
@@ -773,7 +807,7 @@ export class DashboardComponent {
     const dialogData = {
       badge,
       type: 'badge',
-      tierMessage: badgeMessage 
+      tierMessage: badgeMessage
     };
     const dialogRef = this.dialog.open(DialogComponent, {
       data: dialogData
@@ -783,5 +817,44 @@ export class DashboardComponent {
       console.log(`Dialog result: ${result}`);
     });
   }
+
+
+  // downloadProofOfImg(imgUrl: string) {
+  //   // Encode and build path
+
+  //   // const newTab = window.open(badgePath, '_blank');
+  //   console.log('imgUrl >>>>> ',imgUrl)
+
+  //   setTimeout(() => {
+  //     const link = document.createElement('a');
+  //     link.href = imgUrl;
+  //     link.download = `${this.hours.firstName + this.hours.lastName}_ProofOfImage.png`;
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //   }, 1000);
+  // }
+
+  downloadProofOfImg(imgUrl: string) {
+    fetch(imgUrl, { mode: 'cors' })
+      .then(response => response.blob())
+      .then(blob => {
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+
+        link.download = `ProofOfImage.png`;
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        window.URL.revokeObjectURL(blobUrl);
+      })
+      .catch(err => {
+        console.error('Download error:', err);
+      });
+  }
+
 
 }

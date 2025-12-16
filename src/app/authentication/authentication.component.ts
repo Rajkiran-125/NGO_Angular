@@ -292,7 +292,7 @@ export class AuthenticationComponent {
   }
   // onFileSelected(event: any) { this.previewUrl = event.target.files[0]; console.log(this.previewUrl) }
 
-  frogetPassword() {
+  forgetPassword() {
     this.router.navigate(['/forgetPassword']);
   }
 

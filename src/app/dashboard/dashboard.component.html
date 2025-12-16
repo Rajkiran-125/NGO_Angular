@@ -207,7 +207,7 @@
                 {{ entry.activityName }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ entry.serviceDate | date: 'shortDate' }}
+                {{ entry.serviceDate | date:'MM/dd/yyyy' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {{ entry.hours }}
@@ -220,7 +220,8 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ entry.submittedAt | date: 'shortDate' }}
+                <!-- {{ entry.submittedAt | date: 'shortDate' }} -->
+                {{ entry.submittedAt | date:'MM/dd/yyyy' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 <button *ngIf="entry.status === 'pending'" class="text-blue-600 hover:text-blue-900"
@@ -257,13 +258,20 @@
         </div>
 
         <form (ngSubmit)="handleSubmitHours()" #submitForm="ngForm" enctype="multipart/form-data" class="space-y-4">
-          <!-- <div class="grid grid-cols-2 gap-4"> -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Full Name *</label>
-            <input type="text" [(ngModel)]="hours.fullName" name="fullName" required [disabled]="isAdmin ? true : false"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">First Name *</label>
+              <input type="text" [(ngModel)]="hours.firstName" name="firstName" required
+                [disabled]="isAdmin ? true : false"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Last Name *</label>
+              <input type="text" [(ngModel)]="hours.lastName" name="lastName" required
+                [disabled]="isAdmin ? true : false"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
           </div>
-          <!-- </div> -->
 
           <!-- <div>
           <label class="block text-sm font-medium text-gray-700">School/Organization *</label>
@@ -273,19 +281,23 @@
 
           <div>
             <label class="block text-sm font-medium text-gray-700">Name of Activity *</label>
-            <input type="text" [(ngModel)]="hours.activityName" name="activityName" required [disabled]="isAdmin ? true : false"
+            <input type="text" [(ngModel)]="hours.activityName" name="activityName" required
+              [disabled]="isAdmin ? true : false"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700">Date of Service *</label>
-              <input type="date" [(ngModel)]="hours.serviceDate" name="serviceDate" [max]="today" required [disabled]="isAdmin ? true : false"
+              <input type="date" [(ngModel)]="hours.serviceDate" name="serviceDate" [max]="today" required
+                [disabled]="isAdmin ? true : false"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
+
+
             <div>
               <label class="block text-sm font-medium text-gray-700">Number of Hours *</label>
-              <input type="number" [(ngModel)]="hours.hours" name="hours" step="0.1" min="0.1" required 
+              <input type="number" [(ngModel)]="hours.hours" name="hours" step="0.1" min="0.1" required
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
           </div>
@@ -300,7 +312,8 @@
 
           <div>
             <label class="block text-sm font-medium text-gray-700">Activity Description *</label>
-            <textarea [(ngModel)]="hours.description" name="description" rows="3" required [disabled]="isAdmin ? true : false"
+            <textarea [(ngModel)]="hours.description" name="description" rows="3" required
+              [disabled]="isAdmin ? true : false"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
 
@@ -321,6 +334,12 @@
             <!-- {{fileBaseUrl + '/uploads/proof/'+ hours.proofOfService}} -->
             <img [src]="fileBaseUrl + '/uploads/proof/' + hours.proofOfService"
               class="max-h-64 w-full object-contain border rounded-lg shadow" alt="Proof Image" />
+
+            <!-- Download Button (Top Right) -->
+            <a style="cursor: pointer;" *ngIf="isAdmin" (click)="downloadProofOfImg(fileBaseUrl + '/uploads/proof/' + hours.proofOfService)"
+              class="absolute top-2 right-2 bg-white bg-opacity-80 hover:bg-opacity-100 p-1 rounded-full shadow cursor-pointer">
+              <i class="fa-solid fa-download"></i>
+            </a>
           </div>
 
           <div *ngIf="!isAdmin">
@@ -341,22 +360,21 @@
             <div class="flex justify-end space-x-3 pt-4">
               <button type="button" (click)="hideSubmitHoursModal()"
                 class=" text-white submin-cancel-btn py-2 px-4 rounded-md transition duration-200">Cancel</button>
-                <button type="submit" *ngIf="!path"
-                class="text-white py-2 px-4 rounded-md transition duration-200 submin-hrs-btn">Submit
-                Hours</button>
+              <button type="submit" *ngIf="!path"
+                class="text-white py-2 px-4 rounded-md transition duration-200 submin-hrs-btn">Submit</button>
               <button type="button" *ngIf="path" (click)="updateHours()"
                 class="text-white py-2 px-4 rounded-md transition duration-200 submin-hrs-btn">Update
                 Hours</button>
-              </div>
             </div>
-            <div *ngIf="isAdmin">
-              <div class="flex justify-end space-x-3 pt-4">
+          </div>
+          <div *ngIf="isAdmin">
+            <div class="flex justify-end space-x-3 pt-4">
               <button type="button" (click)="hideSubmitHoursModal()"
                 class=" text-white submin-cancel-btn py-2 px-4 rounded-md transition duration-200">Cancel</button>
               <button type="button" (click)="adminUpdateHours(hours.id)"
-                class=" text-white submin-cancel-btn py-2 px-4 rounded-md transition duration-200">Update Hours</button>
+                class=" text-white submin-cancel-btn py-2 px-4 rounded-md transition duration-200">Update</button>
               <button type="button" (click)="rejectHours(hours.id); hideSubmitHoursModal()"
-                class=" text-white submin-cancel-btn py-2 px-4 rounded-md transition duration-200">Rejected</button>
+                class=" text-white submin-cancel-btn py-2 px-4 rounded-md transition duration-200">Reject</button>
               <button type="submit" (click)="approveHours(hours.id); hideSubmitHoursModal()"
                 class="text-white py-2 px-4 rounded-md transition duration-200 submin-hrs-btn">Approve</button>
             </div>
@@ -507,7 +525,8 @@
           <!-- 🔥 Loop hours -->
           <tr *ngFor="let entry of pendingHours | searchFilter: searchType : searchText">
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ entry.fullName }}<br>
+              {{ entry.firstName }} {{entry.lastName}}
+              <br>
               <span class="text-xs text-gray-500">{{ entry.volunteerId.email }}</span>
             </td>
             <!-- {{entry | json}} -->
@@ -517,7 +536,7 @@
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ entry.serviceDate | date: 'shortDate' }}
+              {{ entry.serviceDate | date: 'MM/dd/yyyy' }}
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

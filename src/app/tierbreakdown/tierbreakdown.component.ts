@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { SharedService } from '../Service/shared.service';
 import { ApiService } from '../Service/api.service';
@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-tierbreakdown',
   standalone: true,
-  imports: [NgIf, NgFor],
+  imports: [NgIf, NgFor, DatePipe],
   templateUrl: './tierbreakdown.component.html',
   styleUrl: './tierbreakdown.component.scss'
 })

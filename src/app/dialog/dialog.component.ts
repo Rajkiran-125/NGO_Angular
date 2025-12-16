@@ -37,10 +37,10 @@ import { environment } from '../../environments/environment';
   styleUrl: './dialog.component.scss'
 })
 export class DialogComponent {
-  
+
   badge: any;
   type: any;
-  
+
   fromDate: Date;
   toDate: Date;
   pdfExportData: any;
@@ -51,11 +51,11 @@ export class DialogComponent {
   hourRejectReason: string = '';
   proofBaseUrl = environment.fileBaseUrl;
   selectedTab = 0; // default: Single Date
-  tierContent:any;
-  unlockedTier:any;
-  fullName:any;
-  tierMessage:any;
-  
+  tierContent: any;
+  unlockedTier: any;
+  fullName: any;
+  tierMessage: any;
+
   constructor(
     public dialogRef: MatDialogRef<DialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -63,19 +63,22 @@ export class DialogComponent {
     private api: ApiService,
     private toster: TosterService,
     private cdr: ChangeDetectorRef,
-  ) { }
+  ) {
+    this.isAdmin = this.sharedService.isAdmin$;
+   }
 
   ngOnInit(): void {
 
-    this.type = this.data.type;
+    this.isAdmin = localStorage.getItem('user') == 'admin' ? true : false;
 
+    this.type = this.data.type;
     if (this.data.type == 'exportDate') {
       this.badge = this.data.badge;
       this.type = this.data.type;
       this.isAdmin = this.data?.isAdmin;
       this.fullName = this.data?.fullName;
     }
-    if(this.type == 'badge'){
+    if (this.type == 'badge') {
       this.badge = this.data.badge;
       this.tierMessage = this.data.tierMessage;
     }
@@ -84,8 +87,8 @@ export class DialogComponent {
       this.proofImageUrl = this.proofBaseUrl + '/uploads/proof/' + this.data.proof;
       console.log('this.proofImageUrl: >> ', this.proofImageUrl)
     }
-    if(this.type == 'newTier'){
-      this.tierContent = this.data.tierContent; 
+    if (this.type == 'newTier') {
+      this.tierContent = this.data.tierContent;
       this.unlockedTier = this.data.unlockedTier;
     }
   }
@@ -101,17 +104,17 @@ export class DialogComponent {
     this.dialogRef.close(returnData);
   }
 
-  viewBadge(badge){
+  viewBadge(badge) {
 
     let badgePath;
 
-    if(badge == 'Kindness Ambassador'){
+    if (badge == 'Kindness Ambassador') {
       badgePath = `assets/Image/badge/kindness_Ambassador.png`;
-    }else if(badge == 'Change Catalyst'){
+    } else if (badge == 'Change Catalyst') {
       badgePath = `assets/Image/badge/Change_Catalyst.png`;
-    }else if(badge == 'Service Champion'){
+    } else if (badge == 'Service Champion') {
       badgePath = `assets/Image/badge/Service_Champion.png`;
-    }else if(badge == 'Legacy Leader'){
+    } else if (badge == 'Legacy Leader') {
       badgePath = `assets/Image/badge/Lagacy_Leader.jfif`;
     }
 
@@ -134,6 +137,27 @@ export class DialogComponent {
       link.click();
       document.body.removeChild(link);
     }, 1000);
+  }
+
+  downloadProofOfImg(imgUrl: string) {
+    fetch(imgUrl, { mode: 'cors' })
+      .then(response => response.blob())
+      .then(blob => {
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+
+        link.download = `ProofOfImage.png`;
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        window.URL.revokeObjectURL(blobUrl);
+      })
+      .catch(err => {
+        console.error('Download error:', err);
+      });
   }
 
   formatDate(date: Date) {
@@ -243,7 +267,7 @@ export class DialogComponent {
     });
   }
 
-  submitHourReason(){
+  submitHourReason() {
     this.dialogRef.close(this.hourRejectReason);
   }
 }

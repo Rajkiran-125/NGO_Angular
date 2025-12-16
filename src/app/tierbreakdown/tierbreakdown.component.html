@@ -81,7 +81,7 @@
           <div *ngFor="let volunteer of volunteersData"
             class="ambassador-item" style="cursor: pointer;"
             (click)="getVolunteerDetails(volunteer.userId)">
-            {{ volunteer.fullName }}
+            {{ volunteer.email }}
           </div>
         </div>
 
@@ -111,10 +111,12 @@
         </div>
 
         <div class="profile-info">
+          <p><strong>First Name:</strong> {{volunteerDetails?.firstName}}</p>
+          <p><strong>Last Name:</strong> {{volunteerDetails?.lastName}}</p>
           <p><strong>Affiliation:</strong> {{volunteerDetails?.schoolOrganization}}</p>
-          <p><strong>Date of Birth:</strong> {{volunteerDetails?.dateOfBirth}}</p>
+          <p><strong>Date of Birth:</strong> {{volunteerDetails?.dateOfBirth | date:'MM/dd/yyyy'}}</p>
           <p><strong>Location:</strong> 
-            {{volunteerDetails?.location?.state}} {{volunteerDetails?.location?.country}}
+            {{volunteerDetails?.location?.state}}, {{volunteerDetails?.location?.country}}
           </p>
           <p><strong>Phone Number:</strong> {{volunteerDetails?.phoneNumber}}</p>
           <p><strong>Email:</strong> {{volunteerDetails?.email}}</p>
