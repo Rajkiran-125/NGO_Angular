@@ -23,7 +23,7 @@ export class AuthenticationComponent {
   loginPage: boolean = true;
   signUpPage: boolean = false;
   authPage: boolean = true;
-  profileUploadPic:File | null = null;
+  profileUploadPic: File | null = null;
   previewUrl: string | ArrayBuffer | null = null;
   changePassword: boolean = false;
   // uploadPic:boolean = false;
@@ -48,31 +48,18 @@ export class AuthenticationComponent {
     });
 
 
-    // this.signUpForm = this.fb.group({
-    //   fullName: ['', Validators.required],
-    //   // lastName: ['', Validators.required],
-    //   email: ['', Validators.required],
-    //   userName: ['', Validators.required],
-    //   password: ['', Validators.required],
-    //   schoolOrOrganization: ['', Validators.required],
-    //   dob: ['', Validators.required],
-    //   phoneNumber: ['', Validators.required],
-    //   state: ['', Validators.required],
-    //   country: ['', Validators.required],
-    //   refCode: ['', Validators.required]
-    // });
-
     this.signUpForm = this.fb.group({
-      fullName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      firstName: ['', Validators.required],//
+      lastName: ['', Validators.required],//
+      email: ['', [Validators.required, Validators.email]],//
       // userName: ['', Validators.required],
-      password: ['', Validators.required],
-      schoolOrOrganization: ['', Validators.required],
-      dob: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
+      password: ['', Validators.required],//
+      schoolOrOrganization: ['', Validators.required],//
+      dob: ['', Validators.required],//
+      phoneNumber: ['', Validators.required],//
 
-      state: ['', Validators.required],
-      country: ['', Validators.required],
+      state: ['', Validators.required],//
+      country: ['', Validators.required],//
 
       // refCode: ['', Validators.required],
       interests: [''],
@@ -201,57 +188,56 @@ export class AuthenticationComponent {
   // }
 
   signUp() {
-  if (this.signUpForm.invalid) {
-    this.toster.show('error', 'Please fill all required fields.');
-    return;
-  }
-
-  this.loader = true;
-
-  const formData = new FormData();
-
-  formData.append("fullName", this.signUpForm.value.fullName);
-  formData.append("email", this.signUpForm.value.email);
-  formData.append("password", this.signUpForm.value.password);
-  formData.append("schoolOrganization", this.signUpForm.value.schoolOrOrganization);
-  formData.append("dateOfBirth", this.signUpForm.value.dob);
-  formData.append("phoneNumber", this.signUpForm.value.phoneNumber);
-
-  // 👉 Nested location object
-  formData.append("state", this.signUpForm.value.state);
-  formData.append("country", this.signUpForm.value.country);
-
-  // 👉 Causes of interest (array or comma-separated)
-  if (Array.isArray(this.signUpForm.value.interests)) {
-    this.signUpForm.value.interests.forEach((item: string, index: number) => {
-      formData.append(`causesOfInterest[${index}]`, item);
-    });
-  } else {
-    formData.append("causesOfInterest", this.signUpForm.value.interests);
-  }
-
-  formData.append("referredBy", "");
-  
-  // 👉 Profile picture (File)
-  if (this.profileUploadPic) {
-    formData.append("profilePicture", this.profileUploadPic);
-  }
-
-  this.api.post('auth/register', formData).subscribe({
-    next: (res) => {
-      this.loader = false;
-      this.toster.show('success', 'Account created successfully!');
-      this.router.navigate(['/login']);
-      this.loginPage = true;
-      this.signUpPage = false;
-    },
-    error: (err) => {
-      this.loader = false;
-      this.toster.show('error', err.error?.message || 'Signup failed');
-      console.error(err);
+    console.log('SignUPForm >> ',this.signUpForm)
+    if (this.signUpForm.invalid) {
+      this.toster.show('error', 'Please fill all required fields.');
+      return;
     }
-  });
-}
+
+    this.loader = true;
+
+    const formData = new FormData();
+
+    formData.append("firstName", this.signUpForm.value.firstName);
+    formData.append("lastName", this.signUpForm.value.lastName);
+    formData.append("email", this.signUpForm.value.email);
+    formData.append("password", this.signUpForm.value.password);
+    formData.append("schoolOrganization", this.signUpForm.value.schoolOrOrganization);
+    formData.append("dateOfBirth", this.signUpForm.value.dob);
+    formData.append("phoneNumber", this.signUpForm.value.phoneNumber);
+
+    formData.append("state", this.signUpForm.value.state);
+    formData.append("country", this.signUpForm.value.country);
+
+    if (Array.isArray(this.signUpForm.value.interests)) {
+      this.signUpForm.value.interests.forEach((item: string, index: number) => {
+        formData.append(`causesOfInterest[${index}]`, item);
+      });
+    } else {
+      formData.append("causesOfInterest", this.signUpForm.value.interests);
+    }
+
+    formData.append("referredBy", "");
+
+    if (this.profileUploadPic) {
+      formData.append("profilePicture", this.profileUploadPic);
+    }
+
+    this.api.post('auth/register', formData).subscribe({
+      next: (res) => {
+        this.loader = false;
+        this.toster.show('success', 'Account created successfully!');
+        this.router.navigate(['/login']);
+        this.loginPage = true;
+        this.signUpPage = false;
+      },
+      error: (err) => {
+        this.loader = false;
+        this.toster.show('error', err.error?.message || 'Signup failed');
+        console.error(err);
+      }
+    });
+  }
 
 
 

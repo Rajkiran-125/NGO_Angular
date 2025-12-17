@@ -65,7 +65,7 @@ export class DialogComponent {
     private cdr: ChangeDetectorRef,
   ) {
     this.isAdmin = this.sharedService.isAdmin$;
-   }
+  }
 
   ngOnInit(): void {
 
@@ -125,7 +125,16 @@ export class DialogComponent {
 
   downloadBadge(badgeName: string) {
     // Encode and build path
-    const badgePath = `assets/Image/badge/kindness_Ambassador.png`;
+    let badgePath = `assets/Image/badge/kindness_Ambassador.png`;
+    if (badgeName == 'Kindness Ambassador') {
+      badgePath = `assets/Image/badge/kindness_Ambassador.png`;
+    } else if (badgeName == 'Change Catalyst') {
+      badgePath = `assets/Image/badge/Change_Catalyst.png`;
+    } else if (badgeName == 'Service Champion') {
+      badgePath = `assets/Image/badge/Service_Champion.png`;
+    } else if (badgeName == 'Legacy Leader') {
+      badgePath = `assets/Image/badge/Lagacy_Leader.jfif`;
+    }
 
     // const newTab = window.open(badgePath, '_blank');
 
@@ -137,6 +146,27 @@ export class DialogComponent {
       link.click();
       document.body.removeChild(link);
     }, 1000);
+  }
+
+  downloadMediaKit(badge: string) {
+    const fileMap: any = {
+      'Kindness Ambassador': 'kindness_Ambassador.pdf',
+      'Change Catalyst': 'Change_Catalyst.pdf',
+      'Service Champion': 'Service_Champion.pdf',
+      'Legacy Leader': 'Legacy_Leader.pdf'   // <== FIXED SPELLING
+    };
+
+    const fileName = fileMap[badge];
+    if (!fileName) return;
+
+    const badgePath = `assets/Image/mediaKit/${fileName}`;
+
+    const link = document.createElement('a');
+    link.href = badgePath;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   downloadProofOfImg(imgUrl: string) {

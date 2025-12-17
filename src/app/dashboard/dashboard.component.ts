@@ -508,15 +508,6 @@ export class DashboardComponent {
     this.toster.show('info', `Rejection Reason: ${reason}`);
   }
 
-
-
-
-
-
-
-
-
-
   // Modal Functions
   hideSubmitHoursModal() { this.showSubmitModal = false; this.hours = {}; this.proofFile = null; }
 
@@ -782,15 +773,25 @@ export class DashboardComponent {
 
   adminUpdateHours(id) {
     try {
+
       const headers = new HttpHeaders({
         Authorization: `Bearer ${this.authToken}`,
         'Content-Type': 'application/json'
       });
+
+      const data = {
+        firstName: this.hours.firstName,
+        lastName: this.hours.lastName,
+        activityName: this.hours.activityName,
+        serviceDate: this.hours.serviceDate,
+        serviceType: this.hours.serviceType,
+        hours: this.hours.hours,
+        description: this.hours.description,
+        isHistorical: this.hours.isHistorical
+      }
+
       console.log('updated hours: >>> ', this.hours.hours);
-      this.api.put(`admin/edit-hours/${id}`,
-        { "hours": this.hours.hours },
-        { headers }
-      ).subscribe((res) => {
+      this.api.put(`admin/edit-hours/${id}`, data, { headers }).subscribe((res) => {
         this.toster.show('info', 'Hours updated!');
         this.loadAdminPanel();
       });
