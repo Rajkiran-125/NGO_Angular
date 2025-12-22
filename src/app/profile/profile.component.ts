@@ -217,6 +217,7 @@ export class ProfileComponent {
     formData.append("schoolOrganization", this.updateProfile.value.organization);
     formData.append("state", this.updateProfile.value.state);
     formData.append("country", this.updateProfile.value.country);
+    formData.append("causesOfInterest", this.updateProfile.value.interests);
     
     // ⬇️ Append profile picture file (NOT Base64)
     if (this.profileUploadPic) {
