@@ -21,27 +21,39 @@ export class TierbreakdownComponent {
     "Random Name #21", "Random Name #22", "Random Name #23", "Random Name #24", "Random Name #25"
   ];
 
-  tiers:any;
-  volunteersData:any;
-  activeTier:any;
-  selectTier:boolean = false;
-  volunteerDetails:any;
-  volunteerCard:boolean = false;
+  tiers: any;
+  volunteersData: any;
+  activeTier: any;
+  selectTier: boolean = false;
+  volunteerDetails: any;
+  volunteerCard: boolean = false;
   imgUrl = environment.fileBaseUrl;
 
+  pageSize = 10;
+  currentPage = 1;
+  totalPages = 0;
+
+  paginatedVolunteers: any[] = [];
+
   constructor(
-      private sharedService: SharedService,
-      private api: ApiService,
-      private toster: TosterService
-    ){}
+    private sharedService: SharedService,
+    private api: ApiService,
+    private toster: TosterService
+  ) { }
 
 
-  ngOnInit(){
+  ngOnInit() {
     this.loadTier();
   }
 
-  loadTier(){
+  loadTier() {
     try {
+
+      
+
+      // after API data is assigned to volunteersData
+      // this.updatePagination();
+
       const authToken = localStorage.getItem("authToken");
       let token = {
         headers: {
@@ -59,7 +71,7 @@ export class TierbreakdownComponent {
     }
   }
 
-  loadvolunteerData(badge){
+  loadvolunteerData(badge) {
     try {
       this.volunteerCard = false;
       this.activeTier = badge;
@@ -77,15 +89,17 @@ export class TierbreakdownComponent {
         console.log(res);
         this.selectTier = true;
         this.volunteersData = res.data;
+        this.currentPage = 1;
+        this.updatePagination();
       });
-      } catch (err) {
+    } catch (err) {
       // this.loader = false;
       this.toster.show("error", err.message);
       console.log(err);
     }
   }
 
-  getVolunteerDetails(id){
+  getVolunteerDetails(id) {
     try {
       console.log(id)
       const authToken = localStorage.getItem("authToken");
@@ -108,4 +122,29 @@ export class TierbreakdownComponent {
       console.log(err);
     }
   }
+
+
+  updatePagination() {
+    this.totalPages = Math.ceil(this.volunteersData.length / this.pageSize);
+
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    this.paginatedVolunteers = this.volunteersData.slice(startIndex, endIndex);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePagination();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagination();
+    }
+  }
+
 }

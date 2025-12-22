@@ -76,19 +76,38 @@
     <div class="list-section">
       <h3 class="list-title">{{activeTier}}</h3>
 
-      <div class="" *ngIf="selectTier">
+      <!-- <div class="" *ngIf="selectTier">
         <div class="ambassadors-grid">
           <div *ngFor="let volunteer of volunteersData"
             class="ambassador-item" style="cursor: pointer;"
             (click)="getVolunteerDetails(volunteer.userId)">
-            {{ volunteer.email }}
+            {{ volunteer.firstName }} {{ volunteer.lastName }}
+          </div>
+        </div>
+      </div> -->
+
+      <div *ngIf="selectTier">
+
+        <div class="ambassadors-grid">
+          <div *ngFor="let volunteer of paginatedVolunteers" class="ambassador-item" style="cursor: pointer;"
+            (click)="getVolunteerDetails(volunteer.userId)">
+            {{ volunteer.firstName || 'User' }} {{ volunteer.lastName || 'Name' }}
           </div>
         </div>
 
-        <!-- <div class="pagination">
-          <span>< 1 2 3 4 5 ></span>
-          <small>Page 1 out of 5</small>
-        </div> -->
+        <!-- Pagination -->
+        <div class="pagination" *ngIf="paginatedVolunteers.length > 10">
+          <button (click)="prevPage()" [disabled]="currentPage === 1">
+            ‹ Prev
+          </button>
+
+          <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+          <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+            Next ›
+          </button>
+        </div>
+
       </div>
 
       <div class="ambassadors-grid" *ngIf="!selectTier">
@@ -115,7 +134,7 @@
           <p><strong>Last Name:</strong> {{volunteerDetails?.lastName}}</p>
           <p><strong>Affiliation:</strong> {{volunteerDetails?.schoolOrganization}}</p>
           <p><strong>Date of Birth:</strong> {{volunteerDetails?.dateOfBirth | date:'MM/dd/yyyy'}}</p>
-          <p><strong>Location:</strong> 
+          <p><strong>Location:</strong>
             {{volunteerDetails?.location?.state}}, {{volunteerDetails?.location?.country}}
           </p>
           <p><strong>Phone Number:</strong> {{volunteerDetails?.phoneNumber}}</p>

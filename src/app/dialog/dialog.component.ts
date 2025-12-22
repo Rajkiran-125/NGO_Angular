@@ -18,6 +18,13 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { environment } from '../../environments/environment';
 
+
+
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { MatNativeDateModule } from '@angular/material/core';
+
 @Component({
   selector: 'app-dialog',
   standalone: true,
@@ -30,7 +37,12 @@ import { environment } from '../../environments/environment';
     NgIf,
     NgFor,
     DatePipe,
-    MatTabsModule
+    MatTabsModule,
+
+    MatAutocompleteModule,
+    MatOptionModule,
+    MatSelectModule,
+    MatNativeDateModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dialog.component.html',
@@ -56,6 +68,12 @@ export class DialogComponent {
   fullName: any;
   tierMessage: any;
 
+  volunteerName = '';
+  serviceType = '';
+
+  volunteerSuggestions: any[] = [];
+  serviceTypes: any[] = [];
+
   constructor(
     public dialogRef: MatDialogRef<DialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -77,6 +95,7 @@ export class DialogComponent {
       this.type = this.data.type;
       this.isAdmin = this.data?.isAdmin;
       this.fullName = this.data?.fullName;
+      this.getServiceTypes();
     }
     if (this.type == 'badge') {
       this.badge = this.data.badge;
@@ -94,11 +113,10 @@ export class DialogComponent {
   }
 
   closeDialog() {
-    // You can send any data back — for example, both dates
     const returnData = {
       fromDate: this.fromDate,
       toDate: this.toDate,
-      type: this.data.type // optional, if you passed 'type' in
+      type: this.data.type
     };
 
     this.dialogRef.close(returnData);
@@ -150,7 +168,7 @@ export class DialogComponent {
 
   downloadMediaKit(badge: string) {
     const fileMap: any = {
-      'Kindness Ambassador': 'kindness_Ambassador.pdf',
+      'Kindness Ambassador': 'K indness_Ambassador.pdf',
       'Change Catalyst': 'Change_Catalyst.pdf',
       'Service Champion': 'Service_Champion.pdf',
       'Legacy Leader': 'Legacy_Leader.pdf'   // <== FIXED SPELLING
@@ -198,10 +216,6 @@ export class DialogComponent {
   }
 
   exportData(type) {
-
-    console.log('fromDate', this.fromDate);
-    console.log('toDate', this.toDate);
-
     let obj: any = {};
 
     if (type === 'submitSingle') {
@@ -217,45 +231,28 @@ export class DialogComponent {
         toDate: this.formatDate(this.toDate)
       };
     }
-
-    console.log("Final OBJ:", obj);
-
     const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
-    // this.api.get(`hours/export?format=json`, { headers }).subscribe(res => {
     this.api.post(`volunteers/hours/export`, obj, { headers }).subscribe(res => {
       console.log(res);
 
       this.pdfExportData = res;
-
-      // 2. Force Angular to re-render DOM
       this.cdr.detectChanges();
 
-      // 3. Wait for DOM + images + table to fully render
       requestAnimationFrame(() => {
 
         if (this.isAdmin) {
 
           const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
-          // this.api.get(`hours/export?format=json`, { headers }).subscribe(res => {
           this.api.post(`volunteers/hours/export`, obj, { headers }).subscribe(res => {
             console.log(res);
 
             if (res.records.length > 0) {
-
-
-              // 1. Convert JSON to worksheet
               const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(res.records);
-
-              // 2. Create a workbook
               const workbook: XLSX.WorkBook = {
                 Sheets: { 'Volunteer Hours': worksheet },
                 SheetNames: ['Volunteer Hours']
               };
-
-              // 3. Generate Excel file buffer
               const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-
-              // 4. Save as file
               const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
               saveAs(data, `volunteer_hours_${new Date().toISOString().slice(0, 10)
                 }.xlsx`);
@@ -267,14 +264,11 @@ export class DialogComponent {
           });
         }
         else {
-
           const element = document.getElementById('pdfContent');
-
-          console.log("PDF Content:", element?.innerHTML); // Debugging
+          console.log("PDF Content:", element?.innerHTML);
 
           if (!element) return;
 
-          // 4. PDF Options
           const opt = {
             margin: 0.5,
             filename: 'Volunteer_Report.pdf',
@@ -283,19 +277,224 @@ export class DialogComponent {
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
           };
 
-          // 5. Generate PDF
           (html2pdf as any)()
             .from(element)
             .set(opt)
             .save();
-          // this.toster.show('success', 'File exported');
         }
 
         this.dialogRef.close();
-
       });
     });
   }
+  /* ================== VOLUNTEER SEARCH ================== */
+  searchVolunteer() {
+    if (!this.volunteerName || this.volunteerName.length < 2) {
+      this.volunteerSuggestions = [];
+      return;
+    }
+
+    const headers = {
+      headers: { Authorization: `Bearer ${this.authToken}` }
+    };
+
+    this.api
+      .get(`admin/users/search?query=${encodeURIComponent(this.volunteerName)}`, headers)
+      .subscribe(res => {
+        this.volunteerSuggestions = res?.users || [];
+      });
+  }
+
+  selectVolunteer(name: string) {
+    this.volunteerName = name;
+    this.volunteerSuggestions = [];
+  }
+
+  /* ================== SERVICE TYPES ================== */
+  getServiceTypes() {
+    const headers = {
+      headers: { Authorization: `Bearer ${this.authToken}` }
+    };
+
+    this.api.get('volunteers/service-types', headers).subscribe(res => {
+      this.serviceTypes = res?.data || [];
+    });
+  }
+
+  /* ================== SUBMIT ================== */
+  // submit(type: 'single' | 'range') {
+
+  //   let payload: any = {};
+
+  //   if (this.volunteerName) {
+  //     payload.volunteerName = this.volunteerName;
+  //   }
+
+  //   if (this.serviceType) {
+  //     payload.serviceType = this.serviceType;
+  //   }
+
+  //   if (type === 'single') {
+  //     payload.fromDate = this.formatDate(this.fromDate);
+  //   }
+
+  //   if (type === 'range') {
+  //     payload.fromDate = this.formatDate(this.fromDate);
+  //     payload.toDate = this.formatDate(this.toDate);
+  //   }
+
+  //   const headers = new HttpHeaders({
+  //     Authorization: `Bearer ${this.authToken}`
+  //   });
+  //   // const headers = {
+  //   //   headers: { Authorization: `Bearer ${this.authToken}` }
+  //   // };
+
+  //   this.api.post('admin/volunteer-report', payload, { headers })
+  //     .subscribe(res => {
+
+  //       if (!res?.data || res.data.length === 0) {
+  //         this.toster.show('error', 'Data not found');
+  //         return;
+  //       }
+
+  //       // ===== EXPORT EXCEL =====
+  //       const worksheet = XLSX.utils.json_to_sheet(res.data);
+  //       const workbook = {
+  //         Sheets: { 'Volunteer Report': worksheet },
+  //         SheetNames: ['Volunteer Report']
+  //       };
+
+  //       const excelBuffer = XLSX.write(workbook, {
+  //         bookType: 'xlsx',
+  //         type: 'array'
+  //       });
+
+  //       const data = new Blob([excelBuffer], {
+  //         type: 'application/octet-stream'
+  //       });
+
+  //       saveAs(
+  //         data,
+  //         `Volunteer_Report_${new Date().toISOString().slice(0, 10)}.xlsx`
+  //       );
+
+  //       this.toster.show('success', 'Report exported');
+  //       this.dialogRef.close();
+  //     });
+  // }
+
+  submit(type: 'single' | 'range') {
+
+    let payload: any = {};
+
+    // ===== Filters =====
+    // if (this.volunteerName) {
+    //   // if using object-based autocomplete
+    //   payload.volunteerName =
+    //     typeof this.volunteerName === 'string'
+    //       ? this.volunteerName
+    //       : `${this.volunteerName.profile.firstName} ${this.volunteerName.profile.lastName}`;
+    // }
+
+    if (this.volunteerName) {
+      payload.volunteerName = this.volunteerName;
+    }
+
+    if (this.serviceType) {
+      payload.serviceType = this.serviceType;
+    }
+
+    // ===== Dates =====
+    if (type === 'single') {
+      payload.fromDate = this.formatDate(this.fromDate);
+    }
+
+    if (type === 'range') {
+      payload.fromDate = this.formatDate(this.fromDate);
+      payload.toDate = this.formatDate(this.toDate);
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.authToken}`
+    });
+
+    let endPoint = this.isAdmin ? 'admin/volunteer-report' : 'volunteers/hours/export'
+
+    this.api.post(endPoint, payload, { headers })
+      .subscribe(res => {
+
+        if (this.isAdmin ? !res?.data : !res.records || this.isAdmin ? res.data.length === 0 : res.records.length === 0) {
+          this.toster.show('error', 'Data not found');
+          return;
+        }
+
+        /* =====================================================
+           ADMIN → EXCEL DOWNLOAD
+        ====================================================== */
+        if (this.isAdmin) {
+
+          const worksheet: XLSX.WorkSheet =
+            XLSX.utils.json_to_sheet(res.data);
+
+          const workbook: XLSX.WorkBook = {
+            Sheets: { 'Volunteer Report': worksheet },
+            SheetNames: ['Volunteer Report']
+          };
+
+          const excelBuffer: any =
+            XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+          const file = new Blob([excelBuffer], {
+            type: 'application/octet-stream'
+          });
+
+          saveAs(
+            file,
+            `Volunteer_Report_${new Date().toISOString().slice(0, 10)}.xlsx`
+          );
+
+          this.toster.show('success', 'Excel exported');
+          this.dialogRef.close();
+          return;
+        }
+
+        /* =====================================================
+           NON-ADMIN → PDF DOWNLOAD (same as exportData)
+        ====================================================== */
+        this.pdfExportData = res;
+        this.cdr.detectChanges();
+
+        requestAnimationFrame(() => {
+          const element = document.getElementById('pdfContent');
+
+          if (!element) {
+            this.toster.show('error', 'PDF content not found');
+            return;
+          }
+
+          const opt = {
+            margin: 0.5,
+            filename: 'Volunteer_Report.pdf',
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+          };
+
+          (html2pdf as any)()
+            .from(element)
+            .set(opt)
+            .save()
+            .then(() => {
+              this.toster.show('success', 'PDF downloaded');
+              this.dialogRef.close();
+            });
+        });
+
+      });
+  }
+
+
 
   submitHourReason() {
     this.dialogRef.close(this.hourRejectReason);

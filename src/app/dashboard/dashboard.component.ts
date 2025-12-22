@@ -513,35 +513,6 @@ export class DashboardComponent {
 
   onFileSelected(event: any) { this.proofFile = event.target.files[0]; console.log(this.proofFile) }
 
-  // Submit Hours
-  // handleSubmitHours() {
-  //   const formData = new FormData();
-  //   Object.keys(this.hours).forEach(key => formData.append(key, this.hours[key]));
-  //   if (this.proofFile) formData.append('proofOfService', this.proofFile);
-
-  //   const authToken = localStorage.getItem("authToken");
-  //   let token = {
-  //     headers: {
-  //       Authorization: `Bearer ${authToken}`
-  //     }
-  //   }
-
-  //   this.api.post(`hours/submit`, formData, token)
-  //     .subscribe({
-  //       next: () => {
-  //         // this.showMessage('Hours submitted successfully!', 'success');
-  //         this.hideSubmitHoursModal();
-  //         this.loadAdminPanel();
-  //         this.loadDashboardData();
-  //         this.toster.show('success', 'Hours submitted')
-  //       },
-  //       error: (err) => {
-  //         this.toster.show('error', err.error?.message || 'Failed to submit hours');
-  //         // this.showMessage(err.error?.message || 'Failed to submit hours', 'error');
-  //       }
-  //     });
-  // }
-
   handleSubmitHours() {
 
     // Required field validation (manual)
@@ -629,20 +600,6 @@ export class DashboardComponent {
       this.loadAdminCards();
     });
   }
-
-  // rejectHours(id: string) {
-  //   const reason = prompt('Please provide a reason for rejection (optional):');
-  //   const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}`, 'Content-Type': 'application/json' });
-  //   this.api.put(`admin/review-hours/${id}`, { status: 'rejected', rejectionReason: reason }, { headers }).subscribe((res) => {
-  //     console.log(res)
-  //     this.toster.show('info', 'Hours rejected!');
-  //     this.loadAdminPanel();
-  //     this.calculateProgress();
-  //     this.prepareStatCards();
-  //     this.loadAdminPanel();
-  //     this.loadAdminCards();
-  //   });
-  // }
 
   rejectHours(id: string) {
     const type = 'rejectHours'
@@ -818,23 +775,6 @@ export class DashboardComponent {
       console.log(`Dialog result: ${result}`);
     });
   }
-
-
-  // downloadProofOfImg(imgUrl: string) {
-  //   // Encode and build path
-
-  //   // const newTab = window.open(badgePath, '_blank');
-  //   console.log('imgUrl >>>>> ',imgUrl)
-
-  //   setTimeout(() => {
-  //     const link = document.createElement('a');
-  //     link.href = imgUrl;
-  //     link.download = `${this.hours.firstName + this.hours.lastName}_ProofOfImage.png`;
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-  //   }, 1000);
-  // }
 
   downloadProofOfImg(imgUrl: string) {
     fetch(imgUrl, { mode: 'cors' })

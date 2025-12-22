@@ -3,7 +3,7 @@
 </button>
 <div class="congrats-card" *ngIf="type == 'badge'">
 
-  <div class="congrats-content ">
+  <div class="congrats-content">
     <div class="flex justify-center">
       <img src="assets/Image/Congratulations.png" alt="Congratulations" class="congrats-image" />
 
@@ -71,10 +71,9 @@
 </div>
 
 
-<div class="congrats-card" *ngIf="data.type == 'exportDate'">
+<!-- <div class="congrats-card" *ngIf="data.type == 'exportDate'">
   <mat-tab-group [(selectedIndex)]="selectedTab">
 
-    <!-- ==================== TAB 1 → SINGLE DATE ==================== -->
     <mat-tab label="Single Date">
       <div class="congrats-card">
 
@@ -96,7 +95,6 @@
       </div>
     </mat-tab>
 
-    <!-- ==================== TAB 2 → DATE RANGE ==================== -->
     <mat-tab label="Date Range">
       <div class="congrats-card">
 
@@ -120,7 +118,119 @@
           <button mat-raised-button class="action-cancel-btn" (click)="dialogRef.close()">Cancel</button>
 
           <button mat-raised-button class="action-submit-btn" (click)="exportData('submitRange'); showPdf = true; data.type = false;">Submit</button>
-          <!-- <button mat-raised-button (click)="showPdf = true;">Submit</button> -->
+        </div>
+
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div> -->
+<div class="congrats-card" *ngIf="data.type === 'exportDate'">
+
+  <mat-tab-group [(selectedIndex)]="selectedTab">
+
+    <!-- ================= TAB 1 : SINGLE DATE ================= -->
+    <mat-tab label="Single Date">
+      <div class="congrats-card">
+
+        <div *ngIf="isAdmin">
+
+          <!-- Volunteer -->
+          <mat-form-field>
+            <mat-label>Volunteer</mat-label>
+            <input matInput [(ngModel)]="volunteerName" (keyup)="searchVolunteer()" [matAutocomplete]="autoVolunteer">
+          </mat-form-field>
+
+          <mat-autocomplete #autoVolunteer="matAutocomplete" (optionSelected)="selectVolunteer($event.option.value)">
+            <mat-option *ngFor="let v of volunteerSuggestions" [value]="v.profile.firstName + ' ' + v.profile.lastName">
+
+              {{ v.profile.firstName }} {{ v.profile.lastName }}
+            </mat-option>
+
+          </mat-autocomplete>
+
+          <!-- Service Type -->
+          <mat-form-field>
+            <mat-label>Service Type</mat-label>
+            <mat-select [(ngModel)]="serviceType">
+              <mat-option value="">All</mat-option>
+              <mat-option *ngFor="let s of serviceTypes" [value]="s">
+                {{ s }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Date -->
+        <mat-form-field>
+          <mat-label>Date</mat-label>
+          <input matInput [matDatepicker]="singlePicker" [(ngModel)]="fromDate">
+          <mat-datepicker-toggle matSuffix [for]="singlePicker"></mat-datepicker-toggle>
+          <mat-datepicker #singlePicker></mat-datepicker>
+        </mat-form-field>
+
+        <div class="actions">
+          <button mat-raised-button class="action-cancel-btn" (click)="dialogRef.close()">Cancel</button>
+
+          <button mat-raised-button class="action-submit-btn" (click)="submit('single'); showPdf = true; data.type = false;">Submit</button>
+        </div>
+
+      </div>
+    </mat-tab>
+
+    <!-- ================= TAB 2 : DATE RANGE ================= -->
+    <mat-tab label="Date Range">
+      <div class="congrats-card">
+
+        <div *ngIf="isAdmin">
+          <!-- Volunteer -->
+          <mat-form-field>
+            <mat-label>Volunteer</mat-label>
+            <input matInput placeholder="Search volunteer" [(ngModel)]="volunteerName" (keyup)="searchVolunteer()"
+              [matAutocomplete]="autoVolunteerRange">
+          </mat-form-field>
+
+          <mat-autocomplete #autoVolunteerRange="matAutocomplete"
+            (optionSelected)="selectVolunteer($event.option.value)">
+            <mat-option *ngFor="let v of volunteerSuggestions" [value]="v.profile.firstName + ' ' + v.profile.lastName">
+
+              {{ v.profile.firstName }} {{ v.profile.lastName }}
+            </mat-option>
+
+          </mat-autocomplete>
+
+          <!-- Service Type -->
+          <mat-form-field>
+            <mat-label>Service Type</mat-label>
+            <mat-select [(ngModel)]="serviceType">
+              <mat-option value="">All</mat-option>
+              <mat-option *ngFor="let s of serviceTypes" [value]="s">
+                {{ s }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        </div>
+
+        <!-- Date Range -->
+        <mat-form-field>
+          <mat-label>From Date</mat-label>
+          <input matInput [matDatepicker]="fromPicker" [(ngModel)]="fromDate">
+          <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>To Date</mat-label>
+          <input matInput [matDatepicker]="toPicker" [(ngModel)]="toDate">
+          <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toPicker></mat-datepicker>
+        </mat-form-field>
+
+        <div class="actions">
+          <button mat-raised-button class="action-cancel-btn" (click)="dialogRef.close()">Cancel</button>
+
+          <button mat-raised-button class="action-submit-btn" (click)="submit('range'); showPdf = true; data.type = false;">Submit</button>
         </div>
 
       </div>
@@ -217,21 +327,14 @@
   <div class="relative inline-block w-full">
 
     <!-- Download Button (Top Right ON IMAGE) -->
-    <button 
-      *ngIf="proofImageUrl && isAdmin"
-      (click)="downloadProofOfImg(proofImageUrl)"
-      class="absolute top-2 right-2 bg-white bg-opacity-80 hover:bg-opacity-100 p-2 rounded-full shadow cursor-pointer z-10"
-    >
+    <button *ngIf="proofImageUrl && isAdmin" (click)="downloadProofOfImg(proofImageUrl)"
+      class="absolute top-2 right-2 bg-white bg-opacity-80 hover:bg-opacity-100 p-2 rounded-full shadow cursor-pointer z-10">
       <i style="color: #ffff;" class="fa-solid fa-download"></i>
     </button>
 
     <!-- Image -->
-    <img
-      *ngIf="proofImageUrl"
-      [src]="proofImageUrl"
-      class="max-h-96 w-full object-contain border rounded-lg shadow-sm"
-      alt="Proof Image"
-    />
+    <img *ngIf="proofImageUrl" [src]="proofImageUrl" class="max-h-96 w-full object-contain border rounded-lg shadow-sm"
+      alt="Proof Image" />
 
   </div>
 

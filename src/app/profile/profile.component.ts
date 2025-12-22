@@ -145,6 +145,7 @@ export class ProfileComponent {
             interests: user.profile.causesOfInterest?.join(', ') || ''
           });
           this.previewUrl = user.profile.profilePicture;
+          // this.profileUploadPic = user.profile.profilePicture;
 
           console.log('Profile form patched:', this.updateProfile.value);
         },
@@ -208,14 +209,15 @@ export class ProfileComponent {
 
     const formData = new FormData();
 
-    formData.append("fullName", this.updateProfile.value.fullName);
+    formData.append("firstName", this.updateProfile.value.firstName);
+    formData.append("lastName", this.updateProfile.value.lastName);
     // formData.append("email", this.updateProfile.value.email);
     formData.append("phoneNumber", this.updateProfile.value.phoneNumber);
     formData.append("dateOfBirth", this.updateProfile.value.dob);
     formData.append("schoolOrganization", this.updateProfile.value.organization);
     formData.append("state", this.updateProfile.value.state);
     formData.append("country", this.updateProfile.value.country);
-
+    
     // ⬇️ Append profile picture file (NOT Base64)
     if (this.profileUploadPic) {
       formData.append("profilePicture", this.profileUploadPic);

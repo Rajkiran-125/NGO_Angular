@@ -1,34 +1,37 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ApiService } from '../Service/api.service';
 import { NgClass, NgIf } from '@angular/common';
 import { SharedService } from '../Service/shared.service';
 import { LoaderComponent } from '../loader/loader.component';
 import { TosterService } from '../Service/toster.service';
 import { Router } from '@angular/router';
-
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-authentication',
   standalone: true,
   imports: [ReactiveFormsModule, NgIf, LoaderComponent, NgClass],
   templateUrl: './authentication.component.html',
-  styleUrl: './authentication.component.scss'
+  styleUrls: ['./authentication.component.scss'],
 })
-export class AuthenticationComponent {
-
+export class AuthenticationComponent implements OnInit {
   loader: boolean = false;
-  loginForm: any = FormGroup;
-  signUpForm: any = FormGroup;
+  loginForm!: FormGroup;
+  signUpForm!: FormGroup;
   loginPage: boolean = true;
   signUpPage: boolean = false;
   authPage: boolean = true;
   profileUploadPic: File | null = null;
   previewUrl: string | ArrayBuffer | null = null;
   changePassword: boolean = false;
-  // uploadPic:boolean = false;
   showPassword = false;
-
+  url = environment.apiUrl;
 
   constructor(
     private fb: FormBuilder,
@@ -36,59 +39,51 @@ export class AuthenticationComponent {
     private sharedService: SharedService,
     private toster: TosterService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-
     this.checkAuthStatus();
 
     this.loginForm = this.fb.group({
       userName: ['', Validators.required],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
-
 
     this.signUpForm = this.fb.group({
-      firstName: ['', Validators.required],//
-      lastName: ['', Validators.required],//
-      email: ['', [Validators.required, Validators.email]],//
-      // userName: ['', Validators.required],
-      password: ['', Validators.required],//
-      schoolOrOrganization: ['', Validators.required],//
-      dob: ['', Validators.required],//
-      phoneNumber: ['', Validators.required],//
-
-      state: ['', Validators.required],//
-      country: ['', Validators.required],//
-
-      // refCode: ['', Validators.required],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      schoolOrOrganization: ['', Validators.required],
+      dob: ['', Validators.required],
+      phoneNumber: ['', Validators.required],
+      state: ['', Validators.required],
+      country: ['', Validators.required],
       interests: [''],
-      // bio: [''],
-
-      profilePhoto: [null]
+      profilePhoto: [null],
     });
 
+    // this.signInWithGoogle();
+    // Handle Google redirect token
+    this.handleGoogleRedirectToken();
   }
 
-
+  // ===================== LOGIN =====================
   login() {
     const email = this.loginForm.value.userName;
     const password = this.loginForm.value.password;
 
     if (this.loginForm.valid) {
-
       this.loader = true;
 
       this.api.post('auth/login', { email, password }).subscribe({
         next: (res: any) => {
           this.loader = false;
-          console.log(res);
-          this.toster.show("success", "Login successfully")
-          const isAdmin = res.user.role == 'admin' ? true : false;
-
+          this.toster.show('success', 'Login successfully');
+          const isAdmin = res.user.role === 'admin';
           const authToken = res.token;
-          localStorage.setItem("authToken", authToken);
 
+          localStorage.setItem('authToken', authToken);
           this.loginPage = false;
           this.authPage = false;
           this.sharedService.login(authToken, isAdmin);
@@ -98,129 +93,82 @@ export class AuthenticationComponent {
         },
         error: (err) => {
           this.loader = false;
-          console.error('Login failed', err);
-
-          this.toster.show('error', err.error?.message);
-        }
+          this.toster.show('error', err.error?.message || 'Login failed');
+        },
       });
     } else {
-      this.loader = false;
-      console.error('Form Invalid');
-
       this.toster.show('error', 'Form Invalid');
     }
   }
 
+  // ===================== GOOGLE LOGIN =====================
+  signInWithGoogle() {
+    window.location.href = `${this.url}auth/google`;
+  }
 
-  // signUp() {
-  //   try {
-  //     this.loader = true;
-  //     let formData = {
-  //       fullName: this.signUpForm.value.fullName,
-  //       // lastName: this.signUpForm.value.lastName,
-  //       email: this.signUpForm.value.email,
-  //       password: this.signUpForm.value.password,
-  //       schoolOrganization: this.signUpForm.value.schoolOrOrganization,
-  //       dateOfBirth: this.signUpForm.value.dob,
-  //       phoneNumber: this.signUpForm.value.phoneNumber,
-  //       location: {
-  //         state: this.signUpForm.value.state,
-  //         country: this.signUpForm.value.country,
-  //       },
-  //       referredBy: this.signUpForm.value.refCode,
-  //     };
+  handleGoogleRedirectToken() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
 
-  //     this.api.post('auth/register', formData).subscribe(res => {
-  //       this.loader = false;
-  //       console.log(res);
-  //       this.toster.show('success', 'SignUp successfully');
-  //       this.router.navigate(['/login']);
-  //     })
-  //   } catch (err) {
-  //     this.loader = false;
-  //     this.toster.show('error', err.error?.message);
-  //     console.log(err);
-  //   }
-  // }
+    if (token) {
+      this.loader = true;
 
+      localStorage.setItem('authToken', token);
 
-  // signUp() {
-  //   if (this.signUpForm.invalid) {
-  //     this.toster.show('error', 'Please fill all required fields.');
-  //     return;
-  //   }
+      let isAdmin = false;
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        isAdmin = payload.role === 'admin';
+      } catch (e) {
+        console.warn('Failed to decode JWT', e);
+      }
 
-  //   this.loader = true;
+      this.sharedService.login(token, isAdmin);
 
-  //   const formData = {
-  //     fullName: this.signUpForm.value.fullName,//
-  //     email: this.signUpForm.value.email,//
-  //     // userName: this.signUpForm.value.userName,
-  //     password: this.signUpForm.value.password,//
-  //     schoolOrganization: this.signUpForm.value.schoolOrOrganization,//
-  //     dateOfBirth: this.signUpForm.value.dob,//
-  //     phoneNumber: this.signUpForm.value.phoneNumber,//
+      this.loginPage = false;
+      this.authPage = false;
+      this.loader = false;
 
-  //     location: {
-  //       state: this.signUpForm.value.state,
-  //       country: this.signUpForm.value.country
-  //     },
+      this.router.navigate([], { replaceUrl: true, queryParams: {} });
 
-  //     referredBy: "",
-  //     causesOfInterest: this.signUpForm.value.interests, //
-  //     // bio: this.signUpForm.value.bio
-  //     profilePicture: this.profileUploadPic //
-  //   };
+      this.router.navigate(['/home']);
+    }
+  }
 
-  //   this.api.post('auth/register', formData, '').subscribe({
-  //     next: (res) => {
-  //       this.loader = false;
-  //       this.toster.show('success', 'Account created successfully!');
-  //       this.router.navigate(['/login']);
-  //       this.loginPage = true;
-  //     },
-  //     error: (err) => {
-  //       this.loader = false;
-  //       this.toster.show('error', err.error?.message || 'Signup failed');
-  //       console.error(err);
-  //     }
-  //   });
-  // }
-
+  // ===================== SIGNUP =====================
   signUp() {
-    console.log('SignUPForm >> ',this.signUpForm)
     if (this.signUpForm.invalid) {
       this.toster.show('error', 'Please fill all required fields.');
       return;
     }
 
     this.loader = true;
-
     const formData = new FormData();
-
-    formData.append("firstName", this.signUpForm.value.firstName);
-    formData.append("lastName", this.signUpForm.value.lastName);
-    formData.append("email", this.signUpForm.value.email);
-    formData.append("password", this.signUpForm.value.password);
-    formData.append("schoolOrganization", this.signUpForm.value.schoolOrOrganization);
-    formData.append("dateOfBirth", this.signUpForm.value.dob);
-    formData.append("phoneNumber", this.signUpForm.value.phoneNumber);
-
-    formData.append("state", this.signUpForm.value.state);
-    formData.append("country", this.signUpForm.value.country);
+    formData.append('firstName', this.signUpForm.value.firstName);
+    formData.append('lastName', this.signUpForm.value.lastName);
+    formData.append('email', this.signUpForm.value.email);
+    formData.append('password', this.signUpForm.value.password);
+    formData.append(
+      'schoolOrganization',
+      this.signUpForm.value.schoolOrOrganization
+    );
+    formData.append('dateOfBirth', this.signUpForm.value.dob);
+    formData.append('phoneNumber', this.signUpForm.value.phoneNumber);
+    formData.append('state', this.signUpForm.value.state);
+    formData.append('country', this.signUpForm.value.country);
 
     if (Array.isArray(this.signUpForm.value.interests)) {
       this.signUpForm.value.interests.forEach((item: string, index: number) => {
         formData.append(`causesOfInterest[${index}]`, item);
       });
     } else {
-      formData.append("causesOfInterest", this.signUpForm.value.interests);
+      formData.append('causesOfInterest', this.signUpForm.value.interests);
     }
 
-    formData.append("referredBy", "");
+    formData.append('referredBy', '');
 
     if (this.profileUploadPic) {
-      formData.append("profilePicture", this.profileUploadPic);
+      formData.append('profilePicture', this.profileUploadPic);
     }
 
     this.api.post('auth/register', formData).subscribe({
@@ -234,35 +182,28 @@ export class AuthenticationComponent {
       error: (err) => {
         this.loader = false;
         this.toster.show('error', err.error?.message || 'Signup failed');
-        console.error(err);
-      }
+      },
     });
   }
 
-
-
   logout() {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem('authToken');
   }
 
   checkAuthStatus() {
-    const authToken = localStorage.getItem("authToken");
+    const authToken = localStorage.getItem('authToken');
     if (authToken) {
       try {
-        let obj = {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-        this.api.get('volunteers/dashboard', obj).subscribe(res => {
-          console.log(res);
-          this.loginPage = false;
-          this.authPage = false;
-          // this.sharedService.updateDashboardPage(true);
-        })
-      } catch (err) {
-        this.toster.show('error', err.error?.message);
-        console.log(err.message);
+        this.api
+          .get('volunteers/dashboard', {
+            headers: { Authorization: `Bearer ${authToken}` },
+          })
+          .subscribe((res) => {
+            this.loginPage = false;
+            this.authPage = false;
+          });
+      } catch (err: any) {
+        this.toster.show('error', err.error?.message || 'Session expired');
       }
     }
   }
@@ -276,10 +217,9 @@ export class AuthenticationComponent {
       reader.readAsDataURL(file);
     }
   }
-  // onFileSelected(event: any) { this.previewUrl = event.target.files[0]; console.log(this.previewUrl) }
 
   forgetPassword() {
     this.router.navigate(['/forgetPassword']);
   }
-
 }
+ 

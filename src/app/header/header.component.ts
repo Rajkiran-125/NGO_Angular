@@ -84,17 +84,23 @@ export class HeaderComponent {
     this.menuOpen = false; // optional, close the menu
     this.router.navigate(['/tierbreakdown']);
   }
-  impactMetrics(){
+  impactMetrics() {
     this.menuOpen = false;
     this.router.navigate(['chart']);
   }
 
   logout() {
     this.menuOpen = false;
+    const user = localStorage.getItem('user');
     localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
     this.sharedService.logout();
     this.toster.show("success", "Logout");
-    this.router.navigate(['/login']);
+    if (user == 'volunteer') {
+      this.router.navigate(['/login']);
+    } else {
+      this.router.navigate(['/adminlogin']);
+    }
   }
 
 }
