@@ -22,13 +22,13 @@
         View badge
       </button> -->
 
-      <button class="download-btn" (click)="viewBadge(badge)">
-        Download Badge
+      <button class="download-btn" (click)="redirectToDrive(badge)">
+        Download Badge and Social Media Toolkit
       </button>
 
-      <button class="download-btn" (click)="downloadMediaKit(badge)">
+      <!-- <button class="download-btn" (click)="downloadMediaKit(badge)">
         Download Social Media Toolkit
-      </button>
+      </button> -->
     </div>
 
   </div>
@@ -58,73 +58,19 @@
       <!-- <button class="download-btn" (click)="viewBadge(badge)">
         View badge
       </button> -->
-      <button class="download-btn" (click)="downloadBadge(badge)">
-        Download Badge
+      <button class="download-btn" (click)="redirectToDrive(badge)">
+        Download Badge and Social Media Toolkit
       </button>
 
-      <button class="download-btn">
+      <!-- <button class="download-btn">
         Download Social Media Toolkit
-      </button>
+      </button> -->
     </div>
 
   </div>
 </div>
 
 
-<!-- <div class="congrats-card" *ngIf="data.type == 'exportDate'">
-  <mat-tab-group [(selectedIndex)]="selectedTab">
-
-    <mat-tab label="Single Date">
-      <div class="congrats-card">
-
-        <p>Select a date you want to export</p>
-
-        <mat-form-field>
-          <mat-label>Date</mat-label>
-          <input matInput [matDatepicker]="singleFromPicker" [(ngModel)]="fromDate">
-          <mat-datepicker-toggle matSuffix [for]="singleFromPicker"></mat-datepicker-toggle>
-          <mat-datepicker #singleFromPicker></mat-datepicker>
-        </mat-form-field>
-
-        <div class="actions">
-          <button mat-raised-button class="action-cancel-btn" (click)="dialogRef.close()">Cancel</button>
-          <button mat-raised-button class="action-submit-btn"
-          (click)="exportData('submitSingle'); showPdf = true; data.type = false;">Submit</button>
-        </div>
-
-      </div>
-    </mat-tab>
-
-    <mat-tab label="Date Range">
-      <div class="congrats-card">
-
-        <p>Select a date range you want to export</p>
-
-        <mat-form-field>
-          <mat-label>From Date</mat-label>
-          <input matInput [matDatepicker]="rangeFromPicker" [(ngModel)]="fromDate">
-          <mat-datepicker-toggle matSuffix [for]="rangeFromPicker"></mat-datepicker-toggle>
-          <mat-datepicker #rangeFromPicker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>To Date</mat-label>
-          <input matInput [matDatepicker]="rangeToPicker" [(ngModel)]="toDate">
-          <mat-datepicker-toggle matSuffix [for]="rangeToPicker"></mat-datepicker-toggle>
-          <mat-datepicker #rangeToPicker></mat-datepicker>
-        </mat-form-field>
-
-        <div class="actions">
-          <button mat-raised-button class="action-cancel-btn" (click)="dialogRef.close()">Cancel</button>
-
-          <button mat-raised-button class="action-submit-btn" (click)="exportData('submitRange'); showPdf = true; data.type = false;">Submit</button>
-        </div>
-
-      </div>
-    </mat-tab>
-
-  </mat-tab-group>
-</div> -->
 <div class="congrats-card" *ngIf="data.type === 'exportDate'">
 
   <mat-tab-group [(selectedIndex)]="selectedTab">

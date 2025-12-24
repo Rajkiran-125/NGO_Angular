@@ -166,12 +166,29 @@ export class DialogComponent {
     }, 1000);
   }
 
+  redirectToDrive(badge) {
+    const linkMap: any = {
+      'Kindness Ambassador': 'https://drive.google.com/drive/folders/1aaD97IJLoribdnWT4l5gAaYciBgfKpdG?usp=drive_link',
+      'Change Catalyst': 'https://drive.google.com/drive/folders/1ydrpNK7umQgefh76c2X2ukd00pB0RFxn?usp=drive_link',
+      'Service Champion': 'https://drive.google.com/drive/folders/1MEKxekM9335RN0rYR3GEW-s3fKtG_1W_?usp=drive_link',
+      'Legacy Leader': 'https://drive.google.com/drive/folders/1u8cgSmWmYOIbrRdejAInlW2Y_ZDVTAdM?usp=drive_link'
+    };
+
+    const driveLink = linkMap[badge];
+    if (!driveLink) {
+      this.toster.show('error',`No Drive link found for badge: ${badge}`);
+      return;
+    }
+
+    window.open(driveLink, '_blank', 'noopener,noreferrer');
+  }
+
   downloadMediaKit(badge: string) {
     const fileMap: any = {
-      'Kindness Ambassador': 'K indness_Ambassador.pdf',
+      'Kindness Ambassador': 'Kindness_Ambassador.pdf',
       'Change Catalyst': 'Change_Catalyst.pdf',
       'Service Champion': 'Service_Champion.pdf',
-      'Legacy Leader': 'Legacy_Leader.pdf'   // <== FIXED SPELLING
+      'Legacy Leader': 'Legacy_Leader.pdf'
     };
 
     const fileName = fileMap[badge];

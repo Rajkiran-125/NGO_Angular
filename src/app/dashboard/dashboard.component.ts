@@ -14,6 +14,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Dialog } from '@angular/cdk/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
 
 import html2pdf from 'html2pdf.js';
 import { SearchFilterPipe } from '../search-filter.pipe';
@@ -37,7 +42,12 @@ interface DashboardData {
   imports: [NgIf,
     NgFor, NgClass, DatePipe, TitleCasePipe, FormsModule, LoaderComponent, AsyncPipe,
     JsonPipe, FooterComponent, MatButtonModule, MatDialogModule, DialogComponent,
-    SearchFilterPipe],
+    SearchFilterPipe,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   // changeDetection: ChangeDetectionStrategy.OnPush,
@@ -69,6 +79,10 @@ export class DashboardComponent {
   displayLabel: string = 'Select Filter';
   path: boolean = false;
   fileBaseUrl = environment.fileBaseUrl;
+
+  selectedFilter = '';
+  searchFromDate: string = '';
+  searchToDate: string = '';
 
   hours: any = {
     firstName: '',
@@ -121,11 +135,11 @@ export class DashboardComponent {
     this.dropdownOpen = !this.dropdownOpen;
   }
 
-  selectFilter(type: string, label: string) {
-    this.searchType = type;
-    this.displayLabel = label;
-    this.dropdownOpen = false;
-  }
+  // selectFilter(type: string, label: string) {
+  //   this.searchType = type;
+  //   this.displayLabel = label;
+  //   this.dropdownOpen = false;
+  // }
 
   // CLOSE DROPDOWN ON CLICK OUTSIDE
   @HostListener('document:click', ['$event'])
@@ -366,8 +380,21 @@ export class DashboardComponent {
   }
 
   onSubmitHours() {
-    this.showSubmitModal = true;
-    console.log('Submit hours clicked');
+
+    const authToken = localStorage.getItem("authToken");
+    let token = {
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      }
+    }
+
+    this.api.get('volunteers/check-profile-completion', token).subscribe(res => {
+      if (res?.redirectToUpdateProfile == true) {
+        this.showSubmitModal = true;
+      } else {
+        this.toster.show('error', 'Complete your profile to continue');
+      }
+    });
   }
 
   onExportData() {
@@ -579,13 +606,30 @@ export class DashboardComponent {
     const headers = new HttpHeaders({ Authorization: `Bearer ${this.authToken}` });
 
     this.api.get(`admin/stats`, { headers }).subscribe(stats => this.adminStats = stats);
-    this.api.get(`admin/pending-hours`, { headers }).subscribe(data => {
-      console.log('pendingHour data: ', data)
-      this.pendingHours = data;
-    });
+    // this.api.post(`admin/pending-hours`, {}, { headers }).subscribe(data => {
+    //   console.log('pendingHour data: ', data)
+    //   this.pendingHours = data;
+    // });
+    this.loadPendingHours();
 
     console.log('__');
     console.log('this.pendingHours : ', this.pendingHours)
+  }
+
+  loadPendingHours() {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      const headers = {
+        Authorization: `Bearer ${authToken}`
+      };
+
+      this.api.post(`admin/pending-hours`, {}, { headers }).subscribe(res => {
+        console.log('pendingHour data: ', res)
+        this.pendingHours = res.data;
+      });
+    } catch (err) {
+      console.log(err.message)
+    }
   }
 
   approveHours(id: string) {
@@ -795,6 +839,48 @@ export class DashboardComponent {
       .catch(err => {
         console.error('Download error:', err);
       });
+  }
+
+  selectFilter(filter: string, label: string) {
+    this.selectedFilter = filter;
+    this.displayLabel = label;
+    this.dropdownOpen = false;
+
+    // Reset inputs when switching filters
+    this.searchText = '';
+    this.searchFromDate = '';
+    this.searchToDate = '';
+    this.loadPendingHours();
+  }
+
+  applyDateFilter() {
+    if (!this.searchFromDate || !this.searchToDate) {
+      this.toster.show('error', 'Please select both From and To dates')
+      return;
+    }
+    const authToken = localStorage.getItem("authToken");
+    const headers = {
+      Authorization: `Bearer ${authToken}`
+    };
+    console.log('Apply Date Filter:', this.searchFromDate, this.searchToDate);
+
+    let data = {
+      fromDate: this.searchFromDate,
+      toDate: this.searchToDate
+    }
+    this.api.post(`admin/pending-hours`, data, { headers }).subscribe(res => {
+      console.log('pendingHour data: ', res)
+      this.pendingHours = res.data;
+    });
+
+    // 🔥 call your API / filter logic here
+  }
+
+  cancelDateFilter() {
+    this.selectedFilter = '';
+    this.displayLabel = 'Select Filter';
+    this.searchFromDate = '';
+    this.searchToDate = '';
   }
 
 

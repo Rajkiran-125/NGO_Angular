@@ -132,14 +132,17 @@
         <div class="profile-info">
           <p><strong>First Name:</strong> {{volunteerDetails?.firstName}}</p>
           <p><strong>Last Name:</strong> {{volunteerDetails?.lastName}}</p>
-          <p><strong>Affiliation:</strong> {{volunteerDetails?.schoolOrganization}}</p>
+          <p><strong>School/Organization Affiliation:</strong> {{volunteerDetails?.schoolOrganization}}</p>
           <p><strong>Date of Birth:</strong> {{volunteerDetails?.dateOfBirth | date:'MM/dd/yyyy'}}</p>
-          <p><strong>Location:</strong>
-            {{volunteerDetails?.location?.state}}, {{volunteerDetails?.location?.country}}
+          <p><strong>State/Region:</strong>
+            {{volunteerDetails?.location?.state}}
+          </p>
+          <p><strong>Country:</strong>
+            {{volunteerDetails?.location?.country}}
           </p>
           <p><strong>Phone Number:</strong> {{volunteerDetails?.phoneNumber}}</p>
           <p><strong>Email:</strong> {{volunteerDetails?.email}}</p>
-          <!-- <p><strong>Causes:</strong> {{volunteerDetails?.causes}}</p> -->
+          <p><strong>Causes/Areas of Interest:</strong> {{volunteerDetails?.causesOfInterest}}</p>
         </div>
       </div>
     </div>

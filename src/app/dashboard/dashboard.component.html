@@ -393,30 +393,45 @@
     </div>
 
     <div>
-      <!-- <div class="flex justify-between table-search">
-
-      <h3 class="text-xl font-bold font-semibold mb-4">Pending Hours for Review</h3>
-      <div class="flex gap-2">
-        <select [(ngModel)]="searchType" class="border px-3 py-2 rounded">
-          <option value="">Select Filter</option>
-          <option value="activityName">Activity</option>
-          <option value="hours">Hours</option>
-          <option value="serviceType">Type</option>
-        </select>
-        <input type="text" [(ngModel)]="searchText" placeholder="Search" class="border px-3 py-2 rounded" />
-      </div>
-    </div> -->
       <div class="flex justify-between">
 
         <h3 class="text-lg text-gray-900 font-bold">Volunteer Hours History</h3>
 
         <div class="search-container">
           <div class="search-box">
-            <!-- {{dropdownOpen}} -->
-            <!-- Search Input -->
-            <input type="text" [(ngModel)]="searchText" placeholder="What are you looking for?" class="search-input" />
 
-            <!-- Custom Dropdown -->
+            <!-- 🔍 TEXT SEARCH -->
+            <input *ngIf="selectedFilter !== 'date'" type="text" [(ngModel)]="searchText"
+              placeholder="What are you looking for?" class="search-input" />
+
+            <!-- 📅 DATE FILTER -->
+            <div *ngIf="selectedFilter === 'date'" class="date-filter">
+
+              <!-- <mat-form-field appearance="outline" class="date-field compact"> -->
+              <mat-form-field class="date-field compact">
+                <input matInput [matDatepicker]="fromPicker" placeholder="From Date" [(ngModel)]="searchFromDate" />
+                <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+                <mat-datepicker #fromPicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field class="date-field compact">
+                <input matInput [matDatepicker]="toPicker" placeholder="To Date" [(ngModel)]="searchToDate" />
+                <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+                <mat-datepicker #toPicker></mat-datepicker>
+              </mat-form-field>
+
+              
+
+              <button mat-raised-button color="primary" class="btn btn-submit" (click)="applyDateFilter()">
+                Submit
+              </button>
+
+              <button mat-stroked-button color="warn" class="btn btn-cancel" (click)="cancelDateFilter()">
+                Cancel
+              </button>
+            </div>
+
+            <!-- ⬇️ FILTER DROPDOWN -->
             <div class="dropdown">
               <span class="dropdown-label" (click)="dropdownOpen = !dropdownOpen">
                 {{ displayLabel }}
@@ -425,20 +440,17 @@
 
               <div class="dropdown-menu" *ngIf="dropdownOpen">
                 <div class="dropdown-item" (click)="selectFilter('', 'Select Filter')">Select Filter</div>
-                <div class="dropdown-item" (click)="selectFilter('fullName', 'Name')">Volunteer</div>
+                <div class="dropdown-item" (click)="selectFilter('fullName', 'Volunteer')">Volunteer</div>
                 <div class="dropdown-item" (click)="selectFilter('activityName', 'Activity')">Activity</div>
                 <div class="dropdown-item" (click)="selectFilter('date', 'Date')">Date</div>
                 <div class="dropdown-item" (click)="selectFilter('serviceType', 'Type')">Type</div>
               </div>
             </div>
 
-            <!-- Search Button -->
-            <!-- <button class="search-btn">
-          🔍
-        </button> -->
-
           </div>
         </div>
+
+
       </div>
 
       <table class="min-w-full divide-y divide-gray-200">
