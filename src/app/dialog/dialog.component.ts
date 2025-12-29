@@ -73,6 +73,7 @@ export class DialogComponent {
 
   volunteerSuggestions: any[] = [];
   serviceTypes: any[] = [];
+  today = new Date().toISOString().split('T')[0];
 
   constructor(
     public dialogRef: MatDialogRef<DialogComponent>,
@@ -288,7 +289,7 @@ export class DialogComponent {
 
           const opt = {
             margin: 0.5,
-            filename: 'Volunteer_Report.pdf',
+            filename: 'NEST4US Volunteer Report.pdf',
             image: { type: 'jpeg', quality: 1 },
             html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
@@ -393,7 +394,7 @@ export class DialogComponent {
 
   //       saveAs(
   //         data,
-  //         `Volunteer_Report_${new Date().toISOString().slice(0, 10)}.xlsx`
+  //         `NEST4US Volunteer Report ${new Date().toISOString().slice(0, 10)}.xlsx`
   //       );
 
   //       this.toster.show('success', 'Report exported');
@@ -455,8 +456,8 @@ export class DialogComponent {
             XLSX.utils.json_to_sheet(res.data);
 
           const workbook: XLSX.WorkBook = {
-            Sheets: { 'Volunteer Report': worksheet },
-            SheetNames: ['Volunteer Report']
+            Sheets: { 'NEST4US Volunteer Report': worksheet },
+            SheetNames: ['NEST4US Volunteer Report']
           };
 
           const excelBuffer: any =
@@ -468,7 +469,7 @@ export class DialogComponent {
 
           saveAs(
             file,
-            `Volunteer_Report_${new Date().toISOString().slice(0, 10)}.xlsx`
+            `NEST4US Volunteer Report ${new Date().toISOString().slice(0, 10)}.xlsx`
           );
 
           this.toster.show('success', 'Excel exported');
@@ -492,7 +493,7 @@ export class DialogComponent {
 
           const opt = {
             margin: 0.5,
-            filename: 'Volunteer_Report.pdf',
+            filename: 'NEST4US Volunteer Report.pdf',
             image: { type: 'jpeg', quality: 1 },
             html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }

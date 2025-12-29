@@ -287,8 +287,17 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700">Date of Service *</label>
-              <input type="date" [(ngModel)]="hours.serviceDate" name="serviceDate" [max]="today" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <!-- <input type="date" [(ngModel)]="hours.serviceDate" name="serviceDate" [max]="today" required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" /> -->
+              <mat-form-field appearance="outline" class="w-full mt-1 mat-input-match">
+                <input matInput [matDatepicker]="serviceDatePicker" [(ngModel)]="hours.serviceDate" name="serviceDate"
+                  placeholder="Select date" [max]="today" required />
+                <mat-datepicker-toggle matSuffix [for]="serviceDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #serviceDatePicker></mat-datepicker>
+              </mat-form-field>
+
+
+
             </div>
 
 
@@ -420,7 +429,7 @@
                 <mat-datepicker #toPicker></mat-datepicker>
               </mat-form-field>
 
-              
+
 
               <button mat-raised-button color="primary" class="btn btn-submit" (click)="applyDateFilter()">
                 Submit

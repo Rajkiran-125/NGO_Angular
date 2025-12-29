@@ -110,7 +110,7 @@
         <!-- Date -->
         <mat-form-field>
           <mat-label>Date</mat-label>
-          <input matInput [matDatepicker]="singlePicker" [(ngModel)]="fromDate">
+          <input matInput [max]="today" [matDatepicker]="singlePicker" [(ngModel)]="fromDate">
           <mat-datepicker-toggle matSuffix [for]="singlePicker"></mat-datepicker-toggle>
           <mat-datepicker #singlePicker></mat-datepicker>
         </mat-form-field>
@@ -161,14 +161,14 @@
         <!-- Date Range -->
         <mat-form-field>
           <mat-label>From Date</mat-label>
-          <input matInput [matDatepicker]="fromPicker" [(ngModel)]="fromDate">
+          <input matInput [max]="today" [matDatepicker]="fromPicker" [(ngModel)]="fromDate">
           <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
           <mat-datepicker #fromPicker></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field>
           <mat-label>To Date</mat-label>
-          <input matInput [matDatepicker]="toPicker" [(ngModel)]="toDate">
+          <input matInput [max]="today" [matDatepicker]="toPicker" [(ngModel)]="toDate">
           <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
           <mat-datepicker #toPicker></mat-datepicker>
         </mat-form-field>

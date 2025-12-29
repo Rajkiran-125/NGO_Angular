@@ -341,3 +341,59 @@ table {
   background-color: #f3e5f5;
 }
 
+
+
+
+
+
+::ng-deep .mat-input-match {
+  width: 100%;
+}
+
+/* Wrapper */
+::ng-deep .mat-input-match .mat-mdc-text-field-wrapper {
+  height: 38px;
+  border-radius: 6px;
+}
+
+/* Flex */
+::ng-deep .mat-input-match .mat-mdc-form-field-flex {
+  height: 38px;
+  align-items: center;
+}
+
+/* Input container */
+::ng-deep .mat-input-match .mat-mdc-form-field-infix {
+  padding: 0 0px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+/* Input text */
+::ng-deep .mat-input-match input.mat-mdc-input-element {
+  height: 44px;
+  line-height: 44px;
+  font-size: 14px;
+  padding: 0;
+}
+
+/* Icon */
+::ng-deep .mat-input-match .mat-mdc-icon-button {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Remove helper space */
+::ng-deep .mat-input-match .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* Disable floating label visually */
+::ng-deep .mat-input-match .mat-mdc-floating-label {
+  display: none !important;
+}
+

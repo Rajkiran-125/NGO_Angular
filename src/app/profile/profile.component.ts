@@ -4,11 +4,20 @@ import { AsyncPipe, NgIf } from '@angular/common';
 import { ApiService } from '../Service/api.service';
 import { TosterService } from '../Service/toster.service';
 import { environment } from '../../environments/environment';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [NgIf, ReactiveFormsModule, FormsModule],
+  imports: [NgIf, ReactiveFormsModule, FormsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule
+  ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -22,6 +31,7 @@ export class ProfileComponent {
   profileUploadPic: File | null = null;
   fileBaseUrl = environment.fileBaseUrl;
   uploadPic: boolean = false;
+  today = new Date().toISOString().split('T')[0];
 
   constructor(
     private fb: FormBuilder,
@@ -36,7 +46,7 @@ export class ProfileComponent {
     this.updateProfile = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      email: [{ value: '', disabled: true }], 
+      email: [{ value: '', disabled: true }],
       // userName: ['', Validators.required],
       // password: ['', Validators.required],
       organization: ['', Validators.required],
@@ -218,7 +228,7 @@ export class ProfileComponent {
     formData.append("state", this.updateProfile.value.state);
     formData.append("country", this.updateProfile.value.country);
     formData.append("causesOfInterest", this.updateProfile.value.interests);
-    
+
     // ⬇️ Append profile picture file (NOT Base64)
     if (this.profileUploadPic) {
       formData.append("profilePicture", this.profileUploadPic);

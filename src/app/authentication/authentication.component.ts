@@ -12,11 +12,20 @@ import { LoaderComponent } from '../loader/loader.component';
 import { TosterService } from '../Service/toster.service';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-authentication',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, LoaderComponent, NgClass],
+  imports: [ReactiveFormsModule, NgIf, LoaderComponent, NgClass,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule
+  ],
   templateUrl: './authentication.component.html',
   styleUrls: ['./authentication.component.scss'],
 })
@@ -32,6 +41,7 @@ export class AuthenticationComponent implements OnInit {
   changePassword: boolean = false;
   showPassword = false;
   url = environment.apiUrl;
+  today = new Date().toISOString().split('T')[0];
 
   constructor(
     private fb: FormBuilder,
@@ -39,7 +49,7 @@ export class AuthenticationComponent implements OnInit {
     private sharedService: SharedService,
     private toster: TosterService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.checkAuthStatus();
@@ -135,6 +145,14 @@ export class AuthenticationComponent implements OnInit {
     }
   }
 
+  formatDateToYYYYMMDD(date: Date | string): string {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   // ===================== SIGNUP =====================
   signUp() {
     if (this.signUpForm.invalid) {
@@ -152,7 +170,7 @@ export class AuthenticationComponent implements OnInit {
       'schoolOrganization',
       this.signUpForm.value.schoolOrOrganization
     );
-    formData.append('dateOfBirth', this.signUpForm.value.dob);
+    formData.append('dateOfBirth', this.formatDateToYYYYMMDD(this.signUpForm.value.dob));
     formData.append('phoneNumber', this.signUpForm.value.phoneNumber);
     formData.append('state', this.signUpForm.value.state);
     formData.append('country', this.signUpForm.value.country);
@@ -222,4 +240,3 @@ export class AuthenticationComponent implements OnInit {
     this.router.navigate(['/forgetPassword']);
   }
 }
- 

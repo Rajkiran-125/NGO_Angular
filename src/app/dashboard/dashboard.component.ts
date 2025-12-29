@@ -389,7 +389,7 @@ export class DashboardComponent {
     }
 
     this.api.get('volunteers/check-profile-completion', token).subscribe(res => {
-      if (res?.redirectToUpdateProfile == true) {
+      if (res?.isProfileComplete == true) {
         this.showSubmitModal = true;
       } else {
         this.toster.show('error', 'Complete your profile to continue');
@@ -540,6 +540,13 @@ export class DashboardComponent {
 
   onFileSelected(event: any) { this.proofFile = event.target.files[0]; console.log(this.proofFile) }
 
+  formatDateToYYYYMMDD(date: Date | string): string {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
   handleSubmitHours() {
 
     // Required field validation (manual)
@@ -552,6 +559,8 @@ export class DashboardComponent {
       'serviceType',
       'description'
     ];
+
+
 
     for (let field of requiredFields) {
       if (!this.hours[field]) {
@@ -568,9 +577,20 @@ export class DashboardComponent {
 
     // --- Build FormData ---
     const formData = new FormData();
+    // Object.keys(this.hours).forEach(key => {
+    //   if (this.hours[key] !== null && this.hours[key] !== undefined) {
+    //     formData.append(key, this.hours[key]);
+    //   }
+    // });
+
     Object.keys(this.hours).forEach(key => {
       if (this.hours[key] !== null && this.hours[key] !== undefined) {
-        formData.append(key, this.hours[key]);
+        if (key === 'serviceDate') {
+          const formattedDate = this.formatDateToYYYYMMDD(this.hours.serviceDate);
+          formData.append('serviceDate', formattedDate);
+        } else {
+          formData.append(key, this.hours[key]);
+        }
       }
     });
 
