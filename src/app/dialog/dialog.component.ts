@@ -424,11 +424,11 @@ export class DialogComponent {
     }
 
     // ===== Dates =====
-    if (type === 'single') {
+    if (type === 'single' && this.fromDate) {
       payload.fromDate = this.formatDate(this.fromDate);
     }
 
-    if (type === 'range') {
+    if (type === 'range' && this.fromDate && this.toDate) {
       payload.fromDate = this.formatDate(this.fromDate);
       payload.toDate = this.formatDate(this.toDate);
     }
