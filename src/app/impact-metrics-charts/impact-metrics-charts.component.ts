@@ -80,11 +80,15 @@ export class ImpactMetricsChartsComponent {
       type: 'pie',
       data: {
         labels: this.dashboardData.serviceCategories.labels,
+        // labels: [
+  //         'Service Projects', 'Community Events', 'Food Rescues', 'NEST Tutors',
+  //         'Notes of Kindness', 'Workshops', 'Donations', 'Other'
+  //       ],
         datasets: [{
           data: this.dashboardData.serviceCategories.data,
           backgroundColor: [
-            '#6A5ACD', '#7EA4FF', '#8BC34A', '#FFF176',
-            '#FF8A65', '#E57373', '#CE93D8', '#BDBDBD'
+            '#8d77ab', '#656a97', '#8d9765', '#5a0f8d', '#fff8bd',
+            '#ffdac3', '#d86464', '#c4a092', '#d8a4d3'
           ]
         }]
       },
