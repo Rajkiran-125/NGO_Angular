@@ -2,7 +2,7 @@ export const environment = {
   production: true,
 
   apiUrl: 'https://volunteer.nest4us.org/api/',
-  fileBaseUrl: 'https://volunteer.nest4us.org'
+  fileBaseUrl: 'https://volunteer.nest4us.org/api'
 
   // apiUrl: 'http://72.61.245.218:3000/api/',
   // fileBaseUrl: 'http://72.61.245.218:3000'

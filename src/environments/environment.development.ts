@@ -5,7 +5,7 @@ export const environment = {
   // fileBaseUrl: 'http://localhost:3000'
 
   apiUrl: 'https://volunteer.nest4us.org/api/',
-  fileBaseUrl: 'https://volunteer.nest4us.org'
+  fileBaseUrl: 'https://volunteer.nest4us.org/api'
 
   // apiUrl: 'https://vmsbackend-eudv.onrender.com/api/',
   // fileBaseUrl: 'https://vmsbackend-eudv.onrender.com/uploads/'
