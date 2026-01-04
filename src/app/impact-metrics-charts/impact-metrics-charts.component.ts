@@ -26,24 +26,22 @@ export class ImpactMetricsChartsComponent {
     this.getDashboardData();
   }
 
-  // ngAfterViewInit(): void {
-  //   this.loadPieChart();
-  //   this.loadBarChart();
-  // }
-
   // loadPieChart() {
-  //   new Chart("pieChartCanvas", {
+  //   if (this.pieChart) this.pieChart.destroy(); // avoid duplicates
+
+  //   this.pieChart = new Chart("pieChartCanvas", {
   //     type: 'pie',
   //     data: {
-  //       labels: [
-  //         'Service Projects', 'Community Events', 'Food Rescues', 'NEST Tutors',
-  //         'Notes of Kindness', 'Workshops', 'Donations', 'Other'
-  //       ],
+  //       labels: this.dashboardData.serviceCategories.labels,
+  //       // labels: [
+  // //         'Service Projects', 'Community Events', 'Food Rescues', 'NEST Tutors',
+  // //         'Notes of Kindness', 'Workshops', 'Donations', 'Other'
+  // //       ],
   //       datasets: [{
-  //         data: [25.7, 13.2, 30.2, 7.2, 5.9, 3.8, 1.0, 13],
+  //         data: this.dashboardData.serviceCategories.data,
   //         backgroundColor: [
-  //           '#6A5ACD', '#7EA4FF', '#8BC34A', '#FFF176',
-  //           '#FF8A65', '#E57373', '#CE93D8', '#BDBDBD'
+  //           '#8d77ab', '#656a97', '#8d9765', '#5a0f8d', '#fff8bd',
+  //           '#ffdac3', '#d86464', '#c4a092', '#d8a4d3'
   //         ]
   //       }]
   //     },
@@ -55,13 +53,55 @@ export class ImpactMetricsChartsComponent {
   //   });
   // }
 
+  loadPieChart() {
+    if (this.pieChart) this.pieChart.destroy();
+
+    this.pieChart = new Chart("pieChartCanvas", {
+      type: 'pie',
+      data: {
+        labels: this.dashboardData.serviceCategories.labels,
+        datasets: [{
+          data: this.dashboardData.serviceCategories.data,
+          backgroundColor: [
+            '#8d77ab', '#656a97', '#8d9765', '#5a0f8d', '#fff8bd',
+            '#ffdac3', '#d86464', '#c4a092', '#d8a4d3'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        animation: false, // ⭐ IMPORTANT FIX
+
+        interaction: {
+          mode: 'index',   // ⭐ fixes hover offset
+          intersect: true
+        },
+
+        plugins: {
+          legend: {
+            position: 'left'
+          },
+          tooltip: {
+            enabled: true
+          }
+        }
+      }
+    });
+  }
+
+
   // loadBarChart() {
-  //   new Chart("barChartCanvas", {
+  //   if (this.barChart) this.barChart.destroy(); // avoid duplicates
+
+  //   this.barChart = new Chart("barChartCanvas", {
   //     type: 'bar',
   //     data: {
-  //       labels: ['9–13', '14–18', '19–25', '26–50', '51+'],
+  //       labels: this.dashboardData.ageDistribution.labels,
   //       datasets: [{
-  //         data: [16, 32, 16, 27, 9],
+  //         label: "Volunteers",
+  //         data: this.dashboardData.ageDistribution.data,
   //         backgroundColor: '#8d6597'
   //       }]
   //     },
@@ -73,53 +113,55 @@ export class ImpactMetricsChartsComponent {
   //   });
   // }
 
-  loadPieChart() {
-    if (this.pieChart) this.pieChart.destroy(); // avoid duplicates
-
-    this.pieChart = new Chart("pieChartCanvas", {
-      type: 'pie',
-      data: {
-        labels: this.dashboardData.serviceCategories.labels,
-        // labels: [
-  //         'Service Projects', 'Community Events', 'Food Rescues', 'NEST Tutors',
-  //         'Notes of Kindness', 'Workshops', 'Donations', 'Other'
-  //       ],
-        datasets: [{
-          data: this.dashboardData.serviceCategories.data,
-          backgroundColor: [
-            '#8d77ab', '#656a97', '#8d9765', '#5a0f8d', '#fff8bd',
-            '#ffdac3', '#d86464', '#c4a092', '#d8a4d3'
-          ]
-        }]
-      },
-      options: {
-        plugins: {
-          legend: { position: 'left' }
-        }
-      }
-    });
-  }
 
   loadBarChart() {
-    if (this.barChart) this.barChart.destroy(); // avoid duplicates
+  if (this.barChart) this.barChart.destroy();
 
-    this.barChart = new Chart("barChartCanvas", {
-      type: 'bar',
-      data: {
-        labels: this.dashboardData.ageDistribution.labels,
-        datasets: [{
-          label: "Volunteers",
-          data: this.dashboardData.ageDistribution.data,
-          backgroundColor: '#8d6597'
-        }]
+  this.barChart = new Chart("barChartCanvas", {
+    type: 'bar',
+    data: {
+      labels: this.dashboardData.ageDistribution.labels,
+      datasets: [{
+        label: "Volunteers",
+        data: this.dashboardData.ageDistribution.data,
+        backgroundColor: '#8d6597',
+        barPercentage: 0.7,
+        categoryPercentage: 0.7
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+
+      animation: false, // ⭐ critical fix
+
+      interaction: {
+        mode: 'index',  // ⭐ correct bar mapping
+        intersect: true
       },
-      options: {
-        scales: {
-          y: { beginAtZero: true }
+
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0 }
+        },
+        x: {
+          grid: { display: false }
+        }
+      },
+
+      plugins: {
+        tooltip: {
+          enabled: true
+        },
+        legend: {
+          display: true
         }
       }
-    });
-  }
+    }
+  });
+}
+
 
 
 
