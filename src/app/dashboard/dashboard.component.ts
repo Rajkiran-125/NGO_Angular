@@ -387,6 +387,9 @@ export class DashboardComponent {
         Authorization: `Bearer ${authToken}`
       }
     }
+    this.hours = {
+      serviceDate: new Date()
+    };
 
     this.api.get('volunteers/check-profile-completion', token).subscribe(res => {
       if (res?.isProfileComplete == true) {

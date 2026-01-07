@@ -63,9 +63,13 @@ export class ImpactMetricsChartsComponent {
         datasets: [{
           data: this.dashboardData.serviceCategories.data,
           backgroundColor: [
-            '#8d77ab', '#656a97', '#8d9765', '#5a0f8d', '#fff8bd',
-            '#ffdac3', '#d86464', '#c4a092', '#d8a4d3'
+            '#1E88E5', '#FB8C00', '#43A047', '#E53935', '#8E24AA',
+            '#00ACC1', '#FDD835', '#D81B60', '#7CB342'
           ]
+          // backgroundColor: [
+          //   '#8d77ab', '#656a97', '#8d9765', '#5a0f8d', '#fff8bd',
+          //   '#ffdac3', '#d86464', '#c4a092', '#d8a4d3'
+          // ]
         }]
       },
       options: {

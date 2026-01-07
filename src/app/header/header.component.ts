@@ -88,6 +88,9 @@ export class HeaderComponent {
     this.menuOpen = false;
     this.router.navigate(['chart']);
   }
+  routeDashboard(){
+    this.router.navigate(['/home']);
+  }
 
   logout() {
     this.menuOpen = false;
