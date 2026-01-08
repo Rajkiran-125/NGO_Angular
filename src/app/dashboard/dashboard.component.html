@@ -408,8 +408,12 @@
           <div class="search-box">
 
             <!-- 🔍 TEXT SEARCH -->
-            <input *ngIf="selectedFilter !== 'date'" type="text" [(ngModel)]="searchText"
+            <!-- <input *ngIf="selectedFilter !== 'date'" type="text" [(ngModel)]="searchText"
+              placeholder="What are you looking for?" class="search-input" /> -->
+
+            <input *ngIf="selectedFilter !== 'date'" type="text" [(ngModel)]="searchText" (input)="applyTextFilter()"
               placeholder="What are you looking for?" class="search-input" />
+
 
             <!-- 📅 DATE FILTER -->
             <div *ngIf="selectedFilter === 'date'" class="date-filter">

@@ -163,9 +163,7 @@ export class DashboardComponent {
       this.api.get('volunteers/newTier', token).subscribe(res => {
         console.log('newTier: ', res);
         const unlockedTier = res.unlockedTier;
-        // const unlockedTier =  "Legacy Leader";
         // res = {
-
         //   "newTierUnlocked": true,
         //   "unlockedTier": "Legacy Leader",
         //   "tierContent": {
@@ -173,6 +171,8 @@ export class DashboardComponent {
         //     "message": "You’ve gone above and beyond! NEST4US is proud to recognize you as a <strong>LEGACY LEADER</strong> for your 250+ hours of volunteer service. Your dedication has built a legacy of kindness and impact that will inspire generations to come!"
         //   }
         // }
+        // const unlockedTier = res.unlockedTier;
+
         const tierContent = res.tierContent
         if (res.newTierUnlocked) {
           const type = 'newTier'
@@ -639,6 +639,7 @@ export class DashboardComponent {
     console.log('this.pendingHours : ', this.pendingHours)
   }
 
+  allPendingHours: any[] = [];
   loadPendingHours() {
     try {
       const authToken = localStorage.getItem("authToken");
@@ -647,8 +648,10 @@ export class DashboardComponent {
       };
 
       this.api.post(`admin/pending-hours`, {}, { headers }).subscribe(res => {
-        console.log('pendingHour data: ', res)
-        this.pendingHours = res.data;
+        console.log('pendingHour data: ', res);
+        this.allPendingHours = res.data;
+        // this.pendingHours = res.data;
+        this.pendingHours = [...res.data];
       });
     } catch (err) {
       console.log(err.message)
@@ -873,8 +876,51 @@ export class DashboardComponent {
     this.searchText = '';
     this.searchFromDate = '';
     this.searchToDate = '';
-    this.loadPendingHours();
+    // if (!filter) {
+    //   this.loadPendingHours();
+    // }
+    this.pendingHours = [...this.allPendingHours];
   }
+
+  // applyTextFilter() {
+  //   if (!this.searchText || !this.selectedFilter) {
+  //     this.loadPendingHours();
+  //     return;
+  //   }
+
+  //   const searchValue = this.searchText.toLowerCase();
+
+  //   this.pendingHours = this.pendingHours.filter(item =>
+  //     item[this.selectedFilter]?.toString().toLowerCase().includes(searchValue)
+  //   );
+  // }
+
+  applyTextFilter() {
+    if (!this.searchText || !this.selectedFilter) {
+      this.pendingHours = [...this.allPendingHours];
+      return;
+    }
+    if (this.pendingHours.length == 0) this.pendingHours = [...this.allPendingHours];
+
+    const searchValue = this.searchText.toLowerCase();
+
+    this.pendingHours = this.pendingHours.filter(item => {
+
+      if (this.selectedFilter === 'fullName') {
+        const fullName =
+          `${item.firstName ?? ''} ${item.lastName ?? ''}`.toLowerCase();
+        return fullName.includes(searchValue);
+      }
+
+      // 🔁 Other filters (Activity, Type, etc.)
+      return item[this.selectedFilter]
+        ?.toString()
+        .toLowerCase()
+        .includes(searchValue);
+    });
+  }
+
+
 
   applyDateFilter() {
     if (!this.searchFromDate || !this.searchToDate) {
