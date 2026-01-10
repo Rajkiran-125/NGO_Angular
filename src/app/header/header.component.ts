@@ -20,6 +20,7 @@ export class HeaderComponent {
   menuOpen = false;
   currentRoute: string = '';
   isAdmin: any;
+  mobileMenuOpen = false;
 
 
   constructor(

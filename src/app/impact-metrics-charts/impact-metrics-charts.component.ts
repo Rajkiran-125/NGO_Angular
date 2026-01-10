@@ -26,33 +26,6 @@ export class ImpactMetricsChartsComponent {
     this.getDashboardData();
   }
 
-  // loadPieChart() {
-  //   if (this.pieChart) this.pieChart.destroy(); // avoid duplicates
-
-  //   this.pieChart = new Chart("pieChartCanvas", {
-  //     type: 'pie',
-  //     data: {
-  //       labels: this.dashboardData.serviceCategories.labels,
-  //       // labels: [
-  // //         'Service Projects', 'Community Events', 'Food Rescues', 'NEST Tutors',
-  // //         'Notes of Kindness', 'Workshops', 'Donations', 'Other'
-  // //       ],
-  //       datasets: [{
-  //         data: this.dashboardData.serviceCategories.data,
-  //         backgroundColor: [
-  //           '#8d77ab', '#656a97', '#8d9765', '#5a0f8d', '#fff8bd',
-  //           '#ffdac3', '#d86464', '#c4a092', '#d8a4d3'
-  //         ]
-  //       }]
-  //     },
-  //     options: {
-  //       plugins: {
-  //         legend: { position: 'left' }
-  //       }
-  //     }
-  //   });
-  // }
-
   loadPieChart() {
     if (this.pieChart) this.pieChart.destroy();
 
@@ -95,76 +68,53 @@ export class ImpactMetricsChartsComponent {
     });
   }
 
-
-  // loadBarChart() {
-  //   if (this.barChart) this.barChart.destroy(); // avoid duplicates
-
-  //   this.barChart = new Chart("barChartCanvas", {
-  //     type: 'bar',
-  //     data: {
-  //       labels: this.dashboardData.ageDistribution.labels,
-  //       datasets: [{
-  //         label: "Volunteers",
-  //         data: this.dashboardData.ageDistribution.data,
-  //         backgroundColor: '#8d6597'
-  //       }]
-  //     },
-  //     options: {
-  //       scales: {
-  //         y: { beginAtZero: true }
-  //       }
-  //     }
-  //   });
-  // }
-
-
   loadBarChart() {
-  if (this.barChart) this.barChart.destroy();
+    if (this.barChart) this.barChart.destroy();
 
-  this.barChart = new Chart("barChartCanvas", {
-    type: 'bar',
-    data: {
-      labels: this.dashboardData.ageDistribution.labels,
-      datasets: [{
-        label: "Volunteers",
-        data: this.dashboardData.ageDistribution.data,
-        backgroundColor: '#8d6597',
-        barPercentage: 0.7,
-        categoryPercentage: 0.7
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-
-      animation: false, // ⭐ critical fix
-
-      interaction: {
-        mode: 'index',  // ⭐ correct bar mapping
-        intersect: true
+    this.barChart = new Chart("barChartCanvas", {
+      type: 'bar',
+      data: {
+        labels: this.dashboardData.ageDistribution.labels,
+        datasets: [{
+          label: "Volunteers",
+          data: this.dashboardData.ageDistribution.data,
+          backgroundColor: '#8d6597',
+          barPercentage: 0.7,
+          categoryPercentage: 0.7
+        }]
       },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
 
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { precision: 0 }
-        },
-        x: {
-          grid: { display: false }
-        }
-      },
+        animation: false, // ⭐ critical fix
 
-      plugins: {
-        tooltip: {
-          enabled: true
+        interaction: {
+          mode: 'index',  // ⭐ correct bar mapping
+          intersect: true
         },
-        legend: {
-          display: true
+
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0 }
+          },
+          x: {
+            grid: { display: false }
+          }
+        },
+
+        plugins: {
+          tooltip: {
+            enabled: true
+          },
+          legend: {
+            display: true
+          }
         }
       }
-    }
-  });
-}
+    });
+  }
 
 
 
