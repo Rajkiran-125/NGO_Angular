@@ -1,5 +1,9 @@
+body{
+  font-family: "Poppins", sans-serif !important;
+}
+
 .logo-img {
-  width: 90px;
+  width: 70px;
   cursor: pointer;
 }
 
@@ -23,13 +27,18 @@ button i {
   justify-content: center;
 }
 
+.desktop-btn {
+  background-color: var(--primary-color);
+  padding: 0.6rem;
+}
+
 a i {
   border: 1px solid var(--primary-color);
   border-radius: 50%;
   color: #fff;
   background: var(--primary-color);
   font-size: 29px;
-    padding: 2px;
+  padding: 2px;
 }
 
 /* Mobile menu */

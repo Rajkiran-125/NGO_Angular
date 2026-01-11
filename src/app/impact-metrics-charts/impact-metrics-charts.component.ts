@@ -27,94 +27,137 @@ export class ImpactMetricsChartsComponent {
   }
 
   loadPieChart() {
-    if (this.pieChart) this.pieChart.destroy();
+  if (this.pieChart) this.pieChart.destroy();
 
-    this.pieChart = new Chart("pieChartCanvas", {
-      type: 'pie',
-      data: {
-        labels: this.dashboardData.serviceCategories.labels,
-        datasets: [{
-          data: this.dashboardData.serviceCategories.data,
-          backgroundColor: [
-            '#1E88E5', '#FB8C00', '#43A047', '#E53935', '#8E24AA',
-            '#00ACC1', '#FDD835', '#D81B60', '#7CB342'
-          ]
-          // backgroundColor: [
-          //   '#8d77ab', '#656a97', '#8d9765', '#5a0f8d', '#fff8bd',
-          //   '#ffdac3', '#d86464', '#c4a092', '#d8a4d3'
-          // ]
-        }]
+  this.pieChart = new Chart("pieChartCanvas", {
+    type: 'pie',
+    data: {
+      labels: this.dashboardData.serviceCategories.labels,
+      datasets: [{
+        data: this.dashboardData.serviceCategories.data,
+        backgroundColor: [
+          '#1E88E5', '#FB8C00', '#43A047', '#E53935', '#8E24AA',
+          '#00ACC1', '#FDD835', '#D81B60', '#7CB342'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+
+      interaction: {
+        mode: 'index',
+        intersect: true
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
 
-        animation: false, // ⭐ IMPORTANT FIX
-
-        interaction: {
-          mode: 'index',   // ⭐ fixes hover offset
-          intersect: true
+      plugins: {
+        legend: {
+          position: 'left',
+          labels: {
+            font: {
+              family: 'Poppins',
+              size: 13,
+              weight: 'bold'
+            }
+          }
         },
-
-        plugins: {
-          legend: {
-            position: 'left'
+        tooltip: {
+          enabled: true,
+          titleFont: {
+            family: 'Poppins',
+            size: 14,
+            weight: 'bold'
           },
-          tooltip: {
-            enabled: true
+          bodyFont: {
+            family: 'Poppins',
+            size: 13,
+            weight: 'bold'
           }
         }
       }
-    });
-  }
+    }
+  });
+}
+
 
   loadBarChart() {
-    if (this.barChart) this.barChart.destroy();
+  if (this.barChart) this.barChart.destroy();
 
-    this.barChart = new Chart("barChartCanvas", {
-      type: 'bar',
-      data: {
-        labels: this.dashboardData.ageDistribution.labels,
-        datasets: [{
-          label: "Volunteers",
-          data: this.dashboardData.ageDistribution.data,
-          backgroundColor: '#8d6597',
-          barPercentage: 0.7,
-          categoryPercentage: 0.7
-        }]
+  this.barChart = new Chart("barChartCanvas", {
+    type: 'bar',
+    data: {
+      labels: this.dashboardData.ageDistribution.labels,
+      datasets: [{
+        label: "Volunteers",
+        data: this.dashboardData.ageDistribution.data,
+        backgroundColor: '#8d6597',
+        barPercentage: 0.7,
+        categoryPercentage: 0.7
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+
+      interaction: {
+        mode: 'index',
+        intersect: true
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
 
-        animation: false, // ⭐ critical fix
-
-        interaction: {
-          mode: 'index',  // ⭐ correct bar mapping
-          intersect: true
-        },
-
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: { precision: 0 }
-          },
-          x: {
-            grid: { display: false }
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            font: {
+              family: 'Poppins',
+              size: 12,
+              weight: 'bold'
+            }
           }
         },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            precision: 0,
+            font: {
+              family: 'Poppins',
+              size: 12,
+              weight: 'bold'
+            }
+          }
+        }
+      },
 
-        plugins: {
-          tooltip: {
-            enabled: true
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            font: {
+              family: 'Poppins',
+              size: 13,
+              weight: 'bold'
+            }
+          }
+        },
+        tooltip: {
+          enabled: true,
+          titleFont: {
+            family: 'Poppins',
+            size: 14,
+            weight: 'bold'
           },
-          legend: {
-            display: true
+          bodyFont: {
+            family: 'Poppins',
+            size: 13
           }
         }
       }
-    });
-  }
+    }
+  });
+}
+
 
 
 
