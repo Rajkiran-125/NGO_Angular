@@ -9,7 +9,7 @@
     <div class="rounded-lg shadow-md p-6 mb-6 dHeader">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900">
+          <h1 class="text-3xl heading font-bold text-gray-900">
             Welcome back, {{ dashboardData.profile.firstName }}!
           </h1>
           <!-- <p class="text-gray-600 mt-1">Welcome to your volunteer dashboard</p> -->
@@ -103,7 +103,7 @@
 
     <!-- Progress to Next Tier -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-6" *ngIf="!isAdmin">
-      <h3 class="font-semibold text-gray-900 mb-4" style="font-size: x-large;">
+      <h3 class="font-semibold heading text-gray-900 mb-4" style="font-size: x-large;">
         Progress to Next Tier
       </h3>
       <div *ngIf="progressInfo; else highestTier">
@@ -156,7 +156,7 @@
     <!-- Hours History -->
     <div class="bg-white rounded-lg shadow-md p-6" *ngIf="!isAdmin">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-        <h3 class="text-lg font-semibold text-gray-900">Hours History</h3>
+        <h3 class="text-lg heading font-semibold text-gray-900">Hours History</h3>
         <div class="mt-2 md:mt-0 flex space-x-2">
           <select [(ngModel)]="statusFilter" class="px-3 py-1 border border-gray-300 rounded-md text-sm">
             <option value="">All Status</option>
@@ -250,8 +250,8 @@
     <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
       <div class="mt-3">
         <div class="flex justify-between items-center mb-4">
-          <h3 *ngIf="!path" class="text-lg font-semibold text-blue-900 text-gray-900">Submit Volunteer Hours</h3>
-          <h3 *ngIf="path" class="text-lg font-semibold text-blue-900 text-gray-900">Update Volunteer Hours</h3>
+          <h3 *ngIf="!path" class="text-lg heading font-semibold text-blue-900 text-gray-900">Submit Volunteer Hours</h3>
+          <h3 *ngIf="path" class="text-lg heading font-semibold text-blue-900 text-gray-900">Update Volunteer Hours</h3>
           <button (click)="hideSubmitHoursModal()" class="text-gray-400 hover:text-gray-600">
             <i class="fas fa-times text-xl"></i>
           </button>
@@ -380,15 +380,15 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6" *ngIf="!isAdmin">
       <div class="bg-blue-50 rounded-lg p-4">
-        <h3>Total Volunteers</h3>
+        <h3 class="heading">Total Volunteers</h3>
         <p class="text-3xl font-bold text-blue-600">{{ adminStats.totalVolunteers }}</p>
       </div>
       <div class="bg-green-50 rounded-lg p-4">
-        <h3>Total Hours</h3>
+        <h3 class="heading">Total Hours</h3>
         <p class="text-3xl font-bold text-green-600">{{ adminStats.totalHours }}</p>
       </div>
       <div class="bg-yellow-50 rounded-lg p-4">
-        <h3>Pending Submissions</h3>
+        <h3 class="heading">Pending Submissions</h3>
         <p class="text-3xl font-bold text-yellow-600">{{ adminStats.pendingSubmissions }}</p>
       </div>
     </div>
@@ -396,7 +396,7 @@
     <div>
       <div class="flex justify-between">
 
-        <h3 class="text-lg text-gray-900 font-bold">Volunteer Hours History</h3>
+        <h3 class="text-lg text-gray-900 heading font-bold">Volunteer Hours History</h3>
 
         <div class="search-container">
           <div class="search-box">
@@ -458,7 +458,9 @@
 
       </div>
 
-      <table class="min-w-full divide-y divide-gray-200">
+      <!-- <table class="min-w-full divide-y divide-gray-200"> -->
+      <table class="min-w-full divide-y divide-gray-200 admin-table">
+
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Volunteer</th>
@@ -479,14 +481,15 @@
           </tr>
           <!-- 🔥 Loop hours -->
           <tr *ngFor="let entry of pendingHours | searchFilter: searchType : searchText">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-cell" 
+              [title]="entry.firstName + ' ' + entry.lastName + ' (' + entry.volunteerId.email + ')'">
               {{ entry.firstName }} {{entry.lastName}}
               <br>
               <span class="text-xs text-gray-500">{{ entry.volunteerId.email }}</span>
             </td>
             <!-- {{entry | json}} -->
 
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-cell" [title]="entry.activityName">
               {{ entry.activityName }}
             </td>
 
@@ -498,7 +501,7 @@
               {{ entry.hours }}
             </td>
 
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate-cell" [title]="entry.serviceType">
               {{ entry.serviceType }}
             </td>
 
@@ -523,6 +526,7 @@
                 Edit
               </button>
             </td>
+
           </tr>
         </tbody>
       </table>

@@ -18,15 +18,15 @@
             <!-- Desktop Menu -->
             <div class="items-center gap-4 hidden md:flex" *ngIf="isLoggedIn$ | async">
 
-                <button *ngIf="isAdmin" class="px-4 py-1 dashboard-btn text-white rounded-md" (click)="impactMetrics()">
+                <button *ngIf="isAdmin" class="px-4 py-1 desktop-btn dashboard-btn text-white rounded-md" (click)="impactMetrics()">
                     Impact Metrics
                 </button>
 
-                <button class="px-4 py-1 dashboard-btn text-white rounded-md" (click)="showDashboard()">
+                <button class="px-4 py-1 desktop-btn dashboard-btn text-white rounded-md" (click)="showDashboard()">
                     Dashboard
                 </button>
 
-                <button *ngIf="isAdmin" class="px-4 py-1 tierbreakdown-btn text-white rounded-md"
+                <button *ngIf="isAdmin" class="px-4 py-1 desktop-btn tierbreakdown-btn text-white rounded-md"
                     (click)="tierBreakdown()">
                     Tier Breakdown
                 </button>
