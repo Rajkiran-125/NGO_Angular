@@ -47,54 +47,7 @@
     <div class="profile-card" *ngIf="volunteerCard">
       <h3 class="profile-name">{{ volunteerDetails?.fullName }}</h3>
 
-      <!-- <div class="profile-content">
-          <div class="profile-img">
-            <img
-            [src]="imgUrl + volunteerDetails.profilePicture"
-            alt="Profile"
-            />
-          </div>
-          
-          <div class="hours-box">
-            <p class="hours-label">Lifetime Hours</p>
-            <h2 class="hours-value">
-              {{ volunteerDetails?.lifetimeHours }}
-            </h2>
-          </div>
 
-        <div class="profile-info">
-          <p><strong>First Name:</strong> {{ volunteerDetails?.firstName }}</p>
-          <p><strong>Last Name:</strong> {{ volunteerDetails?.lastName }}</p>
-          <p>
-            <strong>School/Organization Affiliation:</strong>
-            {{ volunteerDetails?.schoolOrganization }}
-          </p>
-          <p>
-            <strong>Date of Birth:</strong>
-            {{ volunteerDetails?.dateOfBirth | date:'MM/dd/yyyy' }}
-          </p>
-          <p>
-            <strong>State/Region:</strong>
-            {{ volunteerDetails?.location?.state }}
-          </p>
-          <p>
-            <strong>Country:</strong>
-            {{ volunteerDetails?.location?.country }}
-          </p>
-          <p>
-            <strong>Phone Number:</strong>
-            {{ volunteerDetails?.phoneNumber }}
-          </p>
-          <p>
-            <strong>Email:</strong>
-            {{ volunteerDetails?.email }}
-          </p>
-          <p>
-            <strong>Causes/Areas of Interest:</strong>
-            {{ volunteerDetails?.causesOfInterest }}
-          </p>
-        </div>
-      </div> -->
       <div class="profile-content">
         <div class="profile-top-row">
           <div class="profile-img">

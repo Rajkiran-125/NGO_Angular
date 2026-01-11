@@ -1,4 +1,4 @@
-body{
+body,p,h1,h2,h3,button,div{
   font-family: "Poppins", sans-serif !important;
 }
 .dashboard-container {
@@ -14,6 +14,7 @@ body{
   font-size: 1.4rem;
   font-weight: 700;
   margin-bottom: 1rem;
+  font-family: "Poppins", sans-serif !important;
 }
 
 /* Tier Cards */
@@ -71,6 +72,7 @@ body{
   font-size: 1.2rem;
   font-weight: 700;
   margin-bottom: 1rem;
+  font-family: "Poppins", sans-serif !important;
 }
 
 .ambassadors-grid {
