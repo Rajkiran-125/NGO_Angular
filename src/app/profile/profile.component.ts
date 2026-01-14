@@ -4,7 +4,7 @@ import { AsyncPipe, NgIf } from '@angular/common';
 import { ApiService } from '../Service/api.service';
 import { TosterService } from '../Service/toster.service';
 import { environment } from '../../environments/environment';
-import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -255,5 +255,16 @@ export class ProfileComponent {
     });
   }
 
+  onDobChange(event: MatDatepickerInputEvent<Date>) {
+    const date = event.value;
+    if (date) {
+      const year = date.getFullYear();
+      const month = ('0' + (date.getMonth() + 1)).slice(-2);
+      const day = ('0' + date.getDate()).slice(-2);
 
+      const formatted = `${year}-${month}-${day}`;
+      
+      this.updateProfile.patchValue({ dob: formatted }, { emitEvent: false });
+    }
+  }
 }

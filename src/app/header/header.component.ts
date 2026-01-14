@@ -40,6 +40,7 @@ export class HeaderComponent {
   ngOnInit() {
     this.authToken = localStorage.getItem("authToken");
     this.menuOpen = false;
+    this.mobileMenuOpen = false;
     // this.isAdmin = this.sharedService.isAdmin$;
     this.sharedService.isAdmin$.subscribe(value => {
       this.isAdmin = value;
@@ -65,6 +66,7 @@ export class HeaderComponent {
 
   openProfile() {
     this.menuOpen = false;
+    this.mobileMenuOpen = false;
     // this.router.navigate(['/profile']);
     console.log('Navigating to profile...');
     this.router.navigate(['/profile']).then(success => console.log('Navigation result:', success));
@@ -72,6 +74,7 @@ export class HeaderComponent {
 
   showDashboard() {
     this.menuOpen = false;
+    this.mobileMenuOpen = false;
     this.router.navigate(['/home']);
   }
 
@@ -79,14 +82,17 @@ export class HeaderComponent {
     // this.sharedService.setShowChangePassword(true);
 
     this.menuOpen = false; // optional, close the menu
+    this.mobileMenuOpen = false;
     this.router.navigate(['/changepassword']);
   }
   tierBreakdown() {
     this.menuOpen = false; // optional, close the menu
+    this.mobileMenuOpen = false;
     this.router.navigate(['/tierbreakdown']);
   }
   impactMetrics() {
     this.menuOpen = false;
+    this.mobileMenuOpen = false;
     this.router.navigate(['chart']);
   }
   routeDashboard(){
@@ -95,6 +101,7 @@ export class HeaderComponent {
 
   logout() {
     this.menuOpen = false;
+    this.mobileMenuOpen = false;
     const user = localStorage.getItem('user');
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
