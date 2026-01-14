@@ -139,12 +139,13 @@
       <div id="badgeContainer" class="mt-4">
         <h4 class="text-md font-medium text-gray-700 mb-2 font-poppins">Your Badges</h4>
         <div class="flex flex-wrap gap-2">
-          <span *ngFor="let badge of dashboardData.badges"
-            class="inline-flex items-center px-4 py-3 rounded-full text-sm font-medium text-white badge">
-            <!-- <i class="fas fa-award mr-1"></i> -->
-            <button (click)="openDialog(badge)">
-              {{ badge }}
-            </button>
+          <span *ngFor="let badge of dashboardData.badges">
+            <span class="inline-flex items-center px-4 py-3 rounded-full text-sm font-medium text-white badge" (click)="openDialog(badge)">
+              <!-- <i class="fas fa-award mr-1"></i> -->
+              <button>
+                {{ badge }}
+              </button>
+            </span>
           </span>
           <p *ngIf="!dashboardData.badges?.length" class="text-gray-500">
             No badges earned yet. Keep volunteering!
