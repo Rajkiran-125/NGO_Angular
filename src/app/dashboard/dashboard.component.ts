@@ -388,7 +388,9 @@ export class DashboardComponent {
       }
     }
     this.hours = {
-      serviceDate: new Date()
+      serviceDate: new Date(),
+      firstName: this.dashboardData.profile.firstName,
+      lastName: this.dashboardData.profile.lastName,
     };
 
     this.api.get('volunteers/check-profile-completion', token).subscribe(res => {
