@@ -5,6 +5,14 @@ body{
 .logo-img {
   width: 70px;
   cursor: pointer;
+  transition: width 0.2s ease;
+}
+
+/* Mobile responsive - reduce logo size */
+@media (max-width: 768px) {
+  .logo-img {
+    width: 50px;
+  }
 }
 
 /* Hamburger */
