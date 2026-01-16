@@ -1,5 +1,5 @@
 import { AsyncPipe, DatePipe, JsonPipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
-import { Component, ChangeDetectionStrategy, inject, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, HostListener, ChangeDetectorRef } from '@angular/core';
 import { SharedService } from '../Service/shared.service';
 import { ApiService } from '../Service/api.service';
 import { FormsModule, NgModel } from '@angular/forms';
@@ -84,6 +84,8 @@ export class DashboardComponent {
   searchFromDate: string = '';
   searchToDate: string = '';
 
+  loaderVisible: boolean = false;
+
   hours: any = {
     firstName: '',
     lastName: '',
@@ -115,7 +117,8 @@ export class DashboardComponent {
   constructor(
     private sharedService: SharedService,
     private api: ApiService,
-    private toster: TosterService
+    private toster: TosterService,
+    private cdr: ChangeDetectorRef
   ) {
     this.isAdmin = this.sharedService.isAdmin$;
   }
@@ -610,6 +613,8 @@ export class DashboardComponent {
       }
     };
 
+    this.loaderVisible = true;
+    this.cdr.markForCheck();
     // Submit API
     this.api.post(`hours/submit`, formData, token)
       .subscribe({
@@ -621,6 +626,10 @@ export class DashboardComponent {
         },
         error: (err) => {
           this.toster.show('error', err.error?.message || 'Failed to submit hours');
+        },
+        complete: () => {
+          this.loaderVisible = false;
+          this.cdr.markForCheck();
         }
       });
   }
