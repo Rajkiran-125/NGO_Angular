@@ -24,6 +24,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
+import { LoaderComponent } from "../loader/loader.component";
 
 @Component({
   selector: 'app-dialog',
@@ -42,8 +43,8 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatAutocompleteModule,
     MatOptionModule,
     MatSelectModule,
-    MatNativeDateModule
-  ],
+    MatNativeDateModule,
+    LoaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dialog.component.html',
   styleUrl: './dialog.component.scss'
@@ -74,6 +75,8 @@ export class DialogComponent {
   volunteerSuggestions: any[] = [];
   serviceTypes: any[] = [];
   today = new Date().toISOString().split('T')[0];
+
+  loaderVisible: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<DialogComponent>,
@@ -404,6 +407,9 @@ export class DialogComponent {
 
   submit(type: 'single' | 'range') {
 
+    this.loaderVisible = true;
+    this.cdr.markForCheck();
+
     let payload: any = {};
 
     // ===== Filters =====
@@ -441,9 +447,12 @@ export class DialogComponent {
 
     this.api.post(endPoint, payload, { headers })
       .subscribe(res => {
+        this.loaderVisible = false;
+        this.cdr.markForCheck();
 
         if (this.isAdmin ? !res?.data : !res.records || this.isAdmin ? res.data.length === 0 : res.records.length === 0) {
           this.toster.show('error', 'Data not found');
+          this.dialogRef.close();
           return;
         }
 
