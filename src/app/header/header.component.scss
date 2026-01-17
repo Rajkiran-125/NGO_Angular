@@ -1,6 +1,10 @@
 body{
   font-family: "Poppins", sans-serif !important;
 }
+#navbar {
+  position: relative !important;
+  z-index: 50 !important;
+}
 
 .logo-img {
   width: 70px;

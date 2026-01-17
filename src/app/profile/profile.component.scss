@@ -1,4 +1,4 @@
-body{
+body {
   font-family: "Poppins", sans-serif !important;
 }
 
@@ -158,4 +158,64 @@ input {
 
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
   display: none;
+}
+
+
+
+
+
+
+
+// date picker 
+::ng-deep .mat-input-match {
+  width: 100%;
+}
+
+::ng-deep .mat-input-match .mat-mdc-text-field-wrapper {
+  height: 38px;
+  padding: 0;
+}
+
+::ng-deep .mat-input-match .mat-mdc-form-field-flex {
+  height: 44px;
+  align-items: center;
+}
+
+::ng-deep .mdc-text-field--outlined .mdc-notched-outline {
+  z-index: 1;
+  border: 1px solid #000;
+  border-radius: 5px;
+}
+
+::ng-deep .mat-input-match .mat-mdc-form-field-infix {
+  padding: 0 12px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+::ng-deep .mat-input-match input.mat-mdc-input-element {
+  height: 44px;
+  line-height: normal;
+  font-size: 14px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+::ng-deep .mat-input-match .mat-mdc-icon-button {
+  width: 50px;
+  height: 50px;
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+::ng-deep .mat-input-match .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+::ng-deep .mat-input-match .mat-mdc-floating-label {
+  display: none !important;
 }
