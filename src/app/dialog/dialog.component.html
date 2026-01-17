@@ -1,3 +1,4 @@
+<app-loader *ngIf="loaderVisible"></app-loader>
 <button class="close-btn" (click)="dialogRef.close()">
   ✕
 </button>
@@ -190,7 +191,6 @@
 
 <!-- report.component.html -->
 <div id="pdfContent" class="report-container" *ngIf="showPdf">
-<app-loader *ngIf="loaderVisible"></app-loader>
   <!-- Header -->
   <!-- <div class="headerBanner">
     <div class="left">
