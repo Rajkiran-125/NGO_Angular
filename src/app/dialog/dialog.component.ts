@@ -447,12 +447,11 @@ export class DialogComponent {
 
     this.api.post(endPoint, payload, { headers })
       .subscribe(res => {
-        this.loaderVisible = false;
-        this.cdr.markForCheck();
-
         if (this.isAdmin ? !res?.data : !res.records || this.isAdmin ? res.data.length === 0 : res.records.length === 0) {
           this.toster.show('error', 'Data not found');
           this.dialogRef.close();
+          this.loaderVisible = false;
+          this.cdr.markForCheck();
           return;
         }
 
@@ -483,6 +482,8 @@ export class DialogComponent {
 
           this.toster.show('success', 'Excel exported');
           this.dialogRef.close();
+          this.loaderVisible = false;
+          this.cdr.markForCheck();
           return;
         }
 
@@ -497,6 +498,9 @@ export class DialogComponent {
 
           if (!element) {
             this.toster.show('error', 'PDF content not found');
+            this.dialogRef.close();
+            this.loaderVisible = false;
+            this.cdr.markForCheck();
             return;
           }
 
@@ -515,6 +519,8 @@ export class DialogComponent {
             .then(() => {
               this.toster.show('success', 'PDF downloaded');
               this.dialogRef.close();
+              this.loaderVisible = false;
+              this.cdr.markForCheck();
             });
         });
 
