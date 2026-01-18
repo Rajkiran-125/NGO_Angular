@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { TosterService } from '../Service/toster.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { ApiService } from '../Service/api.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -21,12 +23,15 @@ export class HeaderComponent {
   currentRoute: string = '';
   isAdmin: any;
   mobileMenuOpen = false;
+  previewUrl: string | null = null;
+  fileBaseUrl = environment.fileBaseUrl;
 
 
   constructor(
     private sharedService: SharedService,
     private toster: TosterService,
-    private router: Router
+    private router: Router,
+    private api: ApiService,
   ) {
     this.isLoggedIn$ = this.sharedService.isLoggedIn$;
     this.router.events
@@ -46,7 +51,30 @@ export class HeaderComponent {
       this.isAdmin = value;
     });
     this.isAdmin = localStorage.getItem('user') == 'admin' ? true : false;
+    this.loadProfileData();
+  }
 
+  loadProfileData() {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      const token = {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      };
+
+      this.api.get('volunteers/profile', token).subscribe({
+        next: (res: any) => {
+          const user = res.user;
+          this.previewUrl = user.profile.profilePicture;
+        },
+        error: (err) => {
+          this.toster.show("error", err.message);
+        }
+      });
+    } catch (err) {
+      this.toster.show("error", err.message);
+    }
   }
 
 

@@ -99,3 +99,22 @@ a i {
 .dropdown-item:hover {
   background-color: #f3e8ff;
 }
+
+.profile-btn {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.profile-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color);
+  cursor: pointer;
+}
+
+.profile-img:hover {
+  box-shadow: 0 0 5px var(--primary-color);
+}
