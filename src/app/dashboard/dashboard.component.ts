@@ -111,6 +111,7 @@ export class DashboardComponent {
     'NEST4US Notes of Kindness',
     'NEST4US Workshops',
     'NEST4US Donations',
+    'NEST4US Impact Internship',
     "Other"
   ];
 
