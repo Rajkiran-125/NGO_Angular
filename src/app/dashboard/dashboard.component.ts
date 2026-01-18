@@ -127,10 +127,10 @@ export class DashboardComponent {
     this.loadDashboardData();
     this.isAdmin = localStorage.getItem('user') == 'admin' ? true : false;
     this.newTier();
+    this.getServiceTypes();
     if (this.isAdmin) {
       this.loadAdminPanel();
       this.loadAdminCards();
-      this.getServiceTypes();
     }
   }
 
