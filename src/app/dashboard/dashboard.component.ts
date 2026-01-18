@@ -68,7 +68,10 @@ export class DashboardComponent {
   showSubmitModal = false;
   // isAdmin$ : Observable<boolean>; // toggle based on login
   isAdmin: any; // toggle based on login
-  today = new Date().toISOString().split('T')[0];
+  // today = new Date().toISOString().split('T')[0];
+  today = new Date(new Date().setDate(new Date().getDate() + 1))
+  .toISOString()
+  .split('T')[0];
   isLoading = false;
   pdfExportData: any;
   adminCardsData: any;
