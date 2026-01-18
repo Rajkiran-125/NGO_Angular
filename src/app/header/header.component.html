@@ -35,12 +35,27 @@
 
                 <!-- Profile Dropdown -->
                 <div class="custom-dropdown">
-                    <div class="flex">
-                        <button (click)="toggleMenu()">
-                            <i class="fa-regular fa-user"></i>
+                    <div class="flex items-center gap-1">
+                        <button (click)="toggleMenu()" class="profile-btn">
+
+                            <!-- SHOW IMAGE ONLY IF BOTH EXIST -->
+                            <img
+                            *ngIf="fileBaseUrl && previewUrl; else userIcon"
+                            [src]="fileBaseUrl + previewUrl"
+                            alt="Profile"
+                            class="profile-img"
+                            />
+
+                            <!-- FALLBACK ICON -->
+                            <ng-template #userIcon>
+                            <i class="fa-regular fa-user profile-icon"></i>
+                            </ng-template>
+
                         </button>
+
                         <button class="dropdown-btn" (click)="toggleMenu()">▼</button>
                     </div>
+
 
                     <div class="dropdown-menu" *ngIf="menuOpen">
                         <div class="dropdown-item" (click)="openProfile()">My Profile</div>

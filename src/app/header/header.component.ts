@@ -1,10 +1,12 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { SharedService } from '../Service/shared.service';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { TosterService } from '../Service/toster.service';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
+import { ApiService } from '../Service/api.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -13,7 +15,7 @@ import { filter } from 'rxjs/operators';
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit, OnDestroy {
 
   authToken: any;
   isLoggedIn$: Observable<boolean>;
@@ -21,18 +23,23 @@ export class HeaderComponent {
   currentRoute: string = '';
   isAdmin: any;
   mobileMenuOpen = false;
-
+  previewUrl: string | null = null;
+  fileBaseUrl = environment.fileBaseUrl;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private sharedService: SharedService,
     private toster: TosterService,
-    private router: Router
+    private router: Router,
+    private api: ApiService,
   ) {
     this.isLoggedIn$ = this.sharedService.isLoggedIn$;
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destroy$))
       .subscribe((event: NavigationEnd) => {
         this.currentRoute = event.urlAfterRedirects;
+        this.mobileMenuOpen = false; // Close mobile menu on route change
       });
     this.isAdmin = this.sharedService.isAdmin$;
   }
@@ -46,9 +53,45 @@ export class HeaderComponent {
       this.isAdmin = value;
     });
     this.isAdmin = localStorage.getItem('user') == 'admin' ? true : false;
-
+    
+    // Load profile data on init
+    this.loadProfileData();
+    
+    // Reload profile data when login status changes
+    this.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe(isLoggedIn => {
+      if (isLoggedIn) {
+        this.loadProfileData();
+      }
+    });
   }
 
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadProfileData() {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      if (!authToken) return; // Don't load if not authenticated
+      
+      const token = {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      };
+
+      this.api.get('volunteers/profile', token).subscribe({
+        next: (res: any) => {
+          const user = res.user;
+          this.previewUrl = user.profile.profilePicture;
+        },
+        error: (err) => {
+        }
+      });
+    } catch (err) {
+    }
+  }
 
   // ✅ Close menu when clicking outside
   @HostListener('document:click', ['$event'])
