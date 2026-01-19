@@ -31,13 +31,14 @@ export class ProfileComponent {
   profileUploadPic: File | null = null;
   fileBaseUrl = environment.fileBaseUrl;
   uploadPic: boolean = false;
-  today = (() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  })();
+  // today = (() => {
+  //   const now = new Date();
+  //   const year = now.getFullYear();
+  //   const month = String(now.getMonth() + 1).padStart(2, '0');
+  //   const day = String(now.getDate()).padStart(2, '0');
+  //   return `${year}-${month}-${day}`;
+  // })();
+  today: Date = new Date();
 
   constructor(
     private fb: FormBuilder,
