@@ -69,13 +69,7 @@ export class DashboardComponent {
   // isAdmin$ : Observable<boolean>; // toggle based on login
   isAdmin: any; // toggle based on login
   // today = new Date().toISOString().split('T')[0];
-  today = (() => {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    })();
+  today = new Date();
   isLoading = false;
   pdfExportData: any;
   adminCardsData: any;
