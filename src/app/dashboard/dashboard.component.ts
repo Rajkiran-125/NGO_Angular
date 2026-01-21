@@ -385,7 +385,7 @@ export class DashboardComponent {
   }
 
   onSubmitHours() {
-
+    this.path = false;
     const authToken = localStorage.getItem("authToken");
     let token = {
       headers: {
@@ -602,7 +602,8 @@ export class DashboardComponent {
     Object.keys(this.hours).forEach(key => {
       if (this.hours[key] !== null && this.hours[key] !== undefined) {
         if (key === 'serviceDate') {
-          const formattedDate = this.formatDateToYYYYMMDD(this.hours.serviceDate);
+          // const formattedDate = this.formatDateToYYYYMMDD(this.hours.serviceDate);
+          const formattedDate = this.toIsoMidnight(this.hours.serviceDate);
           formData.append('serviceDate', formattedDate);
         } else {
           formData.append(key, this.hours[key]);
@@ -642,6 +643,11 @@ export class DashboardComponent {
       });
   }
 
+  private toIsoMidnight(date: Date): string {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d.toISOString();
+  }
 
   // Admin Panel
   loadAdminPanel() {
