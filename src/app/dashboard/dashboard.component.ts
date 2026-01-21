@@ -414,13 +414,16 @@ export class DashboardComponent {
   editHoursAdmin(id: string) {
     console.log(this.dashboardData)
     const entry = this.pendingHours.find(e => e._id === id);
+    const serviceDate = entry.serviceDate
+                ? new Date(entry.serviceDate)
+                : null;
     console.log(entry)
     if (entry) {
       this.hours = {
         firstName: entry.firstName,
         lastName: entry.lastName,
         activityName: entry.activityName,
-        serviceDate: entry.serviceDate ? entry.serviceDate.split('T')[0] : '', // keep YYYY-MM-DD
+        serviceDate: serviceDate, // keep YYYY-MM-DD
         hours: entry.hours,
         serviceType: entry.serviceType,
         description: entry.description,
@@ -451,12 +454,15 @@ export class DashboardComponent {
       const entry = res?.entry;
       console.log('edit hour: ', entry);
 
+      const serviceDate = entry.serviceDate
+                ? new Date(entry.serviceDate)
+                : null;
       if (entry) {
         this.hours = {
           firstName: entry.firstName,
           lastName: entry.lastName,
           activityName: entry.activityName,
-          serviceDate: entry.serviceDate ? entry.serviceDate.split('T')[0] : '', // keep YYYY-MM-DD
+          serviceDate: serviceDate, // keep YYYY-MM-DD
           hours: entry.hours,
           serviceType: entry.serviceType,
           description: entry.description,
