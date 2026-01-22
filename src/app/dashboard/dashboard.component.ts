@@ -260,7 +260,9 @@ export class DashboardComponent {
         icon: 'fas fa-dollar-sign',
         label: 'Value of Service',
         // value: `$${this.dashboardData.valueOfService || '0.00'}`,
-        value: `$${(this.dashboardData?.totalHours * 34.79)}`,
+        // value: `$${(this.dashboardData?.totalHours * 34.79)}`,
+        value: `$${((this.dashboardData?.totalHours || 0) * 34.79).toFixed(2)}`,
+        // value: `$${(43877.6666666666666).toFixed(2)}`,
       },
       {
         icon: 'fas fa-calendar',
