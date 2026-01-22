@@ -74,7 +74,7 @@ export class DialogComponent {
 
   volunteerSuggestions: any[] = [];
   serviceTypes: any[] = [];
-  today = new Date().toISOString().split('T')[0];
+  today = new Date();
 
   loaderVisible: boolean = false;
 

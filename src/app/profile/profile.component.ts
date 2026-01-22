@@ -31,7 +31,14 @@ export class ProfileComponent {
   profileUploadPic: File | null = null;
   fileBaseUrl = environment.fileBaseUrl;
   uploadPic: boolean = false;
-  today = new Date().toISOString().split('T')[0];
+  // today = (() => {
+  //   const now = new Date();
+  //   const year = now.getFullYear();
+  //   const month = String(now.getMonth() + 1).padStart(2, '0');
+  //   const day = String(now.getDate()).padStart(2, '0');
+  //   return `${year}-${month}-${day}`;
+  // })();
+  today: Date = new Date();
 
   constructor(
     private fb: FormBuilder,
@@ -142,11 +149,15 @@ export class ProfileComponent {
 
           console.log('user: >> ', user);
 
+          const dobFromApi = user.profile.dateOfBirth
+                ? new Date(user.profile.dateOfBirth)
+                : null;
+
           this.updateProfile.patchValue({
             firstName: user.profile.firstName || '',
             lastName: user.profile.lastName || '',
             organization: user.profile.schoolOrganization || '',
-            dob: user.profile.dateOfBirth ? user.profile.dateOfBirth.split('T')[0] : '',
+            dob: dobFromApi || '',
             // country: `${user.profile.location?.state || ''}, ${user.profile.location?.country || ''}`,
             state: user.profile.location?.state || '',
             country: user.profile.location?.country || '',

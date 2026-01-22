@@ -69,9 +69,7 @@ export class DashboardComponent {
   // isAdmin$ : Observable<boolean>; // toggle based on login
   isAdmin: any; // toggle based on login
   // today = new Date().toISOString().split('T')[0];
-  today = new Date(new Date().setDate(new Date().getDate() + 1))
-  .toISOString()
-  .split('T')[0];
+  today = new Date();
   isLoading = false;
   pdfExportData: any;
   adminCardsData: any;
@@ -111,6 +109,7 @@ export class DashboardComponent {
     'NEST4US Notes of Kindness',
     'NEST4US Workshops',
     'NEST4US Donations',
+    'NEST4US Impact Internship',
     "Other"
   ];
 
@@ -388,7 +387,7 @@ export class DashboardComponent {
   }
 
   onSubmitHours() {
-
+    this.path = false;
     const authToken = localStorage.getItem("authToken");
     let token = {
       headers: {
@@ -417,13 +416,16 @@ export class DashboardComponent {
   editHoursAdmin(id: string) {
     console.log(this.dashboardData)
     const entry = this.pendingHours.find(e => e._id === id);
+    const serviceDate = entry.serviceDate
+                ? new Date(entry.serviceDate)
+                : null;
     console.log(entry)
     if (entry) {
       this.hours = {
         firstName: entry.firstName,
         lastName: entry.lastName,
         activityName: entry.activityName,
-        serviceDate: entry.serviceDate ? entry.serviceDate.split('T')[0] : '', // keep YYYY-MM-DD
+        serviceDate: serviceDate, // keep YYYY-MM-DD
         hours: entry.hours,
         serviceType: entry.serviceType,
         description: entry.description,
@@ -454,12 +456,15 @@ export class DashboardComponent {
       const entry = res?.entry;
       console.log('edit hour: ', entry);
 
+      const serviceDate = entry.serviceDate
+                ? new Date(entry.serviceDate)
+                : null;
       if (entry) {
         this.hours = {
           firstName: entry.firstName,
           lastName: entry.lastName,
           activityName: entry.activityName,
-          serviceDate: entry.serviceDate ? entry.serviceDate.split('T')[0] : '', // keep YYYY-MM-DD
+          serviceDate: serviceDate, // keep YYYY-MM-DD
           hours: entry.hours,
           serviceType: entry.serviceType,
           description: entry.description,
@@ -599,7 +604,8 @@ export class DashboardComponent {
     Object.keys(this.hours).forEach(key => {
       if (this.hours[key] !== null && this.hours[key] !== undefined) {
         if (key === 'serviceDate') {
-          const formattedDate = this.formatDateToYYYYMMDD(this.hours.serviceDate);
+          // const formattedDate = this.formatDateToYYYYMMDD(this.hours.serviceDate);
+          const formattedDate = this.toIsoMidnight(this.hours.serviceDate);
           formData.append('serviceDate', formattedDate);
         } else {
           formData.append(key, this.hours[key]);
@@ -639,6 +645,11 @@ export class DashboardComponent {
       });
   }
 
+  private toIsoMidnight(date: Date): string {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d.toISOString();
+  }
 
   // Admin Panel
   loadAdminPanel() {
