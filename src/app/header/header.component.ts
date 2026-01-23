@@ -156,11 +156,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.router.navigate(['/adminlogin']);
     }
   }
-  
+
   faq() {
     this.menuOpen = false;
     this.mobileMenuOpen = false;
-    window.open('https://drive.google.com/drive/folders/1kuB1RoLKhFOANtFiuJljLoq56EE3TCOB?usp=drive_link', '_blank');
+    window.open('https://drive.google.com/file/d/1IAa4vW8w2vga5B4LeN7-4Tc-YBdPYO4b/view?usp=sharing', '_blank');
   }
 
 }
