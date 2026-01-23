@@ -60,6 +60,7 @@
                     <div class="dropdown-menu" *ngIf="menuOpen">
                         <div class="dropdown-item" (click)="openProfile()">My Profile</div>
                         <div class="dropdown-item" (click)="changePassword()">Change Password</div>
+                        <div class="dropdown-item" (click)="faq()">FAQ's</div>
                         <div class="dropdown-item" (click)="logout()">Logout</div>
                     </div>
                 </div>
@@ -77,6 +78,7 @@
             <button *ngIf="isAdmin" (click)="tierBreakdown()">Tier Breakdown</button>
             <button (click)="openProfile()">My Profile</button>
             <button (click)="changePassword()">Change Password</button>
+            <button (click)="faq()">FAQ's</button>
             <button (click)="logout()">Logout</button>
         </div>
 
