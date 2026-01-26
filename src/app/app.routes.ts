@@ -9,6 +9,7 @@ import { LoginGuard } from './guards/login.guard';
 import { TierbreakdownComponent } from './tierbreakdown/tierbreakdown.component';
 import { ImpactMetricsChartsComponent } from './impact-metrics-charts/impact-metrics-charts.component';
 import { ForgetPasswordComponent } from './forget-password/forget-password.component';
+import { VolunteersComponent } from './volunteers/volunteers.component';
 
 // export const routes: Routes = [
 //     { path: '', component: HomeComponent },
@@ -29,6 +30,7 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
   { path: 'changepassword', component: ChangePasswordComponent, canActivate: [AuthGuard] },
   { path: 'tierbreakdown', component: TierbreakdownComponent, canActivate: [AuthGuard] },
+  { path: 'volunteers', component: VolunteersComponent, canActivate: [AuthGuard] },
   { path: 'chart', component: ImpactMetricsChartsComponent, canActivate: [AuthGuard] },
   
   { path: 'login', component: AuthenticationComponent, canActivate: [LoginGuard] },

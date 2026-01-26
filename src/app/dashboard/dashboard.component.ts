@@ -4,6 +4,7 @@ import { SharedService } from '../Service/shared.service';
 import { ApiService } from '../Service/api.service';
 import { FormsModule, NgModel } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { LoaderComponent } from '../loader/loader.component';
 import { Observable } from 'rxjs';
 import * as XLSX from 'xlsx';
@@ -120,7 +121,8 @@ export class DashboardComponent {
     private sharedService: SharedService,
     private api: ApiService,
     private toster: TosterService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {
     this.isAdmin = this.sharedService.isAdmin$;
   }
@@ -979,5 +981,8 @@ export class DashboardComponent {
     this.searchToDate = '';
   }
 
+  goToAllVolunteers() {
+    this.router.navigate(['/volunteers']);
+  }
 
 }

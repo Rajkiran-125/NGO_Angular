@@ -60,7 +60,9 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 flex-1">
         <ng-container *ngFor="let card of (isAdmin ? statCardsAdmin : statCards)">
           <div
-            class="bg-white shadow-sm rounded-lg p-2 flex flex-col justify-center items-start transition-transform hover:-translate-y-1 hover:shadow-md">
+            class="bg-white shadow-sm rounded-lg p-2 flex flex-col justify-center items-start transition-transform hover:-translate-y-1 hover:shadow-md"
+            [ngClass]="{'cursor-pointer': card.label === 'Total Volunteers'}"
+            (click)="card.label === 'Total Volunteers' && goToAllVolunteers()">
             <div class="flex tile-cards items-center mb-2">
               <div class="p-1 mb-8 tile-icon rounded-full flex-shrink-0">
                 <i [class]="card.icon + ' text-2xl'"></i>
@@ -380,7 +382,7 @@
     <!-- <h2 class="text-2xl font-bold text-gray-900 mb-6">Admin Dashboard</h2> -->
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6" *ngIf="!isAdmin">
-      <div class="bg-blue-50 rounded-lg p-4">
+      <div class="bg-blue-50 rounded-lg p-4 cursor-pointer hover:bg-blue-100 transition" (click)="goToAllVolunteers()">
         <h3 class="heading">Total Volunteers</h3>
         <p class="text-3xl font-bold text-blue-600">{{ adminStats.totalVolunteers }}</p>
       </div>
