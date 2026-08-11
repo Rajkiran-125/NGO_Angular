@@ -297,3 +297,21 @@ button[type="button"] {
 ::ng-deep .mat-input-match {
     width: 100%;
 }
+
+
+.guest-login {
+  width: 100%;
+}
+
+.guest-login-btn {
+  width: 100% !important;
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  font-weight: 600;
+}
+
+.guest-login-btn:hover {
+  background-color: var(--primary-color);
+  color: #fff;
+}

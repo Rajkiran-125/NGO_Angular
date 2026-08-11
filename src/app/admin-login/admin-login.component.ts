@@ -54,7 +54,7 @@ export class AdminLoginComponent {
           console.log(res);
           this.toster.show("success", "Login successfully")
           const isAdmin = res.user.role == 'admin' ? true : false;
-          
+
           const authToken = res.token;
           localStorage.setItem("authToken", authToken);
 
@@ -79,7 +79,7 @@ export class AdminLoginComponent {
     }
   }
 
-  routeForgetPass(){
+  routeForgetPass() {
     this.router.navigate(['/forgetPassword']);
   }
 
@@ -104,4 +104,44 @@ export class AdminLoginComponent {
       }
     }
   }
+
+  guestAdminLogin() {
+    const email = "rajjaiswar1256@gmail.com";
+    const password = "April@125";
+
+    if (true) {
+
+      this.loader = true;
+
+      this.api.post('auth/admin/login', { email, password }).subscribe({
+        next: (res: any) => {
+          this.loader = false;
+          console.log(res);
+          this.toster.show("success", "Login successfully")
+          const isAdmin = res.user.role == 'admin' ? true : false;
+
+          const authToken = res.token;
+          localStorage.setItem("authToken", authToken);
+
+          this.loginPage = false;
+          this.sharedService.login(authToken, isAdmin);
+
+          this.loginForm.reset();
+          this.router.navigate(['/home']);
+        },
+        error: (err) => {
+          this.loader = false;
+          console.error('Login failed', err);
+
+          this.toster.show('error', err.error?.message);
+        }
+      });
+    } else {
+      this.loader = false;
+      console.error('Form Invalid');
+
+      this.toster.show('error', 'Form Invalid');
+    }
+  }
+
 }

@@ -40,6 +40,14 @@
             "scripts": [
               "node_modules/pdfmake/build/pdfmake.min.js",
               "node_modules/pdfmake/build/vfs_fonts.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "canvg",
+              "core-js",
+              "raf",
+              "rgbcolor",
+              "html2pdf.js",
+              "file-saver"
             ]
           },
           "configurations": {

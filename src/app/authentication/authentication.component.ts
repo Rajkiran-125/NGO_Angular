@@ -239,4 +239,42 @@ export class AuthenticationComponent implements OnInit {
   forgetPassword() {
     this.router.navigate(['/forgetPassword']);
   }
+
+  loginAsGuest() {
+    this.loader = true;
+    let email = "guest@gmail.com";
+    let password = "Guest@123"
+
+    this.api.post('auth/login', {email, password}).subscribe({
+      next: (res: any) => {
+        this.loader = false;
+
+        this.toster.show('success', 'Guest login successful');
+
+        const isAdmin = res.user?.role === 'admin';
+        const authToken = res.token;
+
+        // Store authentication token
+        localStorage.setItem('authToken', authToken);
+
+        // Update authentication state
+        this.loginPage = false;
+        this.authPage = false;
+
+        this.sharedService.login(authToken, isAdmin);
+
+        // Navigate to home
+        this.router.navigate(['/home']);
+      },
+
+      error: (err) => {
+        this.loader = false;
+
+        this.toster.show(
+          'error',
+          err.error?.message || 'Guest login failed'
+        );
+      }
+    });
+  }
 }
